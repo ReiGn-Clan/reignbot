@@ -1,6 +1,21 @@
 // Require the 'fs' and 'path' modules
 const fs = require('node:fs');
 const path = require('node:path');
+const mongoose = require('mongoose');
+const xp = require('discord-xp');
+
+const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
+mongoose.connect(mongo_uri, { useNewUrlParser: true, useUnifiedTopology: true}) //connect to mongoDB
+  .then(() =>{
+    console.log('Connected to MongoDB server');
+
+    const xpCollection = mongoose.connection.db.collection('xpCollection');
+
+    console.log(xpCollection);
+  })
+  .catch((err) => {
+    console.log('Failed to connect to MongoDB: ', err);
+});
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
@@ -11,10 +26,10 @@ const { token } = require('./config.json');
 // Create a new instance of the 'Client' object with the necessary intents enabled
 const client = new Client({ 
   intents: 
-  [GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMessages,
-  GatewayIntentBits.MessageContent,
-  GatewayIntentBits.GuildMembers], 
+    [GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers], 
 });
 
 // Create a new Collection to store the commands
@@ -69,7 +84,7 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 client.on("messageCreate", function(message){
-  //if the message starts with the command prefix or if the author is the bot, skip logging
+  //if the message starts with the command prefix or if the author is the bot, skip this method
   if (message.content.startsWith("/") || message.author.bot) {
     return;
   }
@@ -79,4 +94,4 @@ client.on("messageCreate", function(message){
 });
 
 // Log the client in using the token from the config file
-client.login(token);
+client.login(token); 
