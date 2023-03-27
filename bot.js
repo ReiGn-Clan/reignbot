@@ -8,8 +8,14 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 // Require the 'token' property from the 'config.json' file
 const { token } = require('./config.json');
 
-// Create a new instance of the 'Client' object with the 'Guilds' intent enabled
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// Create a new instance of the 'Client' object with the necessary intents enabled
+const client = new Client({ 
+  intents: 
+  [GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.MessageContent,
+  GatewayIntentBits.GuildMembers], 
+});
 
 // Create a new Collection to store the commands
 client.commands = new Collection();
@@ -60,6 +66,16 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
   }
+});
+
+client.on("messageCreate", function(message){
+  //if the message starts with the command prefix or if the author is the bot, skip logging
+  if (message.content.startsWith("/") || message.author.bot) {
+    return;
+  }
+
+  const timestamp = new Date().toLocaleString();
+  console.log(`[${timestamp}] ${message.author.username}: ${message.content}`);
 });
 
 // Log the client in using the token from the config file
