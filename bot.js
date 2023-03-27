@@ -1,21 +1,8 @@
 // Require the 'fs' and 'path' modules
 const fs = require('node:fs');
 const path = require('node:path');
-const mongoose = require('mongoose');
-const xp = require('discord-xp');
-
+const Levels = require('discord-xp');
 const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
-mongoose.connect(mongo_uri, { useNewUrlParser: true, useUnifiedTopology: true}) //connect to mongoDB
-  .then(() =>{
-    console.log('Connected to MongoDB server');
-
-    const xpCollection = mongoose.connection.db.collection('xpCollection');
-
-    console.log(xpCollection);
-  })
-  .catch((err) => {
-    console.log('Failed to connect to MongoDB: ', err);
-});
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
@@ -48,8 +35,9 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-// When the client is ready, log a message to the console
+// When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, () => {
+  Levels.setURL(mongo_uri);
   console.log('Ready!');
 });
 
@@ -83,14 +71,19 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 
-client.on("messageCreate", function(message){
+client.on("messageCreate", async message =>{
   //if the message starts with the command prefix or if the author is the bot, skip this method
   if (message.content.startsWith("/") || message.author.bot) {
     return;
   }
 
-  const timestamp = new Date().toLocaleString();
-  console.log(`[${timestamp}] ${message.author.username}: ${message.content}`);
+  const xpPerMsg = 15;
+  const hasLeveledUp = await Levels.appendXp(message.author.id, message.guild.id, xpPerMsg);
+
+  if (hasLeveledUp){
+    const user = await Levels.fetch(message.author.id, message.guild.id);
+    message.channel.send(`${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`);
+  }
 });
 
 // Log the client in using the token from the config file
