@@ -1,4 +1,3 @@
-// Require the 'fs' and 'path' modules
 const fs = require('node:fs');
 const path = require('node:path');
 const Levels = require('discord-xp');
@@ -77,12 +76,13 @@ client.on("messageCreate", async message =>{
     return;
   }
 
+  // Here we establish an xpPerMsg variable, then a hasLeveledUp variable
   const xpPerMsg = 15;
-  const hasLeveledUp = await Levels.appendXp(message.author.id, message.guild.id, xpPerMsg);
+  const hasLeveledUp = await Levels.appendXp(message.author.id, message.guild.id, xpPerMsg); //adds xp per message to the user, sends the data to mongoDB
 
-  if (hasLeveledUp){
-    const user = await Levels.fetch(message.author.id, message.guild.id);
-    message.channel.send(`${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`);
+  if (hasLeveledUp){ //if level up threshold is hit, this activates
+    const user = await Levels.fetch(message.author.id, message.guild.id); //retrieves xp for user from mongoDB
+    message.channel.send(`${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`); //replies with how much xp the user has
   }
 });
 
