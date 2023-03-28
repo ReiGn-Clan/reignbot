@@ -11,6 +11,6 @@
     },
     "rules": {
     },
-    "extends": ["eslint:recommended", "prettier"]
+    "extends": ["eslint:recommended"]
     
 }
