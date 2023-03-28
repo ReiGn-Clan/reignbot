@@ -1,7 +1,5 @@
 const {SlashCommandBuilder} = require('discord.js');
 const Levels = require('discord-xp');
-const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
-Levels.setURL(mongo_uri); //connect to mongoDB
 
 module.exports = {
     data: new SlashCommandBuilder()
