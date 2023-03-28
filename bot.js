@@ -11,7 +11,6 @@ mongoose.connect(mongo_uri, {
 Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
 //NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
 
-
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 

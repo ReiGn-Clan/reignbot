@@ -4,12 +4,23 @@ const Levels = require('discord-xp');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('checkxp')
-        .setDescription('Check how much XP you have.'),
-    async execute(interaction) {
-        const userXP = await Levels.fetch(interaction.user.id, interaction.guild.id); //fetch the discord-xp library, and check how much xp in this server the user has
-        if (!userXP) {
-            await interaction.reply (`${interaction.user.toString()} You have 0 xp.`); // if no xp, tell them 0xp.
-        }
-        await interaction.reply(`${interaction.user.toString()}, you currently have **${userXP.xp}XP!**`); //tag the user and return how much xp they have
-    },
+        .setDescription('Check how much XP a user has.')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('The user to check the XP of')
+                .setRequired(true)
+            ),
+            async execute(interaction) {
+                const user = interaction.options.getUser('user');
+                const member = interaction.options.getMember('user') || await interaction.guild.members.fetch(user.id);
+                const name = member.nickname || user.username;
+            
+                const userXP = await Levels.fetch(user.id, interaction.guild.id);
+            
+                if (!userXP) {
+                  await interaction.reply(`${name} has 0 XP.`);
+                } else {
+                  await interaction.reply(`${name} has **${userXP.xp} XP!**`);
+                }
+              },
 }; 
