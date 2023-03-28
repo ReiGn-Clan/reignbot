@@ -1,15 +1,6 @@
-
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const Levels = require('discord-xp');
-=======
-const { SlashCommandBuilder } = require("discord.js");
-const Levels = require("discord-xp");
-const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
-Levels.setURL(mongo_uri); //connect to mongoDB
-
-
-//Test
-
+ 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('checkleaderboard')
@@ -17,14 +8,14 @@ module.exports = {
   async execute(interaction) {
     const limit = interaction.options.getInteger('limit') || 10;
     const leaderboard = await Levels.fetchLeaderboard(interaction.guild.id, limit);
-
+ 
     const memberPromises = leaderboard.map(async (user, index) => {
       const member = await interaction.guild.members.fetch(user.userID);
       return `${index + 1}. ${member.nickname ?? member.user.username} - Level ${user.level} (${user.xp} XP)`;
     });
-
+ 
     const leaderboardData = await Promise.all(memberPromises);
-
+ 
     const fields = [
       {
         name: 'User',
@@ -37,13 +28,12 @@ module.exports = {
         inline: true
       }
     ];
-
+ 
     const embed = new EmbedBuilder()
       .setColor('#0099ff')
       .setTitle('XP Leaderboard')
       .setDescription('Here are the top 10 users in this server by XP:')
       .addFields(fields);
-
+ 
     await interaction.reply({ embeds: [embed] });
   }
-};
