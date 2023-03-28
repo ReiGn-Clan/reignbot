@@ -1,7 +1,15 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const Levels = require('discord-xp');
+
+const mongoose = require('mongoose');
 const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
+mongoose.connect(mongo_uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('Connected to mongoDB'));
+Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
+//NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
@@ -36,7 +44,6 @@ for (const file of commandFiles) {
 
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, () => {
-  Levels.setURL(mongo_uri);
   console.log('Ready!');
 });
 
