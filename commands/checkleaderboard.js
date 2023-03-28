@@ -41,8 +41,6 @@ module.exports = {
       .addFields(fields);
 
     await interaction.reply({ embeds: [embed] });
-
   },
 };
- //prettify test :)
-
+//prettify test :)
