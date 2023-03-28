@@ -1,16 +1,16 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const Levels = require("discord-xp");
+const fs = require('node:fs');
+const path = require('node:path');
+const Levels = require('discord-xp');
 
 const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
 Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
 //NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
-const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
-const { token } = require("./config.json");
+const { token } = require('./config.json');
 
 // Create a new instance of the 'Client' object with the necessary intents enabled
 const client = new Client({
@@ -26,12 +26,12 @@ const client = new Client({
 client.commands = new Collection();
 
 // Define the path to the 'commands' directory
-const commandsPath = path.join(__dirname, "commands");
+const commandsPath = path.join(__dirname, 'commands');
 
 // Get an array of all JavaScript files in the 'commands' directory
 const commandFiles = fs
   .readdirSync(commandsPath)
-  .filter((file) => file.endsWith(".js"));
+  .filter((file) => file.endsWith('.js'));
 
 // Loop through each command file and add it to the Collection
 for (const file of commandFiles) {
@@ -42,7 +42,7 @@ for (const file of commandFiles) {
 
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, () => {
-  console.log("Ready!");
+  console.log('Ready!');
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
@@ -69,21 +69,21 @@ client.on(Events.InteractionCreate, async (interaction) => {
     // If there is an error, send an error message to the user
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
+        content: 'There was an error while executing this command!',
         ephemeral: true,
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
+        content: 'There was an error while executing this command!',
         ephemeral: true,
       });
     }
   }
 });
 
-client.on("messageCreate", async (message) => {
+client.on('messageCreate', async (message) => {
   //if the message starts with the command prefix or if the author is the bot, skip this method
-  if (message.content.startsWith("/") || message.author.bot) {
+  if (message.content.startsWith('/') || message.author.bot) {
     return;
   }
 
@@ -92,14 +92,14 @@ client.on("messageCreate", async (message) => {
   const hasLeveledUp = await Levels.appendXp(
     message.author.id,
     message.guild.id,
-    xpPerMsg
+    xpPerMsg,
   ); //adds xp per message to the user, sends the data to mongoDB
 
   if (hasLeveledUp) {
     //if level up threshold is hit, this activates
     const user = await Levels.fetch(message.author.id, message.guild.id); //retrieves xp for user from mongoDB
     message.channel.send(
-      `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`
+      `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
     ); //replies with how much xp the user has
   }
 });
