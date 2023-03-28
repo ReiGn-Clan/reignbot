@@ -10,7 +10,9 @@ on:
 jobs:
   prettier:
     runs-on: ubuntu-latest
-    permissions: read-all|write-all
+    permissions:
+      issues: write
+      pull-requests: write
     
     steps:
       - name: Checkout
