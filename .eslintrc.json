@@ -10,5 +10,7 @@
         "sourceType": "module"
     },
     "rules": {
-    }
+    },
+    "extends": ["eslint:recommended", "plugin:compat/recommended"]
+    
 }
