@@ -1,0 +1,21 @@
+default_language_version:
+  ruby: 3.1.1
+repos:
+  - repo: https://github.com/eslint/eslint.git
+    rev: v8.16.0
+    hooks:
+      - id: eslint
+        additional_dependencies:
+        - eslint
+        - typescript
+        - typescript-eslint
+        - "@typescript-eslint/eslint-plugin"
+        - "@typescript-eslint/parser"
+        - babel-eslint@6.1.2
+        - prettier-eslint
+        - eslint-plugin-prettier
+        - eslint-config-prettier
+        - eslint-config-airbnb
+        - eslint-plugin-react
+        - eslint-plugin-jsx-a11y
+        - eslint-plugin-import
