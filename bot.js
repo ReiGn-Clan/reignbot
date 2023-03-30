@@ -23,6 +23,7 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildInvites,
+        GatewayIntentBits.GuildPresences,
     ],
 });
 
@@ -49,6 +50,13 @@ client.once(Events.ClientReady, () => {
     console.log('Ready!');
 });
 
+// Run once to make sure all invites are stored
+client.once(Events.ClientReady, () => {
+    client.guilds.fetch(guildID).then((guild) => {
+        guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
+    });
+});
+
 // Event for when invite is created
 client.on(Events.InviteCreate, async (invite) => {
     console.log('Invite event triggered');
@@ -61,13 +69,23 @@ client.on(Events.InviteCreate, async (invite) => {
 client.on(Events.GuildMemberAdd, async (member) => {
     console.log('User joined');
     console.log(member.id);
+    client.guilds.fetch(guildID).then((guild) => {
+        guild.invites
+            .fetch()
+            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id));
+    });
     //inv_l.UpdateLeaderboard(member.id);
 });
 
 // Event for when user leaves
 client.on(Events.GuildMemberRemove, async (member) => {
     console.log('User left');
-    //inv_l.UpdateLeaderboard(member.id, false);
+    console.log(member.id);
+    client.guilds.fetch(guildID).then((guild) => {
+        guild.invites
+            .fetch()
+            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id, false));
+    });
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
