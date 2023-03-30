@@ -58,7 +58,7 @@ client.once(Events.ClientReady, () => {
 });
 
 // Event for when invite is created
-client.on(Events.InviteCreate, async (invite) => {
+client.on(Events.InviteCreate, async () => {
     console.log('Invite event triggered');
     client.guilds.fetch(guildID).then((guild) => {
         guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
