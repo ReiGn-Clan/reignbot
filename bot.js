@@ -10,7 +10,13 @@ Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for
 //NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
-const { Client, Collection, Events, GatewayIntentBits, GuildMemberRoleManager } = require('discord.js');
+const {
+  Client,
+  Collection,
+  Events,
+  GatewayIntentBits,
+  GuildMemberRoleManager,
+} = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
 const { token } = require('./config.json');
@@ -100,33 +106,42 @@ client.on('messageCreate', async (message) => {
 
   if (hasLeveledUp) {
     //if level up threshold is hit, this activates
-  let user = await Levels.fetch(message.author.id, message.guild.id); //retrieves xp for user from mongoDB
+    let user = await Levels.fetch(message.author.id, message.guild.id); //retrieves xp for user from mongoDB
 
-  let newLevel = user.level; //check what level the user leveled up to
-  let newLevelName = levelNames[newLevel]; //match the new level to the rank name
- 
-  let previousLevelName = levelNames[newLevel - 1]; // check what their level was prior to level up
+    let newLevel = user.level; //check what level the user leveled up to
+    let newLevelName = levelNames[newLevel]; //match the new level to the rank name
 
-  const member = message.member; //establish who leveled up
-  const role = message.guild.roles.cache.find(role => role.name === newLevelName); //find the role to assign upon level up
+    let previousLevelName = levelNames[newLevel - 1]; // check what their level was prior to level up
 
-  // remove old role if new level gives them a new role
-  if (previousLevelName && member.roles.cache.some(role => role.name === previousLevelName)) { 
-    const previousRole = member.guild.roles.cache.find(role => role.name === previousLevelName);
-    await member.roles.remove(previousRole);
-  } 
+    const member = message.member; //establish who leveled up
+    const role = message.guild.roles.cache.find(
+      (role) => role.name === newLevelName,
+    ); //find the role to assign upon level up
 
-  await member.roles.add(role) //give new role and log to console
-    .then(() => console.log(`Added the role ${role.name} to ${member.user.tag}`))
-    .catch(console.error); 
+    // remove old role if new level gives them a new role
+    if (
+      previousLevelName &&
+      member.roles.cache.some((role) => role.name === previousLevelName)
+    ) {
+      const previousRole = member.guild.roles.cache.find(
+        (role) => role.name === previousLevelName,
+      );
+      await member.roles.remove(previousRole);
+    }
 
-  message.channel.send( //send message
-    `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}**`,
+    await member.roles
+      .add(role) //give new role and log to console
+      .then(() =>
+        console.log(`Added the role ${role.name} to ${member.user.tag}`),
+      )
+      .catch(console.error);
+
+    message.channel.send(
+      //send message
+      `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}**`,
     );
   }
 });
-
-   
 
 // Log the client in using the token from the config file
 client.login(token);
