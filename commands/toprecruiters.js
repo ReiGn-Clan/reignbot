@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('toprecruiters')
-        .setDescription('Check the top 10 recruiters on the leaderboard'),
+        .setDescription('Check the top recruiters on the leaderboard'),
 
     async execute(interaction) {
         const invite_leaderboard = JSON.parse(
@@ -23,11 +23,12 @@ module.exports = {
 
         const memberPromises = invite_leaderboard_arr.map(
             async (user, index) => {
-                console.log(String(user[0]));
-                const member = await interaction.guild.members.fetch(user[0]);
+                const member = await interaction.guild.members.fetch(
+                    String(user[0]),
+                );
                 return `${index + 1}. ${
                     member.nickname ?? member.user.username
-                } - Invites ${user[1]}`;
+                } - ${user[1]}`;
             },
         );
 
@@ -42,7 +43,7 @@ module.exports = {
                 inline: true,
             },
             {
-                name: 'XP',
+                name: 'Recruited',
                 value: leaderboardData
                     .map((entry) => entry.split(' - ')[1])
                     .join('\n'),
@@ -53,9 +54,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setColor('#0099ff')
             .setTitle('Invite Leaderboard')
-            .setDescription(
-                'Here are the top 10 users in this server by invites:',
-            )
+            .setDescription('Here are the top recruiters in this server:')
             .addFields(fields);
 
         await interaction.reply({ embeds: [embed] });
