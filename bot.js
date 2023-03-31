@@ -126,7 +126,5 @@ client.on('messageCreate', async (message) => {
   }
 });
 
-   
-
 // Log the client in using the token from the config file
 client.login(token);
