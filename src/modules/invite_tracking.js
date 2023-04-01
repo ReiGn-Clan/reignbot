@@ -3,7 +3,7 @@ const fs = require('fs');
 // Function to update the list of existing invites,
 function UpdateLinks(invites) {
     // Create empty object
-    let links = {};
+    let links = JSON.parse(fs.readFileSync('invite_links.json'));
 
     // Get the keys == invite link
     const keys = invites.keys();
@@ -114,7 +114,13 @@ function RetrieveLinkUsed(invites, invite_links_old) {
     }
 
     if (link_used != null) {
-        let json_data = JSON.stringify(links, null, 2);
+        // Concat the old and new invites
+        const concatted = {
+            ...invite_links_old,
+            ...links,
+        };
+
+        let json_data = JSON.stringify(concatted, null, 2);
 
         fs.writeFileSync('invite_links.json', json_data, (err) => {
             if (err) throw err;
