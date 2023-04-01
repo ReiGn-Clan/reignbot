@@ -21,16 +21,18 @@ module.exports = {
             (key) => [Number(key), invite_leaderboard[key]],
         );
 
-        const memberPromises = invite_leaderboard_arr.map(
-            async (user, index) => {
+        const leaderboard_limit = 10;
+
+        const memberPromises = invite_leaderboard_arr
+            .slice(0, leaderboard_limit)
+            .map(async (user, index) => {
                 const member = await interaction.guild.members.fetch(
                     String(user[0]),
                 );
                 return `${index + 1}. ${
                     member.nickname ?? member.user.username
                 } - ${user[1]}`;
-            },
-        );
+            });
 
         const leaderboardData = await Promise.all(memberPromises);
 

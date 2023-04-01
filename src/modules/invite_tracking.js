@@ -1,10 +1,6 @@
 const fs = require('fs');
 
-// Function to update the list of existing invites,
-function UpdateLinks(invites) {
-    // Create empty object
-    let links = JSON.parse(fs.readFileSync('invite_links.json'));
-
+function CreateInviteLinkObject(invites, links) {
     // Get the keys == invite link
     const keys = invites.keys();
     // Loop over the links and save " link : [creator, times used]"
@@ -13,10 +9,23 @@ function UpdateLinks(invites) {
         const curr_key = keys.next();
         if (curr_key.done == true) break;
 
-        const inviterId = invites.get(curr_key.value).inviterId;
-        const linkUsed = invites.get(curr_key.value).uses;
-        links[curr_key.value] = [inviterId, linkUsed];
+        links[curr_key.value] = {
+            InviterID: invites.get(curr_key.value).inviterId,
+            LinkUses: invites.get(curr_key.value).uses,
+            ExpirationDate: invites.get(curr_key.value).expiresAt,
+            MaximumUses: invites.get(curr_key.value).maxUses,
+        };
     }
+
+    return links;
+}
+
+// Function to update the list of existing invites,
+function UpdateLinks(invites) {
+    // Create empty object
+    let links = JSON.parse(fs.readFileSync('invite_links.json'));
+
+    links = CreateInviteLinkObject(invites, links);
 
     // Save the information to JSON file
     let json_data = JSON.stringify(links, null, 2);
@@ -50,15 +59,17 @@ function UpdateLeaderboard(invites, memberID, increase = true) {
 
     // Update the leaderboard and save it, if the link is not undefined
     if (link != null) {
-        const userID = invite_links[link][0];
+        const userID = invite_links[link].InviterID;
 
         if (userID in invite_leaderboard) {
             if (increase) {
-                invite_leaderboard[userID] = invite_leaderboard[userID] + 1;
+                invite_leaderboard[userID] += 1;
                 what_links[memberID] = link;
             } else {
-                invite_leaderboard[userID] = invite_leaderboard[userID] - 1;
+                invite_leaderboard[userID] -= 1;
                 delete what_links[memberID];
+                if (invite_leaderboard[userID] === 0)
+                    delete invite_leaderboard[userID];
             }
         } else {
             what_links[memberID] = link;
@@ -94,22 +105,45 @@ function UpdateLeaderboard(invites, memberID, increase = true) {
 function RetrieveLinkUsed(invites, invite_links_old) {
     let links = {};
     let link_used = null;
-    const keys = invites.keys();
 
-    // eslint-disable-next-line no-constant-condition
-    while (1) {
-        const curr_key = keys.next();
-        if (curr_key.done == true) break;
+    // Retrieve the current existing links
+    links = CreateInviteLinkObject(invites, links);
 
-        const inviterId = invites.get(curr_key.value).inviterId;
-        const linkUsed = invites.get(curr_key.value).uses;
-        links[curr_key.value] = [inviterId, linkUsed];
+    // Start comparing to retrieve the link used
+    // First for times used
+    // Then deal with limited amount uses
+    // Split keys in two, overlapping and not overlapping
+    let intersecting_keys = Object.keys(links).filter((x) =>
+        Object.keys(invite_links_old).includes(x),
+    );
 
-        if (
-            JSON.stringify(links[curr_key.value]) !=
-            JSON.stringify(invite_links_old[curr_key.value])
-        ) {
-            link_used = curr_key.value;
+    // Check for overlapping keys
+    for (let i in intersecting_keys) {
+        let key = intersecting_keys[i];
+        let old_entry = invite_links_old[key];
+        let new_entry = links[key];
+
+        if (old_entry.LinkUses != new_entry.LinkUses) {
+            link_used = key;
+        }
+    }
+
+    if (link_used === null) {
+        // Check for keys in old but not new
+        let different_keys = Object.keys(invite_links_old).filter(
+            (x) => !Object.keys(links).includes(x),
+        );
+
+        for (let i in different_keys) {
+            let key = different_keys[i];
+            let old_entry = invite_links_old[key];
+
+            // If link does not exist anymore in new, but does in old
+            // and not expired, means limited uses link
+            if (Date.now() < Date.parse(old_entry.ExpirationDate)) {
+                link_used = key;
+                invite_links_old[key].LinkUses += 1;
+            }
         }
     }
 
