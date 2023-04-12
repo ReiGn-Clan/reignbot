@@ -10,13 +10,13 @@ const commands = [];
 const commandsPath = path.join(__dirname, 'commands');
 // Read the contents of the directory and filter for files that end with ".js"
 const commandFiles = fs
-  .readdirSync(commandsPath)
-  .filter((file) => file.endsWith('.js'));
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-  // Loop through each command file
-  const command = require(`./commands/${file}`); // Load the command from the file
-  commands.push(command.data.toJSON()); // Add the command data to the array
+    // Loop through each command file
+    const command = require(`./commands/${file}`); // Load the command from the file
+    commands.push(command.data.toJSON()); // Add the command data to the array
 }
 
 // Create a new REST instance and set the token
@@ -24,23 +24,23 @@ const rest = new REST({ version: 10 }).setToken(token);
 
 // Define an asynchronous function that will refresh the application commands
 (async () => {
-  try {
-    // Log a message indicating the number of commands being refreshed
-    console.log(
-      `Started refreshing ${commands.length} application (/) commands.`,
-    );
+    try {
+        // Log a message indicating the number of commands being refreshed
+        console.log(
+            `Started refreshing ${commands.length} application (/) commands.`,
+        );
 
-    // Use the REST API to update the guild's commands with the data in the commands array
-    const data = await rest.put(
-      Routes.applicationGuildCommands(clientID, guildID),
-      { body: commands },
-    );
+        // Use the REST API to update the guild's commands with the data in the commands array
+        const data = await rest.put(
+            Routes.applicationGuildCommands(clientID, guildID),
+            { body: commands },
+        );
 
-    // Log a message indicating the number of commands that were successfully reloaded
-    console.log(
-      `Successfully reloaded ${data.length} application (/) commands.`,
-    );
-  } catch (error) {
-    console.error(error); // If an error occurs, log the error to the console
-  }
+        // Log a message indicating the number of commands that were successfully reloaded
+        console.log(
+            `Successfully reloaded ${data.length} application (/) commands.`,
+        );
+    } catch (error) {
+        console.error(error); // If an error occurs, log the error to the console
+    }
 })(); // Immediately invoke the async function to refresh the commands when the script is run
