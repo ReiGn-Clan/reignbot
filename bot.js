@@ -10,12 +10,7 @@ Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for
 //NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
-const {
-    Client,
-    Collection,
-    Events,
-    GatewayIntentBits
-} = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
 const { token } = require('./config.json');

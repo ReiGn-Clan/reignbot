@@ -14,7 +14,9 @@ module.exports = {
 
         const memberPromises = leaderboard.map(async (user, index) => {
             try {
-                const member = await interaction.guild.members.fetch(user.userID);
+                const member = await interaction.guild.members.fetch(
+                    user.userID,
+                );
                 return `${index + 1}. ${
                     member.nickname ?? member.user.username
                 } - Level ${user.level} (${user.xp} XP)`;
@@ -23,8 +25,10 @@ module.exports = {
                 return null;
             }
         });
-        
-        const leaderboardData = (await Promise.all(memberPromises)).filter(entry => entry !== null);
+
+        const leaderboardData = (await Promise.all(memberPromises)).filter(
+            (entry) => entry !== null,
+        );
 
         const fields = [
             {
