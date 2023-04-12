@@ -1,19 +1,25 @@
-// Imports
-const inv_l = require('./src/modules/invite_tracking.js');
-
 const fs = require('node:fs');
 const path = require('node:path');
 const Levels = require('discord-xp');
+
+const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8'); //read the levelNames JSON
+const levelNames = JSON.parse(levelNamesData); //then parse it
 
 const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
 Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
 //NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const {
+    Client,
+    Collection,
+    Events,
+    GatewayIntentBits,
+    GuildMemberRoleManager,
+} = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
-const { token, guildID } = require('./config.json');
+const { token } = require('./config.json');
 
 // Create a new instance of the 'Client' object with the necessary intents enabled
 const client = new Client({
@@ -22,8 +28,6 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildInvites,
-        GatewayIntentBits.GuildPresences,
     ],
 });
 
@@ -50,44 +54,6 @@ client.once(Events.ClientReady, () => {
     console.log('Ready!');
 });
 
-// Run once to make sure all invites are stored
-client.once(Events.ClientReady, () => {
-    client.guilds.fetch(guildID).then((guild) => {
-        guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
-    });
-});
-
-// Event for when invite is created
-client.on(Events.InviteCreate, async () => {
-    console.log('Invite event triggered');
-    client.guilds.fetch(guildID).then((guild) => {
-        guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
-    });
-});
-
-// Event for when user joins
-client.on(Events.GuildMemberAdd, async (member) => {
-    console.log('User joined');
-    console.log(member.id);
-    client.guilds.fetch(guildID).then((guild) => {
-        guild.invites
-            .fetch()
-            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id));
-    });
-    //inv_l.UpdateLeaderboard(member.id);
-});
-
-// Event for when user leaves
-client.on(Events.GuildMemberRemove, async (member) => {
-    console.log('User left');
-    console.log(member.id);
-    client.guilds.fetch(guildID).then((guild) => {
-        guild.invites
-            .fetch()
-            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id, false));
-    });
-});
-
 // Listen for interactions (i.e. commands) and execute the appropriate command
 client.on(Events.InteractionCreate, async (interaction) => {
     // Ignore interactions that are not chat input commands
@@ -97,12 +63,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isCommand()) return;
 
     // Log the command usage to the console
-    const { commandName, user } = interaction;
-    const timestamp = new Date().toLocaleString();
+    let { commandName, user } = interaction;
+    let timestamp = new Date().toLocaleString();
     console.log(`[${timestamp}] ${user.username} used command /${commandName}`);
 
     // Get the appropriate command from the Collection and execute it
-    const command = client.commands.get(interaction.commandName);
+    let command = client.commands.get(interaction.commandName);
     if (!command) return;
 
     try {
@@ -131,8 +97,8 @@ client.on('messageCreate', async (message) => {
     }
 
     // Here we establish an xpPerMsg variable, then a hasLeveledUp variable
-    const xpPerMsg = 15;
-    const hasLeveledUp = await Levels.appendXp(
+    const xpPerMsg = 150;
+    let hasLeveledUp = await Levels.appendXp(
         message.author.id,
         message.guild.id,
         xpPerMsg,
@@ -140,10 +106,42 @@ client.on('messageCreate', async (message) => {
 
     if (hasLeveledUp) {
         //if level up threshold is hit, this activates
-        const user = await Levels.fetch(message.author.id, message.guild.id); //retrieves xp for user from mongoDB
+        let user = await Levels.fetch(message.author.id, message.guild.id); //retrieves xp for user from mongoDB
+
+        let newLevel = user.level; //check what level the user leveled up to
+        let newLevelName = levelNames[newLevel]; //match the new level to the rank name
+
+        let previousLevelName = levelNames[newLevel - 1]; // check what their level was prior to level up
+
+        const member = message.member; //establish who leveled up
+        const role = message.guild.roles.cache.find(
+            (role) => role.name === newLevelName,
+        ); //find the role to assign upon level up
+
+        // remove old role if new level gives them a new role
+        if (
+            previousLevelName &&
+            member.roles.cache.some((role) => role.name === previousLevelName)
+        ) {
+            const previousRole = member.guild.roles.cache.find(
+                (role) => role.name === previousLevelName,
+            );
+            await member.roles.remove(previousRole);
+        }
+
+        await member.roles
+            .add(role) //give new role and log to console
+            .then(() =>
+                console.log(
+                    `Added the role ${role.name} to ${member.user.tag}`,
+                ),
+            )
+            .catch(console.error);
+
         message.channel.send(
-            `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
-        ); //replies with how much xp the user has
+            //send message
+            `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}**`,
+        );
     }
 });
 
