@@ -14,8 +14,7 @@ const {
     Client,
     Collection,
     Events,
-    GatewayIntentBits,
-    GuildMemberRoleManager,
+    GatewayIntentBits
 } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
