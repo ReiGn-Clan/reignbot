@@ -164,7 +164,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
     client.guilds.fetch(guildID).then((guild) => {
         guild.invites
             .fetch()
-            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id));
+            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id, guild));
     });
     //inv_l.UpdateLeaderboard(member.id);
 });
@@ -176,7 +176,9 @@ client.on(Events.GuildMemberRemove, async (member) => {
     client.guilds.fetch(guildID).then((guild) => {
         guild.invites
             .fetch()
-            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id, false));
+            .then((inv) =>
+                inv_l.UpdateLeaderboard(inv, member.id, guild, false),
+            );
     });
 });
 
