@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { EmbedBuilder } = require('discord.js');
 
 function CreateInviteLinkObject(invites, links) {
     // Get the keys == invite link
@@ -23,26 +24,28 @@ function CreateInviteLinkObject(invites, links) {
 // Function to update the list of existing invites,
 function UpdateLinks(invites) {
     // Create empty object
-    let links = JSON.parse(fs.readFileSync('invite_links.json'));
+    let links = JSON.parse(fs.readFileSync('./json/invite_links.json'));
 
     links = CreateInviteLinkObject(invites, links);
 
     // Save the information to JSON file
     let json_data = JSON.stringify(links, null, 2);
 
-    fs.writeFileSync('invite_links.json', json_data, (err) => {
+    fs.writeFileSync('./json/invite_links.json', json_data, (err) => {
         if (err) throw err;
         console.log('Links written to file');
     });
 }
 
 // Update the leaderboard file, not sorted (yet)
-function UpdateLeaderboard(invites, memberID, increase = true) {
+function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     // Read in file
-    let invite_links = JSON.parse(fs.readFileSync('invite_links.json'));
+    let invite_links = JSON.parse(fs.readFileSync('./json/invite_links.json'));
     let invite_leaderboard = JSON.parse(
-        fs.readFileSync('invite_leaderboard.json'),
+        fs.readFileSync('./json/invite_leaderboard.json'),
     );
+
+    let invite_leaderboard_old = invite_leaderboard;
 
     let link;
     let what_links = {};
@@ -53,39 +56,46 @@ function UpdateLeaderboard(invites, memberID, increase = true) {
 
         if (link === 0) return;
     } else {
-        what_links = JSON.parse(fs.readFileSync('what_links.json'));
+        what_links = JSON.parse(fs.readFileSync('./json/what_links.json'));
         link = what_links[memberID];
     }
 
     // Update the leaderboard and save it, if the link is not undefined
     if (link != null) {
-        const userID = invite_links[link].InviterID;
+        const userID = 'u' + invite_links[link].InviterID;
 
         if (userID in invite_leaderboard) {
             if (increase) {
-                invite_leaderboard[userID] += 1;
+                invite_leaderboard[userID].score += 1;
                 what_links[memberID] = link;
             } else {
-                invite_leaderboard[userID] -= 1;
+                invite_leaderboard[userID].score -= 1;
                 delete what_links[memberID];
-                if (invite_leaderboard[userID] === 0)
+                if (invite_leaderboard[userID].score === 0)
                     delete invite_leaderboard[userID];
             }
         } else {
             what_links[memberID] = link;
-            invite_leaderboard[userID] = 1;
+            invite_leaderboard[userID] = {
+                score: 1,
+                change: 'NEW',
+            };
         }
 
         // Sort the leaderboard top to low and save it to json file
         let sorted_leaderboard = sort_leaderboard(invite_leaderboard);
-        let invite_leaderboard_json = JSON.stringify(
+        let dynamic_leaderboard = get_change(
+            invite_leaderboard_old,
             sorted_leaderboard,
+        );
+        let invite_leaderboard_json = JSON.stringify(
+            dynamic_leaderboard, // change this back to sorted once it works again
             null,
             2,
         );
 
         fs.writeFileSync(
-            'invite_leaderboard.json',
+            './json/invite_leaderboard.json',
             invite_leaderboard_json,
             (err) => {
                 if (err) throw err;
@@ -95,10 +105,12 @@ function UpdateLeaderboard(invites, memberID, increase = true) {
 
         let what_links_json = JSON.stringify(what_links, null, 2);
 
-        fs.writeFileSync('what_links.json', what_links_json, (err) => {
+        fs.writeFileSync('./json/what_links.json', what_links_json, (err) => {
             if (err) throw err;
-            console.log('what_links written to file');
+            console.log('./json/what_links written to file');
         });
+
+        update_dynamic_Leaderboards(dynamic_leaderboard, guild);
     }
 }
 
@@ -156,7 +168,7 @@ function RetrieveLinkUsed(invites, invite_links_old) {
 
         let json_data = JSON.stringify(concatted, null, 2);
 
-        fs.writeFileSync('invite_links.json', json_data, (err) => {
+        fs.writeFileSync('./json/invite_links.json', json_data, (err) => {
             if (err) throw err;
             console.log('Links written to file');
         });
@@ -169,10 +181,138 @@ function RetrieveLinkUsed(invites, invite_links_old) {
 }
 
 function sort_leaderboard(leaderboard) {
-    const sortable = Object.fromEntries(
-        Object.entries(leaderboard).sort(([, a], [, b]) => b - a),
+    // Convert the object into an array of key-value pairs
+    const keyValueArray = Object.entries(leaderboard);
+
+    // Sort the array based on the score value in descending order
+    keyValueArray.sort((a, b) => b[1].score - a[1].score);
+
+    // Create a new Map to store the sorted key-value pairs
+    const sortedMap = new Map(keyValueArray);
+
+    // Create a new object to store the sorted key-value pairs
+    const sortedObject = Object.fromEntries(sortedMap);
+
+    return sortedObject;
+}
+
+function get_change(leaderboard_old, leaderboard_new) {
+    const keyValueArray_old = Object.keys(leaderboard_old);
+    const keyValueArray_new = Object.keys(leaderboard_new);
+
+    // Bekijk welke keys in de nieuwe zitten en niet in de oude, deze krijgen status 'new'
+
+    // Check for keys in new but not old
+    let different_keys = Object.keys(keyValueArray_new).filter(
+        (x) => !Object.keys(keyValueArray_old).includes(x),
     );
-    return sortable;
+
+    for (let i in different_keys) {
+        leaderboard_new[different_keys[i]].change = 'NEW';
+    }
+
+    // Check what keys intersect
+    let intersecting_keys = Object.keys(leaderboard_new).filter((x) =>
+        Object.keys(leaderboard_old).includes(x),
+    );
+
+    for (let j in intersecting_keys) {
+        let key = intersecting_keys[j];
+        let position_old = keyValueArray_old.indexOf(key);
+        let position_new = keyValueArray_new.indexOf(key);
+
+        if (position_new > position_old) {
+            leaderboard_new[key].change = 'DOWN';
+        } else if (position_new < position_old) {
+            leaderboard_new[key].change = 'UP';
+        } else if (position_new === position_old) {
+            leaderboard_new[key].change = 'SAME';
+        } else {
+            console.log('Wtf this is not supposed to happen');
+        }
+    }
+
+    return leaderboard_new;
+}
+
+async function update_dynamic_Leaderboards(leaderboard, guild) {
+    const emote_dict = {
+        SAME: '⛔',
+        UP: '⬆️',
+        DOWN: '⬇️',
+        NEW: '🆕',
+    };
+
+    const invite_leaderboard = leaderboard;
+    const dyn_boards = JSON.parse(
+        fs.readFileSync('./json/dynamic_leaderboards.json'),
+    );
+
+    if (Object.keys(invite_leaderboard).length === 0) {
+        console.log('No entries on leaderboard yet');
+        return;
+    }
+
+    const invite_leaderboard_arr = Object.keys(invite_leaderboard).map(
+        (key) => [
+            Number(key.substring(1)),
+            invite_leaderboard[key].score,
+            invite_leaderboard[key].change,
+        ],
+    );
+
+    const memberPromises = invite_leaderboard_arr.map(async (user, index) => {
+        const member = await guild.members.fetch(String(user[0]));
+        return `${index + 1}. ${member.nickname ?? member.user.username} - ${
+            user[1]
+        } - ${emote_dict[user[2]]}`;
+    });
+
+    const leaderboardData = await Promise.all(memberPromises);
+
+    const fields = [
+        {
+            name: 'User',
+            value: leaderboardData
+                .map((entry) => entry.split(' - ')[0])
+                .join('\n'),
+            inline: true,
+        },
+        {
+            name: 'Recruited',
+            value: leaderboardData
+                .map((entry) => entry.split(' - ')[1])
+                .join('\n'),
+            inline: true,
+        },
+        {
+            name: 'Change',
+            value: leaderboardData
+                .map((entry) => entry.split(' - ')[2])
+                .join('\n'),
+            inline: true,
+        },
+    ];
+
+    const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle('Invite Leaderboard')
+        .setDescription('Here are the top recruiters in this server:')
+        .addFields(fields);
+
+    let dyn_names = Object.keys(dyn_boards);
+    for (let i in dyn_names) {
+        let board = dyn_boards[dyn_names[i]];
+
+        const channel = await guild.channels.fetch(board.channel);
+
+        const message = await channel.messages.fetch(board.message);
+
+        message
+            .edit({ embeds: [embed] })
+            .then(console.log('Updated dynamic leaderboard:' + dyn_names[i]))
+            .catch(console.error);
+    }
 }
 
 module.exports = { UpdateLinks, UpdateLeaderboard, RetrieveLinkUsed };

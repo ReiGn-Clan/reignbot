@@ -3,16 +3,28 @@ const fs = require('fs');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('toprecruiters')
-        .setDescription('Check the top recruiters on the leaderboard')
-        .addIntegerOption((option) =>
+        .setName('createleaderboard')
+        .setDescription('Creates a dynamic leaderboard')
+        .addStringOption((option) =>
             option
-                .setName('leaderboard_length')
-                .setDescription('Length of the leaderboard')
+                .setName('channel')
+                .setDescription('The channel to post leaderboard')
+                .setRequired(true),
+        )
+        .addStringOption((option) =>
+            option
+                .setName('name')
+                .setDescription('Name of leaderboard')
                 .setRequired(true),
         ),
 
     async execute(interaction) {
+        const client = interaction.client;
+        const name = interaction.options.getString('name');
+        const channelID = interaction.options.getString('channel');
+
+        const channel = await client.channels.fetch(channelID);
+
         const emote_dict = {
             SAME: '⛔',
             UP: '⬆️',
@@ -38,19 +50,16 @@ module.exports = {
             ],
         );
 
-        const leaderboard_limit =
-            interaction.options.getInteger('leaderboard_length');
-
-        const memberPromises = invite_leaderboard_arr
-            .slice(0, leaderboard_limit)
-            .map(async (user, index) => {
+        const memberPromises = invite_leaderboard_arr.map(
+            async (user, index) => {
                 const member = await interaction.guild.members.fetch(
                     String(user[0]),
                 );
                 return `${index + 1}. ${
                     member.nickname ?? member.user.username
                 } - ${user[1]} - ${emote_dict[user[2]]}`;
-            });
+            },
+        );
 
         const leaderboardData = await Promise.all(memberPromises);
 
@@ -80,10 +89,32 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setColor('#0099ff')
-            .setTitle('Invite Leaderboard')
-            .setDescription('Here are the top recruiters in this server:')
+            .setTitle(name)
+            .setDescription('The top recruiters in the server:')
             .addFields(fields);
 
-        await interaction.reply({ embeds: [embed] });
+        channel.send({ embeds: [embed] }).then((sent) => {
+            let id_ = sent.id;
+            let dynamicLeaderboards = JSON.parse(
+                fs.readFileSync('./json/dynamic_leaderboards.json'),
+            );
+            dynamicLeaderboards[name] = {
+                message: id_,
+                channel: channelID,
+            };
+
+            let json_data = JSON.stringify(dynamicLeaderboards, null, 2);
+
+            fs.writeFileSync(
+                './json/dynamic_leaderboards.json',
+                json_data,
+                (err) => {
+                    if (err) throw err;
+                    console.log('Links written to file');
+                },
+            );
+        });
+
+        await interaction.reply('Created Dynamic leaderboard');
     },
 };
