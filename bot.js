@@ -127,12 +127,16 @@ client.on('messageCreate', async (message) => {
             await member.roles.remove(previousRole);
 
             //send this message to user when role doesn't change
-            if (previousLevelName === newLevelName){
-                message.channel.send(`${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`);
+            if (previousLevelName === newLevelName) {
+                message.channel.send(
+                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
+                );
             }
             //send this message when the role does change
-            if (previousLevelName != newLevelName){
-                message.channel.send(`${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`);
+            if (previousLevelName != newLevelName) {
+                message.channel.send(
+                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
+                );
             }
         }
 
