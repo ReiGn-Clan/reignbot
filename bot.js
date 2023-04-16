@@ -87,6 +87,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
+//event for each message posted, awards xp to every user per message
 client.on('messageCreate', async (message) => {
     //if the message starts with the command prefix or if the author is the bot, skip this method
     if (message.content.startsWith('/') || message.author.bot) {
@@ -94,7 +95,7 @@ client.on('messageCreate', async (message) => {
     }
 
     // Here we establish an xpPerMsg variable, then a hasLeveledUp variable
-    const xpPerMsg = 150;
+    const xpPerMsg = 15;
     let hasLeveledUp = await Levels.appendXp(
         message.author.id,
         message.guild.id,
@@ -124,6 +125,15 @@ client.on('messageCreate', async (message) => {
                 (role) => role.name === previousLevelName,
             );
             await member.roles.remove(previousRole);
+
+            //send this message to user when role doesn't change
+            if (previousLevelName === newLevelName){
+                message.channel.send(`${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`);
+            }
+            //send this message when the role does change
+            if (previousLevelName != newLevelName){
+                message.channel.send(`${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`);
+            }
         }
 
         await member.roles
@@ -134,11 +144,6 @@ client.on('messageCreate', async (message) => {
                 ),
             )
             .catch(console.error);
-
-        message.channel.send(
-            //send message
-            `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}**`,
-        );
     }
 });
 
