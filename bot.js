@@ -101,7 +101,7 @@ client.on('messageCreate', async (message) => {
     ).catch(console.error); // add error handling for appendXp function
 
     if (hasLeveledUp) {
-        console.log("here!");
+        console.log('here!');
         try {
             await xp_roles.levelUp(message);
         } catch (error) {
