@@ -2,9 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const Levels = require('discord-xp');
 const inv_l = require('./src/modules/invite_tracking.js');
-
-const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8'); //read the levelNames JSON
-const levelNames = JSON.parse(levelNamesData); //then parse it
+const xp_roles = require('./src/modules/xp_roles.js');
 
 const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
 Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
@@ -100,55 +98,16 @@ client.on('messageCreate', async (message) => {
         message.author.id,
         message.guild.id,
         xpPerMsg,
-    ); //adds xp per message to the user, sends the data to mongoDB
+    ).catch(console.error); // add error handling for appendXp function
 
     if (hasLeveledUp) {
-        //if level up threshold is hit, this activates
-        let user = await Levels.fetch(message.author.id, message.guild.id); //retrieves xp for user from mongoDB
-
-        let newLevel = user.level; //check what level the user leveled up to
-        let newLevelName = levelNames[newLevel]; //match the new level to the rank name
-
-        let previousLevelName = levelNames[newLevel - 1]; // check what their level was prior to level up
-
-        const member = message.member; //establish who leveled up
-        const role = message.guild.roles.cache.find(
-            (role) => role.name === newLevelName,
-        ); //find the role to assign upon level up
-
-        // remove old role if new level gives them a new role
-        if (
-            previousLevelName &&
-            member.roles.cache.some((role) => role.name === previousLevelName)
-        ) {
-            const previousRole = member.guild.roles.cache.find(
-                (role) => role.name === previousLevelName,
-            );
-            await member.roles.remove(previousRole);
-
-            //send this message to user when role doesn't change
-            if (previousLevelName === newLevelName) {
-                message.channel.send(
-                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
-                );
-            }
-            //send this message when the role does change
-            if (previousLevelName != newLevelName) {
-                message.channel.send(
-                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
-                );
-            }
+        console.log("here!");
+        try {
+            await xp_roles.levelUp(message);
+        } catch (error) {
+            console.error(error); // add error handling for levelUp function
         }
-
-        await member.roles
-            .add(role) //give new role and log to console
-            .then(() =>
-                console.log(
-                    `Added the role ${role.name} to ${member.user.tag}`,
-                ),
-            )
-            .catch(console.error);
-    }
+    };
 });
 
 // Run once to make sure all invites are stored
