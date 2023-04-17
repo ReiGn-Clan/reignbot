@@ -107,7 +107,7 @@ client.on('messageCreate', async (message) => {
         } catch (error) {
             console.error(error); // add error handling for levelUp function
         }
-    };
+    }
 });
 
 // Run once to make sure all invites are stored
