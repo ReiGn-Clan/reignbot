@@ -53,6 +53,6 @@ module.exports = {
             .setDescription('Here are the top 10 users in this server by XP:')
             .addFields(fields);
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.channel.send({ embeds: [embed] });
     },
 };

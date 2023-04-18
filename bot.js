@@ -47,7 +47,6 @@ for (const file of commandFiles) {
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, () => {
     console.log('Ready!');
-    console.log(Levels.xpFor(2));
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command

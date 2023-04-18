@@ -17,9 +17,11 @@ async function levelUp(message) {
         (role) => role.name === newLevelName,
     );
 
+    const fetchedMember = await member.guild.members.fetch(member.id);
+
     if (
         previousLevelName &&
-        member.roles.cache.some((role) => role.name === previousLevelName)
+        fetchedMember.roles.cache.map(role => role.name == previousLevelName)
     ) {
         const previousRole = member.guild.roles.cache.find(
             (role) => role.name === previousLevelName,
