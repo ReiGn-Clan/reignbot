@@ -6,13 +6,11 @@ const levelNames = JSON.parse(levelNamesData);
 
 async function levelUp(message) {
     let user = await Levels.fetch(message.author.id, message.guild.id);
-
+   
     let newLevel = user.level;
     let newLevelName = levelNames[newLevel];
 
     let previousLevelName = levelNames[newLevel - 1];
-
-    console.log(message);
 
     const member = message.member;
     const role = message.guild.roles.cache.find(
@@ -21,7 +19,7 @@ async function levelUp(message) {
 
     if (
         previousLevelName &&
-        member.roles.cache.some((role) => role.name == previousLevelName)
+        member.roles.cache.some((role) => role.name === previousLevelName)
     ) {
         const previousRole = member.guild.roles.cache.find(
             (role) => role.name === previousLevelName,
@@ -43,6 +41,4 @@ async function levelUp(message) {
     }
 }
 
-module.exports = {
-    levelUp: levelUp,
-};
+module.exports = { levelUp };
