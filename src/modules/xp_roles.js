@@ -44,12 +44,9 @@ async function levelUp(message) {
     }
 }
 
-async function updateXpLeaderboard(guild){
+async function updateXpLeaderboard(guild) {
     const limit = 10;
-    const leaderboard = await Levels.fetchLeaderboard(
-        guild.id,
-        limit,
-    );
+    const leaderboard = await Levels.fetchLeaderboard(guild.id, limit);
 
     const memberPromises = leaderboard.map(async (user, index) => {
         try {
@@ -89,12 +86,12 @@ async function updateXpLeaderboard(guild){
         .setTitle('Top Members')
         .setDescription('Here are the top members by XP in this server:')
         .addFields(fields);
-    
+
     const channel = await guild.channels.fetch('1095411283882426488');
     const message = await channel.messages.fetch('1098278074254110740');
 
     message
-        .edit({ embeds: [embed]})
+        .edit({ embeds: [embed] })
         .then(console.log('Updated XP leaderboard'))
         .catch(console.error);
 }
