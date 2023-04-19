@@ -45,18 +45,18 @@ for (const file of commandFiles) {
 }
 
 // When the client is ready, log a message to the console and connect to mongoDB
-client.once(Events.ClientReady, () => {
+client.once(Events.ClientReady, async () => {
     console.log('Ready!');
+    const guild = client.guilds.cache.get('1089665371923026053');
     setInterval(() => {
-        const channel = client.channels.cache.get('1098013771613610014');
-        channel.send('/checkleaderboard');
-    }, 6000);
+        xp_roles.updateXpLeaderboard(guild);
+    }, 10000);
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
 client.on(Events.InteractionCreate, async (interaction) => {
     // Ignore interactions that are not chat input commands
-    if (!interaction.isChatInputCommand()) return;
+    if (!interaction.isChatInputCommand() || message.author.bot) return;
 
     // Ignore interactions that are not commands
     if (!interaction.isCommand()) return;

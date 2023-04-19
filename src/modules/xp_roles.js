@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const Levels = require('discord-xp');
+const { EmbedBuilder } = require('discord.js');
 
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelNames = JSON.parse(levelNamesData);
@@ -43,4 +44,59 @@ async function levelUp(message) {
     }
 }
 
-module.exports = { levelUp };
+async function updateXpLeaderboard(guild){
+    const limit = 10;
+    const leaderboard = await Levels.fetchLeaderboard(
+        guild.id,
+        limit,
+    );
+
+    const memberPromises = leaderboard.map(async (user, index) => {
+        try {
+            const member = await guild.members.fetch(user.userID);
+            return `${index + 1}. ${
+                member.nickname ?? member.user.username
+            } - Level ${user.level} (${user.xp} XP)`;
+        } catch (error) {
+            console.error(`Error fetching member ${user.userID}:`, error);
+            return null;
+        }
+    });
+
+    const leaderboardData = (await Promise.all(memberPromises)).filter(
+        (entry) => entry !== null,
+    );
+
+    const fields = [
+        {
+            name: 'User',
+            value: leaderboardData
+                .map((entry) => entry.split(' - ')[0])
+                .join('\n'),
+            inline: true,
+        },
+        {
+            name: 'XP',
+            value: leaderboardData
+                .map((entry) => entry.split(' - ')[1])
+                .join('\n'),
+            inline: true,
+        },
+    ];
+
+    const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle('Invite Leaderboard')
+        .setDescription('Here are the top recruiters in this server:')
+        .addFields(fields);
+    
+    const channel = await guild.channels.fetch('1095411283882426488');
+    const message = await channel.messages.fetch('1098278074254110740');
+
+    message
+        .edit({ embeds: [embed]})
+        .then(console.log('Updated XP leaderboard'))
+        .catch(console.error);
+}
+
+module.exports = { levelUp, updateXpLeaderboard };
