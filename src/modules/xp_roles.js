@@ -45,7 +45,7 @@ async function levelUp(message) {
 }
 
 async function updateXpLeaderboard(guild) {
-    const limit = 10;
+    const limit = 1000;
     const leaderboard = await Levels.fetchLeaderboard(guild.id, limit);
 
     const memberPromises = leaderboard.map(async (user, index) => {

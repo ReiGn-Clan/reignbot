@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const Levels = require('discord-xp');
 
 async function checkLeaderboard(interaction) {
-    const limit = interaction.options.getInteger('limit') || 10;
+    const limit = interaction.options.getInteger('leaderboard_length');
     const leaderboard = await Levels.fetchLeaderboard(
         interaction.guild.id,
         limit,
@@ -48,11 +48,20 @@ async function checkLeaderboard(interaction) {
         .addFields(fields);
 
     await interaction.channel.send({ embeds: [embed] });
+    await interaction.reply('The top ' + String(limit) + ' users by xp');
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('checkleaderboard')
-        .setDescription('Check the top 10 on the leaderboard'),
+        .setDescription('Check the top users on the leaderboard')
+        .addIntegerOption((option) =>
+            option
+                .setName('leaderboard_length')
+                .setDescription('Length of the leaderboard')
+                .setRequired(true)
+                .setMinValue(1)
+                .setMaxValue(30),
+        ),
     execute: checkLeaderboard,
 };

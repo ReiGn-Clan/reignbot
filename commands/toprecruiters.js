@@ -9,7 +9,9 @@ module.exports = {
             option
                 .setName('leaderboard_length')
                 .setDescription('Length of the leaderboard')
-                .setRequired(true),
+                .setRequired(true)
+                .setMinValue(1)
+                .setMaxValue(30),
         ),
 
     async execute(interaction) {
