@@ -56,7 +56,7 @@ client.once(Events.ClientReady, async () => {
 // Listen for interactions (i.e. commands) and execute the appropriate command
 client.on(Events.InteractionCreate, async (interaction) => {
     // Ignore interactions that are not chat input commands
-    if (!interaction.isChatInputCommand() || message.author.bot) return;
+    if (!interaction.isChatInputCommand()) return;
 
     // Ignore interactions that are not commands
     if (!interaction.isCommand()) return;
