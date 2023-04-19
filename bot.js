@@ -51,6 +51,8 @@ client.once(Events.ClientReady, async () => {
     setInterval(() => {
         xp_roles.updateXpLeaderboard(guild);
     }, 10000);
+    client.user.setAvatar('./assets/profile_pic.png');
+    client.user.setUsername('ReignBot');
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
