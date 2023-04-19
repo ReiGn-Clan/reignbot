@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const Levels = require('discord-xp');
 
-async function checkLeaderboard (interaction) {
+async function checkLeaderboard(interaction) {
     const limit = interaction.options.getInteger('limit') || 10;
     const leaderboard = await Levels.fetchLeaderboard(
         interaction.guild.id,
@@ -10,9 +10,7 @@ async function checkLeaderboard (interaction) {
 
     const memberPromises = leaderboard.map(async (user, index) => {
         try {
-            const member = await interaction.guild.members.fetch(
-                user.userID,
-            );
+            const member = await interaction.guild.members.fetch(user.userID);
             return `${index + 1}. ${
                 member.nickname ?? member.user.username
             } - Level ${user.level} (${user.xp} XP)`;
@@ -54,7 +52,7 @@ async function checkLeaderboard (interaction) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-    .setName('checkleaderboard')
-    .setDescription('Check the top 10 on the leaderboard'),
-    execute: checkLeaderboard
+        .setName('checkleaderboard')
+        .setDescription('Check the top 10 on the leaderboard'),
+    execute: checkLeaderboard,
 };
