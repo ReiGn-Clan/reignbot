@@ -86,8 +86,8 @@ async function updateXpLeaderboard(guild){
 
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
-        .setTitle('Invite Leaderboard')
-        .setDescription('Here are the top recruiters in this server:')
+        .setTitle('Top Members')
+        .setDescription('Here are the top members by XP in this server:')
         .addFields(fields);
     
     const channel = await guild.channels.fetch('1095411283882426488');
