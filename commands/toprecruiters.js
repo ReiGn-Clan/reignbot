@@ -34,7 +34,7 @@ module.exports = {
 
         const invite_leaderboard_arr = Object.keys(invite_leaderboard).map(
             (key) => [
-                Number(key.substring(1)),
+                key.substring(1),
                 invite_leaderboard[key].score,
                 invite_leaderboard[key].change,
             ],
@@ -43,18 +43,33 @@ module.exports = {
         const leaderboard_limit =
             interaction.options.getInteger('leaderboard_length');
 
+        const all_members = await interaction.guild.members.fetch();
+        const all_memberIDs = Array.from(all_members.keys());
+        let unknown_members = 0;
+
         const memberPromises = invite_leaderboard_arr
             .slice(0, leaderboard_limit)
             .map(async (user, index) => {
-                const member = await interaction.guild.members.fetch(
-                    String(user[0]),
-                );
-                return `${index + 1}. ${
-                    member.nickname ?? member.user.username
-                } - ${user[1]} - ${emote_dict[user[2]]}`;
+                try {
+                    if (all_memberIDs.includes(String(user[0]))) {
+                        const member = await interaction.guild.members.fetch(
+                            String(user[0]),
+                        );
+                        return `${index + 1 - unknown_members}. ${
+                            member.nickname ?? member.user.username
+                        } - ${user[1]} - ${emote_dict[user[2]]}`;
+                    } else {
+                        unknown_members += 1;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching member ${user}`, error);
+                    return null;
+                }
             });
 
-        const leaderboardData = await Promise.all(memberPromises);
+        const leaderboardData = (await Promise.all(memberPromises)).filter(
+            (entry) => entry !== undefined || null,
+        );
 
         const fields = [
             {

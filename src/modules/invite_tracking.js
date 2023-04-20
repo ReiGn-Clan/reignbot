@@ -45,7 +45,7 @@ function UpdateLeaderboard(invites, memberID, guild, increase = true) {
         fs.readFileSync('./json/invite_leaderboard.json'),
     );
 
-    let invite_leaderboard_old = invite_leaderboard;
+    const invite_leaderboard_old = structuredClone(invite_leaderboard);
 
     let link;
     let what_links = {};
@@ -84,6 +84,7 @@ function UpdateLeaderboard(invites, memberID, guild, increase = true) {
 
         // Sort the leaderboard top to low and save it to json file
         let sorted_leaderboard = sort_leaderboard(invite_leaderboard);
+
         let dynamic_leaderboard = get_change(
             invite_leaderboard_old,
             sorted_leaderboard,
@@ -110,7 +111,9 @@ function UpdateLeaderboard(invites, memberID, guild, increase = true) {
             console.log('./json/what_links written to file');
         });
 
-        update_dynamic_Leaderboards(dynamic_leaderboard, guild);
+        update_dynamic_Leaderboards(dynamic_leaderboard, guild).then(
+            console.log('Leaderboards Updated!'),
+        );
     }
 }
 
@@ -203,8 +206,8 @@ function get_change(leaderboard_old, leaderboard_new) {
     // Bekijk welke keys in de nieuwe zitten en niet in de oude, deze krijgen status 'new'
 
     // Check for keys in new but not old
-    let different_keys = Object.keys(keyValueArray_new).filter(
-        (x) => !Object.keys(keyValueArray_old).includes(x),
+    let different_keys = Object.keys(leaderboard_new).filter(
+        (x) => !Object.keys(leaderboard_old).includes(x),
     );
 
     for (let i in different_keys) {
@@ -244,31 +247,48 @@ async function update_dynamic_Leaderboards(leaderboard, guild) {
     };
 
     const invite_leaderboard = leaderboard;
-    const dyn_boards = JSON.parse(
-        fs.readFileSync('./json/dynamic_leaderboards.json'),
-    );
 
     if (Object.keys(invite_leaderboard).length === 0) {
         console.log('No entries on leaderboard yet');
+        const embed = new EmbedBuilder()
+            .setColor('#0099ff')
+            .setTitle('Invite Leaderboard')
+            .setDescription('There is nobody on the leaderboard yet!');
+        await loop_leaderboards(embed, guild);
         return;
     }
 
     const invite_leaderboard_arr = Object.keys(invite_leaderboard).map(
         (key) => [
-            Number(key.substring(1)),
+            key.substring(1),
             invite_leaderboard[key].score,
             invite_leaderboard[key].change,
         ],
     );
 
+    const all_members = await guild.members.fetch();
+    const all_memberIDs = Array.from(all_members.keys());
+    let unknown_members = 0;
+
     const memberPromises = invite_leaderboard_arr.map(async (user, index) => {
-        const member = await guild.members.fetch(String(user[0]));
-        return `${index + 1}. ${member.nickname ?? member.user.username} - ${
-            user[1]
-        } - ${emote_dict[user[2]]}`;
+        try {
+            if (all_memberIDs.includes(String(user[0]))) {
+                const member = await guild.members.fetch(String(user[0]));
+                return `${index + 1 - unknown_members}. ${
+                    member.nickname ?? member.user.username
+                } - ${user[1]} - ${emote_dict[user[2]]}`;
+            } else {
+                unknown_members += 1;
+            }
+        } catch (error) {
+            console.error(`Error fetching member ${String(user[0])}`, error);
+            return null;
+        }
     });
 
-    const leaderboardData = await Promise.all(memberPromises);
+    const leaderboardData = (await Promise.all(memberPromises)).filter(
+        (entry) => entry !== undefined || null,
+    );
 
     const fields = [
         {
@@ -300,6 +320,13 @@ async function update_dynamic_Leaderboards(leaderboard, guild) {
         .setDescription('Here are the top recruiters in this server:')
         .addFields(fields);
 
+    await loop_leaderboards(embed, guild);
+}
+
+async function loop_leaderboards(embed, guild) {
+    const dyn_boards = JSON.parse(
+        fs.readFileSync('./json/dynamic_leaderboards.json'),
+    );
     let dyn_names = Object.keys(dyn_boards);
     for (let i in dyn_names) {
         let board = dyn_boards[dyn_names[i]];

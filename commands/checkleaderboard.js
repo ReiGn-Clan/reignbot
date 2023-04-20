@@ -8,20 +8,30 @@ async function checkLeaderboard(interaction) {
         limit,
     );
 
+    const all_members = await interaction.guild.members.fetch();
+    const all_memberIDs = Array.from(all_members.keys());
+    let unknown_members = 0;
+
     const memberPromises = leaderboard.map(async (user, index) => {
         try {
-            const member = await interaction.guild.members.fetch(user.userID);
-            return `${index + 1}. ${
-                member.nickname ?? member.user.username
-            } - Level ${user.level} (${user.xp} XP)`;
+            if (all_memberIDs.includes(String(user.userID))) {
+                const member = await interaction.guild.members.fetch(
+                    user.userID,
+                );
+                return `${index + 1 - unknown_members}. ${
+                    member.nickname ?? member.user.username
+                } - Level ${user.level} (${user.xp} XP)`;
+            } else {
+                unknown_members += 1;
+            }
         } catch (error) {
-            console.error(`Error fetching member ${user.userID}:`, error);
+            console.error(`Error fetching member ${user.userID}`, error);
             return null;
         }
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(
-        (entry) => entry !== null,
+        (entry) => entry !== undefined || null,
     );
 
     const fields = [
