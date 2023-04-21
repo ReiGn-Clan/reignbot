@@ -139,7 +139,10 @@ client.on(Events.GuildMemberAdd, async (member) => {
             .fetch()
             .then((inv) => inv_l.UpdateLeaderboard(inv, member.id, guild));
     });
-    //inv_l.UpdateLeaderboard(member.id);
+    //Add the 1st level role to every new user who joins
+    const guild = client.guilds.cache.get(guildID);
+    const role = guild.roles.cache.find(role => role.name === 'placeholder1');
+    await member.roles.add(role);
 });
 
 // Event for when user leaves
