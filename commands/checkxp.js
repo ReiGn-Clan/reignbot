@@ -26,7 +26,13 @@ module.exports = {
         if (!userXP) {
             await interaction.reply(`${name} has 0 XP.`);
         } else {
-            await interaction.reply(`${name} has **${userXP.xp} XP and is Level ${userXP.level}! They need ${xpNeeded} XP to reach Level ${userXP.level + 1}.**`);
+            await interaction.reply(
+                `${name} has **${userXP.xp} XP and is Level ${
+                    userXP.level
+                }! They need ${xpNeeded} XP to reach Level ${
+                    userXP.level + 1
+                }.**`,
+            );
         }
     },
 };
