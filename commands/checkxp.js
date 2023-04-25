@@ -21,11 +21,18 @@ module.exports = {
         const name = member.nickname || user.username;
 
         const userXP = await Levels.fetch(user.id, interaction.guild.id);
+        let xpNeeded = await Levels.xpFor(userXP.level + 1);
 
         if (!userXP) {
             await interaction.reply(`${name} has 0 XP.`);
         } else {
-            await interaction.reply(`${name} has **${userXP.xp} XP!**`);
+            await interaction.reply(
+                `${name} has **${userXP.xp} XP and is Level ${
+                    userXP.level
+                }! They need ${xpNeeded} XP to reach Level ${
+                    userXP.level + 1
+                }.**`,
+            );
         }
     },
 };
