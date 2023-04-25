@@ -141,7 +141,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
     });
     //Add the 1st level role to every new user who joins
     const guild = client.guilds.cache.get(guildID);
-    const role = guild.roles.cache.find(role => role.name === 'placeholder1');
+    const role = guild.roles.cache.find((role) => role.name === 'placeholder1');
     await member.roles.add(role);
 });
 

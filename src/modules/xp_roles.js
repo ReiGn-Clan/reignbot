@@ -8,11 +8,17 @@ const levelRanges = JSON.parse(levelNamesData).ranges;
 async function levelUp(message) {
     let user = await Levels.fetch(message.author.id, message.guild.id);
 
-    let newLevelRange = levelRanges.find(range => range.start <= user.level && range.end >= user.level);
+    let newLevelRange = levelRanges.find(
+        (range) => range.start <= user.level && range.end >= user.level,
+    );
     let newLevelName = newLevelRange ? newLevelRange.value : null;
 
-    let previousLevelRange = levelRanges.find(range => range.start <= user.level - 1 && range.end >= user.level - 1);
-    let previousLevelName = previousLevelRange ? previousLevelRange.value : null;
+    let previousLevelRange = levelRanges.find(
+        (range) => range.start <= user.level - 1 && range.end >= user.level - 1,
+    );
+    let previousLevelName = previousLevelRange
+        ? previousLevelRange.value
+        : null;
 
     const member = message.member;
     const role = message.guild.roles.cache.find(
