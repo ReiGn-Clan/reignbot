@@ -3,15 +3,22 @@ const Levels = require('discord-xp');
 const { EmbedBuilder } = require('discord.js');
 
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
-const levelNames = JSON.parse(levelNamesData);
+const levelRanges = JSON.parse(levelNamesData).ranges;
 
 async function levelUp(message) {
     let user = await Levels.fetch(message.author.id, message.guild.id);
 
-    let newLevel = user.level;
-    let newLevelName = levelNames[newLevel];
+    let newLevelRange = levelRanges.find(
+        (range) => range.start <= user.level && range.end >= user.level,
+    );
+    let newLevelName = newLevelRange ? newLevelRange.value : null;
 
-    let previousLevelName = levelNames[newLevel - 1];
+    let previousLevelRange = levelRanges.find(
+        (range) => range.start <= user.level - 1 && range.end >= user.level - 1,
+    );
+    let previousLevelName = previousLevelRange
+        ? previousLevelRange.value
+        : null;
 
     const member = message.member;
     const role = message.guild.roles.cache.find(
@@ -22,7 +29,7 @@ async function levelUp(message) {
 
     if (
         previousLevelName &&
-        fetchedMember.roles.cache.map((role) => role.name == previousLevelName)
+        fetchedMember.roles.cache.map((role) => role.name === previousLevelName)
     ) {
         const previousRole = member.guild.roles.cache.find(
             (role) => role.name === previousLevelName,
@@ -48,9 +55,9 @@ async function updateXpLeaderboard(guild) {
     const limit = 1000;
     const leaderboard = await Levels.fetchLeaderboard(guild.id, limit);
 
-    const all_members = await guild.members.fetch();
-    const all_memberIDs = Array.from(all_members.keys());
-    let unknown_members = 0;
+    let all_members = await guild.members.fetch();
+    let all_memberIDs = Array.from(all_members.keys());
+    const unknown_members = 0;
 
     const memberPromises = leaderboard.map(async (user, index) => {
         try {

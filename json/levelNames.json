@@ -1,22 +1,64 @@
 {
-    "1": "placeholder1",
-    "2": "placeholder1",
-    "3" : "placeholder1",
-    "4" : "placeholder1",
-    "5": "placeholder1",
-    "6": "placeholder1",
-    "7": "placeholder1",
-    "8": "placeholder1",
-    "9": "placeholder1",
-    "10": "placeholder2",
-    "11": "placeholder2",
-    "12": "placeholder2",
-    "13": "placeholder2",
-    "14": "placeholder2",
-    "15": "placeholder2",
-    "16": "placeholder2",
-    "17": "placeholder2",
-    "18": "placeholder2",
-    "19": "placeholder2",
-    "20": "placeholder2"
+    "ranges": [
+        {
+            "start": 0,
+            "end": 9,
+            "value": "Neophyte"
+        },
+        {
+            "start": 10,
+            "end": 19,
+            "value" : "Hoplite" 
+        },
+        {
+            "start": 20,
+            "end": 29,
+            "value": "Phalanx Guard"
+        },
+        {
+            "start": 30,
+            "end": 39,
+            "value": "Spartan Warrior"
+        },
+        {
+            "start": 40,
+            "end": 49,
+            "value": "Myrmidon"
+        },
+        {
+            "start": 50,
+            "end": 59,
+            "value": "Champion"
+        },
+        {
+            "start": 60,
+            "end": 69,
+            "value": "Strategos"
+        },
+        {
+            "start": 70,
+            "end": 79,
+            "value": "Strategos Major"
+        },
+        {
+            "start": 80,
+            "end": 89,
+            "value": "Archon"
+        },
+        {
+            "start": 90,
+            "end": 99,
+            "value": "Basileus"
+        },
+        {
+            "start": 100,
+            "end": 109,
+            "value": "Demi-God"
+        },
+        {
+            "start": 110,
+            "end": 119,
+            "value": "Olympian"
+        }
+    ]
 }
