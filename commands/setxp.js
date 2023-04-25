@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Levels = require('discord-xp');
 
-
 async function setxp(interaction) {
     let user = interaction.options.getUser('user');
     let amount = interaction.options.getInteger('amount');
