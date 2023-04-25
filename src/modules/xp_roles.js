@@ -57,7 +57,7 @@ async function updateXpLeaderboard(guild) {
 
     let all_members = await guild.members.fetch();
     let all_memberIDs = Array.from(all_members.keys());
-    const unknown_members = 0;
+    let unknown_members = 0;
 
     const memberPromises = leaderboard.map(async (user, index) => {
         try {
