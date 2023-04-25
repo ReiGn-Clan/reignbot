@@ -49,9 +49,9 @@ async function updateXpLeaderboard(guild) {
     const limit = 1000;
     const leaderboard = await Levels.fetchLeaderboard(guild.id, limit);
 
-    const all_members = await guild.members.fetch();
-    const all_memberIDs = Array.from(all_members.keys());
-    let unknown_members = 0;
+    let all_members = await guild.members.fetch();
+    let all_memberIDs = Array.from(all_members.keys());
+    const unknown_members = 0;
 
     const memberPromises = leaderboard.map(async (user, index) => {
         try {
