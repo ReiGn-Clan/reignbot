@@ -4,7 +4,7 @@ const Levels = require('discord-xp');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
 
-const mongo_uri = `mongodb+srv://admin:0mJPeNCsVKfjJ80n@reignbot.bcvxwha.mongodb.net/xpDatabase`; //set uri for mongoDB
+const mongo_uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`; //set uri for mongoDB
 Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
 //NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
 
