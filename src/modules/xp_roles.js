@@ -3,15 +3,16 @@ const Levels = require('discord-xp');
 const { EmbedBuilder } = require('discord.js');
 
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
-const levelNames = JSON.parse(levelNamesData);
+const levelRanges = JSON.parse(levelNamesData).ranges;
 
 async function levelUp(message) {
     let user = await Levels.fetch(message.author.id, message.guild.id);
 
-    let newLevel = user.level;
-    let newLevelName = levelNames[newLevel];
+    let newLevelRange = levelRanges.find(range => range.start <= user.level && range.end >= user.level);
+    let newLevelName = newLevelRange ? newLevelRange.value : null;
 
-    let previousLevelName = levelNames[newLevel - 1];
+    let previousLevelRange = levelRanges.find(range => range.start <= user.level - 1 && range.end >= user.level - 1);
+    let previousLevelName = previousLevelRange ? previousLevelRange.value : null;
 
     const member = message.member;
     const role = message.guild.roles.cache.find(

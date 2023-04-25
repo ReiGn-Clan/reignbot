@@ -9,6 +9,7 @@ async function giveXP (interaction){
     let userTotalXP = await Levels.fetch(interaction.user.id, interaction.guild.id, true);
 
     await interaction.reply(`Added ${amount}XP to ${user}. They now have ${userTotalXP.xp} XP!`);
+
 }
 
 module.exports = {
