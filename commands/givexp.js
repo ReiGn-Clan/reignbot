@@ -5,7 +5,7 @@ async function giveXP(interaction) {
     let user = interaction.options.getUser('user');
     let amount = interaction.options.getInteger('amount');
 
-    const addXP = await Levels.appendXp(user.id, interaction.guild.id, amount);
+    await Levels.appendXp(user.id, interaction.guild.id, amount);
     let userTotalXP = await Levels.fetch(
         interaction.user.id,
         interaction.guild.id,
