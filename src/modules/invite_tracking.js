@@ -254,8 +254,10 @@ async function RetrieveLinkUsed(invites, invite_links_old) {
     }
 
     if (link_used != null) {
+        await temp_invite_links.deleteMany({});
         return link_used;
     } else {
+        await temp_invite_links.deleteMany({});
         console.log('User didnt join with a link, most likely bot');
         return 0;
     }
