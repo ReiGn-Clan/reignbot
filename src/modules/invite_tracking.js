@@ -45,10 +45,6 @@ async function UpdateLinks(invites) {
 // Update the leaderboard file, not sorted (yet)
 async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     // Read in file
-    //let invite_links = JSON.parse(fs.readFileSync('./json/invite_links.json'));
-    //let invite_leaderboard = JSON.parse(
-    //    fs.readFileSync('./json/invite_leaderboard.json'),
-    //);
 
     const invite_links = db.collection('invite_links');
     const invite_leaderboard = db.collection('invite_leaderboard');
