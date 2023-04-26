@@ -1,5 +1,8 @@
+const { MongoClient } = require('mongodb');
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const fs = require('fs');
+const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/recruiter`;
+const client = new MongoClient(uri);
+const db = client.db('recruiter');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,23 +25,15 @@ module.exports = {
             NEW: '🆕',
         };
 
-        const invite_leaderboard = JSON.parse(
-            fs.readFileSync('./json/invite_leaderboard.json'),
-        );
+        const invite_leaderboard = await db.collection('invite_leaderboard');
 
-        if (Object.keys(invite_leaderboard).length === 0) {
-            console.log('No entries on leaderboard yet');
-            await interaction.reply('No entries on the leaderboard yet');
-            return;
-        }
-
-        const invite_leaderboard_arr = Object.keys(invite_leaderboard).map(
-            (key) => [
-                key.substring(1),
-                invite_leaderboard[key].score,
-                invite_leaderboard[key].change,
-            ],
-        );
+        let sorted_leaderboard = await invite_leaderboard
+            .aggregate([
+                {
+                    $sort: { score: -1 },
+                },
+            ])
+            .toArray();
 
         const leaderboard_limit =
             interaction.options.getInteger('leaderboard_length');
@@ -47,22 +42,25 @@ module.exports = {
         const all_memberIDs = Array.from(all_members.keys());
         let unknown_members = 0;
 
-        const memberPromises = invite_leaderboard_arr
+        const memberPromises = sorted_leaderboard
             .slice(0, leaderboard_limit)
             .map(async (user, index) => {
                 try {
-                    if (all_memberIDs.includes(String(user[0]))) {
+                    if (all_memberIDs.includes(String(user._id).substring(1))) {
                         const member = await interaction.guild.members.fetch(
-                            String(user[0]),
+                            String(user._id).substring(1),
                         );
                         return `${index + 1 - unknown_members}. ${
                             member.nickname ?? member.user.username
-                        } - ${user[1]} - ${emote_dict[user[2]]}`;
+                        } - ${user.score} - ${emote_dict[user.change]}`;
                     } else {
                         unknown_members += 1;
                     }
                 } catch (error) {
-                    console.error(`Error fetching member ${user}`, error);
+                    console.error(
+                        `Error fetching member ${user.userID}`,
+                        error,
+                    );
                     return null;
                 }
             });
