@@ -3,6 +3,7 @@ const path = require('node:path');
 const Levels = require('discord-xp');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
+const async = require('async');
 
 const mongo_uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`; //set uri for mongoDB
 Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
@@ -43,6 +44,42 @@ for (const file of commandFiles) {
     const command = require(filePath);
     client.commands.set(command.data.name, command);
 }
+
+// Create queues
+const invLeaderboardQueue = async.queue((task, callback) => {
+    // execute the task function with its arguments
+    inv_l
+        .UpdateLeaderboard(
+            task.invites,
+            task.id,
+            task.guildobject,
+            task.increase,
+        )
+        .then(() => {
+            console.log(`Updated leaderboard for member ${task.id}`);
+            callback();
+        })
+        .catch((err) => {
+            console.error(
+                `Error updating leaderboard for member ${task.id}: ${err}`,
+            );
+            callback(err);
+        });
+}, 1);
+
+const roleQueue = async.queue((task, callback) => {
+    // execute the task function with its arguments
+    task.memberobject.roles
+        .add(task.role)
+        .then(() => {
+            console.log(`Assigned role`);
+            callback();
+        })
+        .catch((err) => {
+            console.error(`Error assigning role, ${err}`);
+            callback(err);
+        });
+}, 1);
 
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
@@ -110,7 +147,7 @@ client.on('messageCreate', async (message) => {
         try {
             await xp_roles.levelUp(message);
         } catch (error) {
-            console.error(error); // add error handling for levelUp function
+            console.error(error); // add error handling for levelUp functio
         }
     }
 });
@@ -135,14 +172,18 @@ client.on(Events.GuildMemberAdd, async (member) => {
     console.log('User joined');
     console.log(member.id);
     client.guilds.fetch(guildID).then((guild) => {
-        guild.invites
-            .fetch()
-            .then((inv) => inv_l.UpdateLeaderboard(inv, member.id, guild));
+        //Add the 1st level role to every new user who joins
+        const role = guild.roles.cache.find((role) => role.name === 'Neophyte');
+        roleQueue.push({ memberobject: member, role: role });
+        guild.invites.fetch().then((inv) =>
+            invLeaderboardQueue.push({
+                invites: inv,
+                id: member.id,
+                guildobject: guild,
+                increase: true,
+            }),
+        );
     });
-    //Add the 1st level role to every new user who joins
-    const guild = client.guilds.cache.get(guildID);
-    const role = guild.roles.cache.find((role) => role.name === 'Neophyte');
-    await member.roles.add(role);
 });
 
 // Event for when user leaves
@@ -150,11 +191,14 @@ client.on(Events.GuildMemberRemove, async (member) => {
     console.log('User left');
     console.log(member.id);
     client.guilds.fetch(guildID).then((guild) => {
-        guild.invites
-            .fetch()
-            .then((inv) =>
-                inv_l.UpdateLeaderboard(inv, member.id, guild, false),
-            );
+        guild.invites.fetch().then((inv) =>
+            invLeaderboardQueue.push({
+                invites: inv,
+                id: member.id,
+                guildobject: guild,
+                increase: false,
+            }),
+        );
     });
 });
 
