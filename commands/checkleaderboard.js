@@ -1,33 +1,39 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const Levels = require('discord-xp');
+const { MongoClient } = require('mongodb');
+
+const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
+const client = new MongoClient(uri);
+const db = client.db('xpDatabase');
 
 async function checkLeaderboard(interaction) {
     const limit = interaction.options.getInteger('leaderboard_length');
-    const leaderboard = await Levels.fetchLeaderboard(
-        interaction.guild.id,
-        limit,
-    );
 
     const all_members = await interaction.guild.members.fetch();
     const all_memberIDs = Array.from(all_members.keys());
-    let unknown_members = 0;
 
-    const memberPromises = leaderboard.map(async (user, index) => {
-        try {
-            if (all_memberIDs.includes(String(user.userID))) {
-                const member = await interaction.guild.members.fetch(
-                    user.userID,
-                );
-                return `${index + 1 - unknown_members}. ${
-                    member.nickname ?? member.user.username
-                } - Level ${user.level} (${user.xp} XP)`;
-            } else {
-                unknown_members += 1;
-            }
-        } catch (error) {
-            console.error(`Error fetching member ${user.userID}`, error);
-            return null;
-        }
+    const xp_leaderboard = await db.collection('levels');
+
+    const sorted_leaderboard = await xp_leaderboard
+        .aggregate([
+            {
+                $match: {
+                    userID: { $in: all_memberIDs },
+                },
+            },
+            {
+                $sort: { xp: -1 },
+            },
+            {
+                $limit: limit,
+            },
+        ])
+        .toArray();
+
+    const memberPromises = sorted_leaderboard.map(async (user, index) => {
+        const member = await interaction.guild.members.fetch(user.userID);
+        return `${index + 1}. ${
+            member.nickname ?? member.user.username
+        } - Level ${user.level} (${user.xp} XP)`;
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(

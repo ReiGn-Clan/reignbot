@@ -45,13 +45,20 @@ async function UpdateLinks(invites) {
 // Update the leaderboard file, not sorted (yet)
 async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     // Read in file
-
+    const all_members = await guild.members.fetch();
+    const all_memberIDs = Array.from(all_members.keys());
+    let modified_memberIDs = all_memberIDs.map((id) => 'u' + id);
     const invite_links = db.collection('invite_links');
     const invite_leaderboard = db.collection('invite_leaderboard');
     const what_links = db.collection('what_links');
 
     let sorted_array_old = await invite_leaderboard
         .aggregate([
+            {
+                $match: {
+                    _id: { $in: modified_memberIDs },
+                },
+            },
             {
                 $sort: { score: -1 },
             },
@@ -122,6 +129,11 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
         // Sort the leaderboard top to low and save
         let sorted_array = await invite_leaderboard
             .aggregate([
+                {
+                    $match: {
+                        _id: { $in: modified_memberIDs },
+                    },
+                },
                 {
                     $sort: { score: -1 },
                 },
@@ -283,26 +295,11 @@ async function update_dynamic_Leaderboards(leaderboard, guild) {
         return;
     }
 
-    const all_members = await guild.members.fetch();
-    const all_memberIDs = Array.from(all_members.keys());
-    let unknown_members = 0;
-
     const memberPromises = leaderboard.map(async (user, index) => {
-        try {
-            if (all_memberIDs.includes(String(user._id).substring(1))) {
-                const member = await guild.members.fetch(
-                    String(user._id).substring(1),
-                );
-                return `${index + 1 - unknown_members}. ${
-                    member.nickname ?? member.user.username
-                } - ${user.score} - ${emote_dict[user.change]}`;
-            } else {
-                unknown_members += 1;
-            }
-        } catch (error) {
-            console.error(`Error fetching member ${user.userID}`, error);
-            return null;
-        }
+        const member = await guild.members.fetch(String(user._id).substring(1));
+        return `${index + 1}. ${member.nickname ?? member.user.username} - ${
+            user.score
+        } - ${emote_dict[user.change]}`;
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(
