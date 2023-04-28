@@ -5,6 +5,12 @@ const { EmbedBuilder } = require('discord.js');
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelRanges = JSON.parse(levelNamesData).ranges;
 
+const { MongoClient } = require('mongodb');
+
+const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
+const client = new MongoClient(uri);
+const db = client.db('xpDatabase');
+
 async function levelUp(message) {
     let user = await Levels.fetch(message.author.id, message.guild.id);
 
@@ -53,26 +59,32 @@ async function levelUp(message) {
 
 async function updateXpLeaderboard(guild) {
     const limit = 1000;
-    const leaderboard = await Levels.fetchLeaderboard(guild.id, limit);
+    const all_members = await guild.members.fetch();
+    const all_memberIDs = Array.from(all_members.keys());
 
-    let all_members = await guild.members.fetch();
-    let all_memberIDs = Array.from(all_members.keys());
-    let unknown_members = 0;
+    const xp_leaderboard = await db.collection('levels');
 
-    const memberPromises = leaderboard.map(async (user, index) => {
-        try {
-            if (all_memberIDs.includes(String(user.userID))) {
-                const member = await guild.members.fetch(user.userID);
-                return `${index + 1 - unknown_members}. ${
-                    member.nickname ?? member.user.username
-                } - Level ${user.level} (${user.xp} XP)`;
-            } else {
-                unknown_members += 1;
-            }
-        } catch (error) {
-            console.error(`Error fetching member ${user.userID}`, error);
-            return null;
-        }
+    const sorted_leaderboard = await xp_leaderboard
+        .aggregate([
+            {
+                $match: {
+                    userID: { $in: all_memberIDs },
+                },
+            },
+            {
+                $sort: { xp: -1 },
+            },
+            {
+                $limit: limit,
+            },
+        ])
+        .toArray();
+
+    const memberPromises = sorted_leaderboard.map(async (user, index) => {
+        const member = await guild.members.fetch(user.userID);
+        return `${index + 1}. ${
+            member.nickname ?? member.user.username
+        } - Level ${user.level} (${user.xp} XP)`;
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(
