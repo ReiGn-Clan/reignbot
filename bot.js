@@ -69,8 +69,8 @@ const invLeaderboardQueue = async.queue((task, callback) => {
 
 const roleQueue = async.queue((task, callback) => {
     // execute the task function with its arguments
-    task.memberobject.roles
-        .add(task.role)
+    task.memberobject
+        .edit({ roles: task.roles })
         .then(() => {
             console.log(`Assigned role`);
             callback();
@@ -173,8 +173,10 @@ client.on(Events.GuildMemberAdd, async (member) => {
     console.log(member.id);
     client.guilds.fetch(guildID).then((guild) => {
         //Add the 1st level role to every new user who joins
-        const role = guild.roles.cache.find((role) => role.name === 'Neophyte');
-        roleQueue.push({ memberobject: member, role: role });
+        let roles = [];
+        roles.push(guild.roles.cache.find((role) => role.name === 'Neophyte'));
+        roles.push(guild.roles.cache.find((role) => role.name === 'Member'));
+        roleQueue.push({ memberobject: member, roles: roles });
         guild.invites.fetch().then((inv) =>
             invLeaderboardQueue.push({
                 invites: inv,
