@@ -158,7 +158,7 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
 });
 
 async function rewardVoiceUsers(guild) {
-    const xpPerMinute = 100000;
+    const xpPerMinute = 10;
     console.log('Updating xp for users', voiceChannelUsers);
     voiceChannelUsers.forEach(async function (item) {
         let hasLeveledUp = await Levels.appendXp(
