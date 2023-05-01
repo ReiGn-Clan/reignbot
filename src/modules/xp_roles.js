@@ -11,54 +11,127 @@ const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/x
 const client = new MongoClient(uri);
 const db = client.db('xpDatabase');
 
-async function levelUp(message) {
+async function improvedLevelUpMessage(message) {
+    // What role should the user
     let user = await Levels.fetch(message.author.id, message.guild.id);
+    const member = await message.guild.members.fetch(message.author.id);
 
     let newLevelRange = levelRanges.find(
         (range) => range.start <= user.level && range.end >= user.level,
     );
     let newLevelName = newLevelRange ? newLevelRange.value : null;
 
-    let previousLevelRange = levelRanges.find(
-        (range) => range.start <= user.level - 1 && range.end >= user.level - 1,
-    );
-    let previousLevelName = previousLevelRange
-        ? previousLevelRange.value
-        : null;
+    // Find what level the user currently has
+    let current_roles = member._roles;
+    let role_array = [];
+    // Check if it has one of the roles
+    for (let i in levelRanges) {
+        role_array.push(levelRanges[i].value);
+    }
 
-    const member = message.member;
-    const role = message.guild.roles.cache.find(
-        (role) => role.name === newLevelName,
-    );
+    // Loop over current roles
+    for (let i in current_roles) {
+        let name = (await message.guild.roles.fetch(current_roles[i])).name;
 
-    const fetchedMember = await member.guild.members.fetch(member.id);
+        if (role_array.includes(name)) {
+            console.log('Found', name);
+            if (name === newLevelName) {
+                // Nothing has to be done
+                console.log('No Action needed');
+                message.channel.send(
+                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
+                );
+                return;
+            } else {
+                console.log('Removing old role and adding new');
+                const role = await message.guild.roles.cache.find(
+                    (role) => role.name === newLevelName,
+                );
+                const previousRole = await member.guild.roles.cache.find(
+                    (role) => role.name === name,
+                );
 
-    if (
-        previousLevelName &&
-        fetchedMember.roles.cache.map((role) => role.name === previousLevelName)
-    ) {
-        const previousRole = member.guild.roles.cache.find(
-            (role) => role.name === previousLevelName,
-        );
-        await member.roles.remove(previousRole);
+                await member.roles.remove(previousRole);
+                await member.roles.add(role);
 
-        if (previousLevelName === newLevelName) {
-            message.channel.send(
-                `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
-            );
-        }
+                await message.channel.send(
+                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
+                );
 
-        if (previousLevelName != newLevelName) {
-            await member.roles.add(role);
-            message.channel.send(
-                `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
-            );
+                return;
+            }
         }
     }
+    // if we come to this it means that the user did not have a rank role, which should not happen
+    // but in case
+    console.log('No role found wtf, adding it');
+    const role = await message.guild.roles.cache.find(
+        (role) => role.name === newLevelName,
+    );
+    await member.roles.add(role);
+
+    await message.channel.send(
+        `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
+    );
+}
+
+async function improvedLevelUp(guild, userID) {
+    // What role should the user
+    let user = await Levels.fetch(userID, guild.id);
+    const member = await guild.members.fetch(userID);
+
+    let newLevelRange = levelRanges.find(
+        (range) => range.start <= user.level && range.end >= user.level,
+    );
+    let newLevelName = newLevelRange ? newLevelRange.value : null;
+
+    // Find what level the user currently has
+    let current_roles = member._roles;
+    let role_array = [];
+    // Check if it has one of the roles
+    for (let i in levelRanges) {
+        role_array.push(levelRanges[i].value);
+    }
+
+    console.log(newLevelName);
+    // Loop over current roles
+    for (let i in current_roles) {
+        let name = (await guild.roles.fetch(current_roles[i])).name;
+
+        if (role_array.includes(name)) {
+            console.log('Found', name);
+            if (name === newLevelName) {
+                // Nothing has to be done
+                console.log('No Action needed');
+                return;
+            } else {
+                console.log('Removing old role and adding new');
+                const role = await guild.roles.cache.find(
+                    (role) => role.name === newLevelName,
+                );
+
+                const previousRole = await member.guild.roles.cache.find(
+                    (role) => role.name === name,
+                );
+
+                await member.roles.remove(previousRole);
+                await member.roles.add(role);
+
+                return;
+            }
+        }
+    }
+    // if we come to this it means that the user did not have a rank role, which should not happen
+    // but in case
+    console.log('No role found wtf, adding it');
+    const role = await guild.roles.cache.find(
+        (role) => role.name === newLevelName,
+    );
+    await member.roles.add(role);
 }
 
 async function updateXpLeaderboard(guild) {
-    const limit = 1000;
+    const limit = 10;
     const all_members = await guild.members.fetch();
     const all_memberIDs = Array.from(all_members.keys());
 
@@ -123,4 +196,8 @@ async function updateXpLeaderboard(guild) {
         .catch(console.error);
 }
 
-module.exports = { levelUp, updateXpLeaderboard };
+module.exports = {
+    updateXpLeaderboard,
+    improvedLevelUp,
+    improvedLevelUpMessage,
+};

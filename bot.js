@@ -15,6 +15,10 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 // Require the 'token' property from the 'config.json' file
 const { token, guildID } = require('./config.json');
 
+// For voice channel tracking
+let afk_channel = null;
+let voiceChannelUsers = [];
+
 // Create a new instance of the 'Client' object with the necessary intents enabled
 const client = new Client({
     intents: [
@@ -24,6 +28,7 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildInvites,
         GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildVoiceStates,
     ],
 });
 
@@ -85,12 +90,94 @@ const roleQueue = async.queue((task, callback) => {
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
     const guild = client.guilds.cache.get('1089665371923026053');
+    afk_channel = guild.afkChannelId;
+
     setInterval(() => {
         xp_roles.updateXpLeaderboard(guild);
     }, 10000);
+
+    setInterval(() => {
+        rewardVoiceUsers(guild);
+    }, 60000);
+
     //client.user.setAvatar('./assets/profile_pic.png');
     //client.user.setUsername('ReignBot');
 });
+
+client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
+    let newUserChannel = newMember.channel;
+    let oldUserChannel = oldMember.channel;
+
+    if (oldUserChannel === null && newUserChannel !== null) {
+        // User Joins a voice channel
+
+        // Check if channel is not afk
+        if (newUserChannel.id !== afk_channel) {
+            console.log('User joined: ', newUserChannel.id);
+            voiceChannelUsers.push(newMember.id);
+        } else {
+            console.log('User joined afk');
+            let index = voiceChannelUsers.indexOf(newMember.id);
+
+            if (index > -1) {
+                voiceChannelUsers.splice(index, 1);
+            }
+        }
+    } else if (newUserChannel === null) {
+        // User leaves a voice channel
+
+        if (oldUserChannel.id !== afk_channel) {
+            console.log('User left: ', oldUserChannel.id);
+            let index = voiceChannelUsers.indexOf(newMember.id);
+
+            if (index > -1) {
+                voiceChannelUsers.splice(index, 1);
+            }
+        }
+    } else if (
+        oldUserChannel != newUserChannel &&
+        newUserChannel !== null &&
+        oldUserChannel !== null
+    ) {
+        // User switches to a different channel
+        // Check if channel is not afk
+        if (newUserChannel.id !== afk_channel) {
+            console.log('User switched to: ', newUserChannel.id);
+            if (oldUserChannel.id === afk_channel) {
+                voiceChannelUsers.push(newMember.id);
+            }
+        } else {
+            console.log('User switched to afk');
+            let index = voiceChannelUsers.indexOf(newMember.id);
+
+            if (index > -1) {
+                voiceChannelUsers.splice(index, 1);
+            }
+        }
+    }
+});
+
+async function rewardVoiceUsers(guild) {
+    const xpPerMinute = 10;
+    console.log('Updating xp for users', voiceChannelUsers);
+    voiceChannelUsers.forEach(async function (item) {
+        let hasLeveledUp = await Levels.appendXp(
+            item,
+            guild.id,
+            xpPerMinute,
+        ).catch(console.error); // add error handling for appendXp function
+
+        if (hasLeveledUp) {
+            try {
+                await xp_roles.improvedLevelUp(guild, item);
+            } catch (error) {
+                console.error(error); // add error handling for levelUp functio
+            }
+        }
+
+        console.log('Done for user', item);
+    });
+}
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -145,7 +232,7 @@ client.on('messageCreate', async (message) => {
 
     if (hasLeveledUp) {
         try {
-            await xp_roles.levelUp(message);
+            await xp_roles.improvedLevelUpMessage(message);
         } catch (error) {
             console.error(error); // add error handling for levelUp functio
         }
