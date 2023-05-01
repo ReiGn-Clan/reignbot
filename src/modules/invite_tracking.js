@@ -175,6 +175,7 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
 
 async function RetrieveLinkUsed(invites, invite_links_old) {
     const temp_invite_links = db.collection('temp_invite_links');
+
     let link_used = null;
 
     // Retrieve the current existing links
@@ -242,6 +243,13 @@ async function RetrieveLinkUsed(invites, invite_links_old) {
                 {
                     $match: {
                         $expr: {
+                            $ne: [0, '$MaximumUses'], // filter out documents where LinkUses equals MaximumUses
+                        },
+                    },
+                },
+                {
+                    $match: {
+                        $expr: {
                             $lt: [Date.parse('$ExpirationDate'), Date.now()], // filter out documents where ExpirationDate has passed
                         },
                     },
@@ -255,7 +263,7 @@ async function RetrieveLinkUsed(invites, invite_links_old) {
             .toArray();
 
         if (difference.length > 0) {
-            link_used = intersected[0]._id;
+            link_used = difference[0]._id;
         }
 
         // Increase the link uses
@@ -264,6 +272,8 @@ async function RetrieveLinkUsed(invites, invite_links_old) {
             { $inc: { LinkUses: 1 } },
         );
     }
+    console.log('Retrieving link used 2222');
+    console.log('LINK USED', link_used);
 
     if (link_used != null) {
         await temp_invite_links.deleteMany({});
