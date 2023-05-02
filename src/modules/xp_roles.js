@@ -131,7 +131,7 @@ async function improvedLevelUp(guild, userID) {
 }
 
 async function updateXpLeaderboard(guild) {
-    const limit = 10;
+    const limit = 10000;
     const all_members = await guild.members.fetch();
     const all_memberIDs = Array.from(all_members.keys());
 
