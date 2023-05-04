@@ -52,9 +52,11 @@ module.exports = {
             const member = await interaction.guild.members.fetch(
                 String(user._id).substring(1),
             );
-            return `${index + 1}. ${
-                member.nickname ?? member.user.username
-            } - ${user.score} - ${emote_dict[user.change]}`;
+            return [
+                `${index + 1}. ${member.nickname ?? member.user.username}`,
+                `${user.score}`,
+                `${emote_dict[user.change]}`,
+            ];
         });
 
         const leaderboardData = (await Promise.all(memberPromises)).filter(
@@ -64,23 +66,17 @@ module.exports = {
         const fields = [
             {
                 name: 'User',
-                value: leaderboardData
-                    .map((entry) => entry.split(' - ')[0])
-                    .join('\n'),
+                value: leaderboardData.map((entry) => entry[0]).join('\n'),
                 inline: true,
             },
             {
                 name: 'Recruited',
-                value: leaderboardData
-                    .map((entry) => entry.split(' - ')[1])
-                    .join('\n'),
+                value: leaderboardData.map((entry) => entry[1]).join('\n'),
                 inline: true,
             },
             {
                 name: 'Change',
-                value: leaderboardData
-                    .map((entry) => entry.split(' - ')[2])
-                    .join('\n'),
+                value: leaderboardData.map((entry) => entry[2]).join('\n'),
                 inline: true,
             },
         ];

@@ -11,7 +11,11 @@ async function giveXP(interaction) {
 
     if (userTotalXP) {
         try {
-            await xp_roles.improvedLevelUp(interaction.guild, user.id);
+            await xp_roles.improvedLevelUp(
+                interaction.guild,
+                user.id,
+                interaction.client,
+            );
         } catch (error) {
             console.error(error); // add error handling for levelUp functio
         }
