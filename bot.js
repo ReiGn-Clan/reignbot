@@ -126,8 +126,10 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
-    let newUserChannel = newMember.channel;
-    let oldUserChannel = oldMember.channel;
+    const newUserChannel = newMember.channel;
+    const oldUserChannel = oldMember.channel;
+
+    const newDeafened = newMember.deaf;
 
     if (oldUserChannel === null && newUserChannel !== null) {
         // User Joins a voice channel
@@ -176,6 +178,27 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
             }
         }
     }
+    if (newDeafened) {
+        if (voiceChannelUsers.includes(newMember.id)) {
+            console.log('User deafened');
+            let index = voiceChannelUsers.indexOf(newMember.id);
+
+            if (index > -1) {
+                voiceChannelUsers.splice(index, 1);
+            }
+        }
+    } else {
+        if (!voiceChannelUsers.includes(newMember.id)) {
+            if (newUserChannel !== null) {
+                if (newUserChannel.id !== afk_channel) {
+                    console.log('User undeafened');
+                    voiceChannelUsers.push(newMember.id);
+                }
+            }
+        }
+    }
+
+    console.log(voiceChannelUsers);
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
