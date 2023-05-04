@@ -1,5 +1,4 @@
 const { MongoClient } = require('mongodb');
-// Replace the uri string with your MongoDB deployment's connection string.
 const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/recruiter`;
 const client = new MongoClient(uri);
 const db = client.db('recruiter');
@@ -66,7 +65,6 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
         .toArray();
 
     let link_used;
-    //let what_links = {};
 
     // Retrieve the link
     if (increase) {
@@ -83,7 +81,6 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     if (link_used != null) {
         const userID =
             'u' + (await invite_links.findOne({ _id: link_used })).InviterID;
-        //const userID = 'u' + invite_links[link_used].InviterID;
 
         const exist = await invite_leaderboard.findOne({ _id: userID });
         console.log(exist);
@@ -115,8 +112,6 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
         } else {
             let doc = { _id: memberID, link: link_used };
             await what_links.insertOne(doc);
-
-            //what_links[memberID] = link_used;
 
             doc = {
                 _id: userID,
