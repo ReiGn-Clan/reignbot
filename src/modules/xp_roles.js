@@ -155,9 +155,10 @@ async function updateXpLeaderboard(guild) {
 
     const memberPromises = sorted_leaderboard.map(async (user, index) => {
         const member = await guild.members.fetch(user.userID);
-        return `${index + 1}. ${
-            member.nickname ?? member.user.username
-        } - Level ${user.level} (${user.xp} XP)`;
+        return [
+            `${index + 1}. ${member.nickname ?? member.user.username}`,
+            `Level ${user.level} (${user.xp} XP)`,
+        ];
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(
@@ -167,16 +168,12 @@ async function updateXpLeaderboard(guild) {
     const fields = [
         {
             name: 'User',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[0])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[0]).join('\n'),
             inline: true,
         },
         {
             name: 'XP',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[1])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[1]).join('\n'),
             inline: true,
         },
     ];

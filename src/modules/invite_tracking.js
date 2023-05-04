@@ -305,11 +305,13 @@ async function update_dynamic_Leaderboards(leaderboard, guild) {
         return;
     }
 
-    const memberPromises = leaderboard.map(async (user, index) => {
+    const memberPromises = invite_leaderboard.map(async (user, index) => {
         const member = await guild.members.fetch(String(user._id).substring(1));
-        return `${index + 1}. ${member.nickname ?? member.user.username} - ${
-            user.score
-        } - ${emote_dict[user.change]}`;
+        return [
+            `${index + 1}. ${member.nickname ?? member.user.username}`,
+            `${user.score}`,
+            `${emote_dict[user.change]}`,
+        ];
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(
@@ -319,23 +321,17 @@ async function update_dynamic_Leaderboards(leaderboard, guild) {
     const fields = [
         {
             name: 'User',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[0])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[0]).join('\n'),
             inline: true,
         },
         {
             name: 'Recruited',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[1])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[1]).join('\n'),
             inline: true,
         },
         {
             name: 'Change',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[2])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[2]).join('\n'),
             inline: true,
         },
     ];
