@@ -288,8 +288,8 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
     return updatedLeaderboard;
 }
 
-async function makeDaily(disClient) {
-    // Determine if we want to make a daily (chance 1 in 30)
+async function makeDaily(disClient, manual = false, manualXP, manualUses) {
+    // Determine if we want to make a daily (chance 1 in 10)
     //if (Math.floor(Math.random() * 10) !== 7) return;
 
     // Channel to send it in
@@ -297,13 +297,24 @@ async function makeDaily(disClient) {
     const channel = await disClient.channels.fetch(channelID);
     const dailies = await db.collection('dailies');
 
-    const maxReactions = Math.floor(Math.random() * 10) + 1;
-    const xp = (Math.floor(Math.random() * 10) + 1) * 100;
+    if (!manual) {
+        const lastMessage = (
+            await channel.messages.fetch({ limit: 1 })
+        ).first();
+        if (lastMessage.author.bot) return;
+    }
+
+    let maxReactions = Math.floor(Math.random() * 10) + 1;
+    let xp = (Math.floor(Math.random() * 10) + 1) * 100;
+    if (manual) {
+        maxReactions = manualUses;
+        xp = manualXP;
+    }
 
     // Sending the message
     channel
         .send({
-            content: `React to this message to gain ${xp} xp \n This message has max ${maxReactions} uses`,
+            content: `React to this message to gain **${xp}** xp \n This message has max ${maxReactions} uses \n **${maxReactions}** uses left`,
             fetchReply: true,
         })
         .then(async (sent) => {
@@ -316,6 +327,7 @@ async function makeDaily(disClient) {
                 uses: 0,
                 xp: xp,
                 channelID: channelID,
+                users: [],
             };
             await dailies.insertOne(doc);
         });
@@ -336,21 +348,34 @@ async function rewardDaily(reaction, user, disClient) {
     }
 
     if (messageDOC !== null) {
+        if (messageDOC.users.includes(user.id)) return;
+        // Channel and message that is the daily
+        const channelDaily = await disClient.channels.fetch(
+            messageDOC.channelID,
+        );
+        const messageDaily = await channelDaily.messages.fetch(messageDOC._id);
         if (
             (messageDOC.uses + 1 == messageDOC.maxUses) |
             (messageDOC.uses >= messageDOC.maxUses)
         ) {
             await dailies.deleteOne({ _id: reaction.message.id });
-            const channel = await disClient.channels.fetch(
-                messageDOC.channelID,
-            );
-            const message = await channel.messages.fetch(messageDOC._id);
-            message.delete().catch(console.error);
+
+            messageDaily.delete().catch(console.error);
         } else {
+            messageDOC.users.push(user.id);
             await dailies.updateOne(
                 { _id: reaction.message.id },
-                { $inc: { uses: 1 } },
+                { $inc: { uses: 1 }, $set: { users: messageDOC.users } },
             );
+            messageDaily.edit({
+                content: `React to this message to gain **${
+                    messageDOC.xp
+                }** xp \n This message has max ${
+                    messageDOC.maxUses
+                } uses \n **${
+                    messageDOC.maxUses - messageDOC.uses - 1
+                }** uses left`,
+            });
         }
 
         let hasLeveledUp = await Levels.appendXp(
@@ -359,11 +384,12 @@ async function rewardDaily(reaction, user, disClient) {
             messageDOC.xp,
         ).catch(console.error); // add error handling for appendXp function
 
+        // Let user know they earned xp
         const channelID = '1103780086810955846';
         const channel = await disClient.channels.fetch(channelID);
 
         channel.send({
-            content: `${user} has earned ${messageDOC.xp} xp with a daily!`,
+            content: `${user} has earned **${messageDOC.xp}** xp with a pop-up!`,
         });
 
         if (hasLeveledUp) {
