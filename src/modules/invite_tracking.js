@@ -1,5 +1,4 @@
 const { MongoClient } = require('mongodb');
-// Replace the uri string with your MongoDB deployment's connection string.
 const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/recruiter`;
 const client = new MongoClient(uri);
 const db = client.db('recruiter');
@@ -66,7 +65,6 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
         .toArray();
 
     let link_used;
-    //let what_links = {};
 
     // Retrieve the link
     if (increase) {
@@ -83,7 +81,6 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     if (link_used != null) {
         const userID =
             'u' + (await invite_links.findOne({ _id: link_used })).InviterID;
-        //const userID = 'u' + invite_links[link_used].InviterID;
 
         const exist = await invite_leaderboard.findOne({ _id: userID });
         console.log(exist);
@@ -115,8 +112,6 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
         } else {
             let doc = { _id: memberID, link: link_used };
             await what_links.insertOne(doc);
-
-            //what_links[memberID] = link_used;
 
             doc = {
                 _id: userID,
@@ -153,9 +148,9 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
             } else if (oldIndex === index) {
                 doc.change = 'SAME';
             } else if (oldIndex < index) {
-                doc.change = 'UP';
-            } else {
                 doc.change = 'DOWN';
+            } else {
+                doc.change = 'UP';
             }
             return doc;
         });
@@ -305,11 +300,13 @@ async function update_dynamic_Leaderboards(leaderboard, guild) {
         return;
     }
 
-    const memberPromises = leaderboard.map(async (user, index) => {
+    const memberPromises = invite_leaderboard.map(async (user, index) => {
         const member = await guild.members.fetch(String(user._id).substring(1));
-        return `${index + 1}. ${member.nickname ?? member.user.username} - ${
-            user.score
-        } - ${emote_dict[user.change]}`;
+        return [
+            `${index + 1}. ${member.nickname ?? member.user.username}`,
+            `${user.score}`,
+            `${emote_dict[user.change]}`,
+        ];
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(
@@ -319,23 +316,17 @@ async function update_dynamic_Leaderboards(leaderboard, guild) {
     const fields = [
         {
             name: 'User',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[0])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[0]).join('\n'),
             inline: true,
         },
         {
             name: 'Recruited',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[1])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[1]).join('\n'),
             inline: true,
         },
         {
             name: 'Change',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[2])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[2]).join('\n'),
             inline: true,
         },
     ];

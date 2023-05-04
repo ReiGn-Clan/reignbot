@@ -29,6 +29,7 @@ const client = new Client({
         GatewayIntentBits.GuildInvites,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildMessageReactions,
     ],
 });
 
@@ -86,27 +87,49 @@ const roleQueue = async.queue((task, callback) => {
         });
 }, 1);
 
+const reactionQueue = async.queue((task, callback) => {
+    // execute the task function with its arguments
+    xp_roles
+        .rewardDaily(task.reaction, task.user, client)
+        .then(() => {
+            console.log(`Rewarded daily`);
+            callback();
+        })
+        .catch((err) => {
+            console.error(`Error rewarding daily, ${err}`);
+            callback(err);
+        });
+}, 1);
+
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
     const guild = client.guilds.cache.get('1089665371923026053');
     afk_channel = guild.afkChannelId;
 
-    setInterval(() => {
-        xp_roles.updateXpLeaderboard(guild);
-    }, 10000);
+    xp_roles.makeDaily(client);
 
     setInterval(() => {
-        rewardVoiceUsers(guild);
+        xp_roles.updateXpLeaderboard(guildID, client);
     }, 60000);
 
-    //client.user.setAvatar('./assets/profile_pic.png');
+    setInterval(() => {
+        xp_roles.rewardVoiceUsers(guildID, voiceChannelUsers, client);
+    }, 60000);
+
+    setInterval(() => {
+        xp_roles.makeDaily(client);
+    }, 6000000);
+
+    //client.user.setAvatar('./assets/logo_v1.jpg');
     //client.user.setUsername('ReignBot');
 });
 
 client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
-    let newUserChannel = newMember.channel;
-    let oldUserChannel = oldMember.channel;
+    const newUserChannel = newMember.channel;
+    const oldUserChannel = oldMember.channel;
+
+    const newDeafened = newMember.deaf;
 
     if (oldUserChannel === null && newUserChannel !== null) {
         // User Joins a voice channel
@@ -155,29 +178,28 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
             }
         }
     }
-});
+    if (newDeafened) {
+        if (voiceChannelUsers.includes(newMember.id)) {
+            console.log('User deafened');
+            let index = voiceChannelUsers.indexOf(newMember.id);
 
-async function rewardVoiceUsers(guild) {
-    const xpPerMinute = 10;
-    console.log('Updating xp for users', voiceChannelUsers);
-    voiceChannelUsers.forEach(async function (item) {
-        let hasLeveledUp = await Levels.appendXp(
-            item,
-            guild.id,
-            xpPerMinute,
-        ).catch(console.error); // add error handling for appendXp function
-
-        if (hasLeveledUp) {
-            try {
-                await xp_roles.improvedLevelUp(guild, item);
-            } catch (error) {
-                console.error(error); // add error handling for levelUp functio
+            if (index > -1) {
+                voiceChannelUsers.splice(index, 1);
             }
         }
+    } else {
+        if (!voiceChannelUsers.includes(newMember.id)) {
+            if (newUserChannel !== null) {
+                if (newUserChannel.id !== afk_channel) {
+                    console.log('User undeafened');
+                    voiceChannelUsers.push(newMember.id);
+                }
+            }
+        }
+    }
 
-        console.log('Done for user', item);
-    });
-}
+    console.log(voiceChannelUsers);
+});
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -232,7 +254,7 @@ client.on('messageCreate', async (message) => {
 
     if (hasLeveledUp) {
         try {
-            await xp_roles.improvedLevelUpMessage(message);
+            await xp_roles.improvedLevelUpMessage(message, client);
         } catch (error) {
             console.error(error); // add error handling for levelUp functio
         }
@@ -288,6 +310,13 @@ client.on(Events.GuildMemberRemove, async (member) => {
                 increase: false,
             }),
         );
+    });
+});
+
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
+    reactionQueue.push({
+        reaction: reaction,
+        user: user,
     });
 });
 

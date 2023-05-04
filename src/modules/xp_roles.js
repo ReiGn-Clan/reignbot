@@ -6,12 +6,11 @@ const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelRanges = JSON.parse(levelNamesData).ranges;
 
 const { MongoClient } = require('mongodb');
-
 const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
 const client = new MongoClient(uri);
 const db = client.db('xpDatabase');
 
-async function improvedLevelUpMessage(message) {
+async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
     let user = await Levels.fetch(message.author.id, message.guild.id);
     const member = await message.guild.members.fetch(message.author.id);
@@ -29,6 +28,9 @@ async function improvedLevelUpMessage(message) {
         role_array.push(levelRanges[i].value);
     }
 
+    const channelID = '1103780086810955846';
+    const channel = await disClient.channels.fetch(channelID);
+
     // Loop over current roles
     for (let i in current_roles) {
         let name = (await message.guild.roles.fetch(current_roles[i])).name;
@@ -38,7 +40,7 @@ async function improvedLevelUpMessage(message) {
             if (name === newLevelName) {
                 // Nothing has to be done
                 console.log('No Action needed');
-                message.channel.send(
+                channel.send(
                     `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
                 );
                 return;
@@ -75,10 +77,12 @@ async function improvedLevelUpMessage(message) {
     );
 }
 
-async function improvedLevelUp(guild, userID) {
+async function improvedLevelUp(guild, userID, disClient) {
     // What role should the user
     let user = await Levels.fetch(userID, guild.id);
     const member = await guild.members.fetch(userID);
+    const channelID = '1103780086810955846';
+    const channel = await disClient.channels.fetch(channelID);
 
     let newLevelRange = levelRanges.find(
         (range) => range.start <= user.level && range.end >= user.level,
@@ -102,6 +106,9 @@ async function improvedLevelUp(guild, userID) {
             console.log('Found', name);
             if (name === newLevelName) {
                 // Nothing has to be done
+                channel.send(
+                    `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
+                );
                 console.log('No Action needed');
                 return;
             } else {
@@ -116,7 +123,9 @@ async function improvedLevelUp(guild, userID) {
 
                 await member.roles.remove(previousRole);
                 await member.roles.add(role);
-
+                channel.send(
+                    `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
+                );
                 return;
             }
         }
@@ -130,12 +139,38 @@ async function improvedLevelUp(guild, userID) {
     await member.roles.add(role);
 }
 
-async function updateXpLeaderboard(guild) {
+async function updateXpLeaderboard(guildID, disClient) {
+    const guild = await disClient.guilds.fetch(guildID);
+
+    const emote_dict = {
+        SAME: '⛔',
+        UP: '⬆️',
+        DOWN: '⬇️',
+        NEW: '🆕',
+    };
+
     const limit = 10000;
     const all_members = await guild.members.fetch();
     const all_memberIDs = Array.from(all_members.keys());
-
+    const timestamp = new Date().toLocaleString();
     const xp_leaderboard = await db.collection('levels');
+    const old_leaderboard = await db.collection('oldLevels');
+
+    const sorted_leaderboard_old = await old_leaderboard
+        .aggregate([
+            {
+                $match: {
+                    userID: { $in: all_memberIDs },
+                },
+            },
+            {
+                $sort: { xp: -1 },
+            },
+            {
+                $limit: limit,
+            },
+        ])
+        .toArray();
 
     const sorted_leaderboard = await xp_leaderboard
         .aggregate([
@@ -153,11 +188,18 @@ async function updateXpLeaderboard(guild) {
         ])
         .toArray();
 
-    const memberPromises = sorted_leaderboard.map(async (user, index) => {
+    const updatedLeaderboard = await positionChange(
+        sorted_leaderboard_old,
+        sorted_leaderboard,
+    );
+
+    const memberPromises = updatedLeaderboard.map(async (user, index) => {
         const member = await guild.members.fetch(user.userID);
-        return `${index + 1}. ${
-            member.nickname ?? member.user.username
-        } - Level ${user.level} (${user.xp} XP)`;
+        return [
+            `${index + 1}. ${member.nickname ?? member.user.username}`,
+            `Level ${user.level} (${user.xp} XP)`,
+            `${emote_dict[user.change]}`,
+        ];
     });
 
     const leaderboardData = (await Promise.all(memberPromises)).filter(
@@ -167,16 +209,17 @@ async function updateXpLeaderboard(guild) {
     const fields = [
         {
             name: 'User',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[0])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[0]).join('\n'),
             inline: true,
         },
         {
             name: 'XP',
-            value: leaderboardData
-                .map((entry) => entry.split(' - ')[1])
-                .join('\n'),
+            value: leaderboardData.map((entry) => entry[1]).join('\n'),
+            inline: true,
+        },
+        {
+            name: 'Change',
+            value: leaderboardData.map((entry) => entry[2]).join('\n'),
             inline: true,
         },
     ];
@@ -184,7 +227,9 @@ async function updateXpLeaderboard(guild) {
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle('Top Members')
-        .setDescription('Here are the top members by XP in this server:')
+        .setDescription(
+            `Here are the top members by XP in this server: \n Changes are from the last minute only \n Last update: ${timestamp}`,
+        )
         .addFields(fields);
 
     const channel = await guild.channels.fetch('1095411283882426488');
@@ -194,10 +239,174 @@ async function updateXpLeaderboard(guild) {
         .edit({ embeds: [embed] })
         .then(console.log('Updated XP leaderboard'))
         .catch(console.error);
+
+    await old_leaderboard.deleteMany();
+    await old_leaderboard.insertMany(await xp_leaderboard.find({}).toArray());
+}
+
+async function rewardVoiceUsers(guildID, voiceChannelUsers, disClient) {
+    const guild = await disClient.guilds.fetch(guildID);
+
+    const xpPerMinute = 10;
+    console.log('Updating xp for users', voiceChannelUsers);
+    voiceChannelUsers.forEach(async function (item) {
+        let hasLeveledUp = await Levels.appendXp(
+            item,
+            guild.id,
+            xpPerMinute,
+        ).catch(console.error); // add error handling for appendXp function
+
+        if (hasLeveledUp) {
+            try {
+                await improvedLevelUp(guild, item, disClient);
+            } catch (error) {
+                console.error(error); // add error handling for levelUp functio
+            }
+        }
+
+        console.log('Done for user', item);
+    });
+}
+
+async function positionChange(oldLeaderboard, newLeaderboard) {
+    const updatedLeaderboard = newLeaderboard.map((doc, index) => {
+        const oldIndex = oldLeaderboard.findIndex(
+            (oldDoc) => oldDoc.userID === doc.userID,
+        );
+        if (oldIndex === -1) {
+            doc.change = 'NEW';
+        } else if (oldIndex === index) {
+            doc.change = 'SAME';
+        } else if (oldIndex < index) {
+            doc.change = 'DOWN';
+        } else {
+            doc.change = 'UP';
+        }
+        return doc;
+    });
+
+    return updatedLeaderboard;
+}
+
+async function makeDaily(disClient, manual = false, manualXP, manualUses) {
+    // Determine if we want to make a daily (chance 1 in 10)
+    //if (Math.floor(Math.random() * 10) !== 7) return;
+
+    // Channel to send it in
+    const channelID = '1091539145127641098';
+    const channel = await disClient.channels.fetch(channelID);
+    const dailies = await db.collection('dailies');
+
+    if (!manual) {
+        const lastMessage = (
+            await channel.messages.fetch({ limit: 1 })
+        ).first();
+        if (lastMessage.author.bot) return;
+    }
+
+    let maxReactions = Math.floor(Math.random() * 10) + 1;
+    let xp = (Math.floor(Math.random() * 10) + 1) * 100;
+    if (manual) {
+        maxReactions = manualUses;
+        xp = manualXP;
+    }
+
+    // Sending the message
+    channel
+        .send({
+            content: `React to this message to gain **${xp}** xp \n This message has max ${maxReactions} uses \n **${maxReactions}** uses left`,
+            fetchReply: true,
+        })
+        .then(async (sent) => {
+            sent.react('1099386036133560391');
+            let id_ = sent.id;
+            console.log(id_);
+            const doc = {
+                _id: id_,
+                maxUses: maxReactions,
+                uses: 0,
+                xp: xp,
+                channelID: channelID,
+                users: [],
+            };
+            await dailies.insertOne(doc);
+        });
+}
+
+async function rewardDaily(reaction, user, disClient) {
+    // Avoid the bot reaction
+    if (user.id == '1089665817160978553') return;
+
+    const dailies = await db.collection('dailies');
+    let messageDOC = await dailies.findOne({ _id: reaction.message.id });
+    const guild = await disClient.guilds.fetch(reaction.message.guildId);
+
+    if (reaction.emoji.id !== '1099386036133560391') {
+        console.log('Wrong emoji');
+        await reaction.users.remove(user.id);
+        return;
+    }
+
+    if (messageDOC !== null) {
+        if (messageDOC.users.includes(user.id)) return;
+        // Channel and message that is the daily
+        const channelDaily = await disClient.channels.fetch(
+            messageDOC.channelID,
+        );
+        const messageDaily = await channelDaily.messages.fetch(messageDOC._id);
+        if (
+            (messageDOC.uses + 1 == messageDOC.maxUses) |
+            (messageDOC.uses >= messageDOC.maxUses)
+        ) {
+            await dailies.deleteOne({ _id: reaction.message.id });
+
+            messageDaily.delete().catch(console.error);
+        } else {
+            messageDOC.users.push(user.id);
+            await dailies.updateOne(
+                { _id: reaction.message.id },
+                { $inc: { uses: 1 }, $set: { users: messageDOC.users } },
+            );
+            messageDaily.edit({
+                content: `React to this message to gain **${
+                    messageDOC.xp
+                }** xp \n This message has max ${
+                    messageDOC.maxUses
+                } uses \n **${
+                    messageDOC.maxUses - messageDOC.uses - 1
+                }** uses left`,
+            });
+        }
+
+        let hasLeveledUp = await Levels.appendXp(
+            user.id,
+            reaction.message.guildId,
+            messageDOC.xp,
+        ).catch(console.error); // add error handling for appendXp function
+
+        // Let user know they earned xp
+        const channelID = '1103780086810955846';
+        const channel = await disClient.channels.fetch(channelID);
+
+        channel.send({
+            content: `${user} has earned **${messageDOC.xp}** xp with a pop-up!`,
+        });
+
+        if (hasLeveledUp) {
+            try {
+                await improvedLevelUp(guild, user.id, disClient);
+            } catch (error) {
+                console.error(error); // add error handling for levelUp functio
+            }
+        }
+    }
 }
 
 module.exports = {
     updateXpLeaderboard,
     improvedLevelUp,
     improvedLevelUpMessage,
+    rewardVoiceUsers,
+    makeDaily,
+    rewardDaily,
 };
