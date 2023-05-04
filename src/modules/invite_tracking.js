@@ -153,9 +153,9 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
             } else if (oldIndex === index) {
                 doc.change = 'SAME';
             } else if (oldIndex < index) {
-                doc.change = 'UP';
-            } else {
                 doc.change = 'DOWN';
+            } else {
+                doc.change = 'UP';
             }
             return doc;
         });
