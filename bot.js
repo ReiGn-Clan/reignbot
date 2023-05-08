@@ -53,24 +53,59 @@ for (const file of commandFiles) {
 
 // Create queues
 const invLeaderboardQueue = async.queue((task, callback) => {
-    // execute the task function with its arguments
-    inv_l
-        .UpdateLeaderboard(
-            task.invites,
-            task.id,
-            task.guildobject,
-            task.increase,
-        )
-        .then(() => {
-            console.log(`Updated leaderboard for member ${task.id}`);
-            callback();
-        })
-        .catch((err) => {
-            console.error(
-                `Error updating leaderboard for member ${task.id}: ${err}`,
-            );
-            callback(err);
+    // Fetch the guild object
+    client.guilds.fetch(guildID).then((guild) => {
+        // Fetch a list of invites
+        guild.invites.fetch().then((invites) => {
+            // Check if we update the leaderboard
+            // Or we simply fetch invites
+            if (task.fetchinv) {
+                console.log('Invite in task Q');
+                inv_l
+                    .UpdateLinks(invites)
+                    .then(() => {
+                        console.log(`Fetched invites!`);
+                        callback();
+                    })
+                    .catch((err) => {
+                        console.error(`Error fetching invites: ${err}`);
+                        callback(err);
+                    });
+            } else {
+                // If we update the leaderboard, check if new member
+                // has joined, so we assign roles to that person
+                if (task.increase) {
+                    let roles = [];
+                    roles.push(
+                        guild.roles.cache.find(
+                            (role) => role.name === 'Neophyte',
+                        ),
+                    );
+                    roles.push(
+                        guild.roles.cache.find(
+                            (role) => role.name === 'Member',
+                        ),
+                    );
+                    roleQueue.push({ memberobject: task.member, roles: roles });
+                }
+                // Execute the task function with its arguments
+                inv_l
+                    .UpdateLeaderboard(invites, task.id, guild, task.increase)
+                    .then(() => {
+                        console.log(
+                            `Updated leaderboard for member ${task.id}`,
+                        );
+                        callback();
+                    })
+                    .catch((err) => {
+                        console.error(
+                            `Error updating leaderboard for member ${task.id}: ${err}`,
+                        );
+                        callback(err);
+                    });
+            }
         });
+    });
 }, 1);
 
 const roleQueue = async.queue((task, callback) => {
@@ -271,8 +306,8 @@ client.once(Events.ClientReady, () => {
 // Event for when invite is created
 client.on(Events.InviteCreate, async () => {
     console.log('Invite event triggered');
-    client.guilds.fetch(guildID).then((guild) => {
-        guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
+    invLeaderboardQueue.push({
+        fetchinv: true,
     });
 });
 
@@ -280,20 +315,12 @@ client.on(Events.InviteCreate, async () => {
 client.on(Events.GuildMemberAdd, async (member) => {
     console.log('User joined');
     console.log(member.id);
-    client.guilds.fetch(guildID).then((guild) => {
-        //Add the 1st level role to every new user who joins
-        let roles = [];
-        roles.push(guild.roles.cache.find((role) => role.name === 'Neophyte'));
-        roles.push(guild.roles.cache.find((role) => role.name === 'Member'));
-        roleQueue.push({ memberobject: member, roles: roles });
-        guild.invites.fetch().then((inv) =>
-            invLeaderboardQueue.push({
-                invites: inv,
-                id: member.id,
-                guildobject: guild,
-                increase: true,
-            }),
-        );
+
+    invLeaderboardQueue.push({
+        id: member.id,
+        member: member,
+        increase: true,
+        fetchinv: false,
     });
 });
 
@@ -301,15 +328,11 @@ client.on(Events.GuildMemberAdd, async (member) => {
 client.on(Events.GuildMemberRemove, async (member) => {
     console.log('User left');
     console.log(member.id);
-    client.guilds.fetch(guildID).then((guild) => {
-        guild.invites.fetch().then((inv) =>
-            invLeaderboardQueue.push({
-                invites: inv,
-                id: member.id,
-                guildobject: guild,
-                increase: false,
-            }),
-        );
+
+    invLeaderboardQueue.push({
+        id: member.id,
+        increase: false,
+        fetchinv: false,
     });
 });
 
