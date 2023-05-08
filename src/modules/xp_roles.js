@@ -359,13 +359,12 @@ async function rewardDaily(reaction, user, disClient) {
     let messageDOC = await dailies.findOne({ _id: reaction.message.id });
     const guild = await disClient.guilds.fetch(reaction.message.guildId);
 
-    if (reaction.emoji.id !== '1099386036133560391') {
-        console.log('Wrong emoji');
-        await reaction.users.remove(user.id);
-        return;
-    }
-
     if (messageDOC !== null) {
+        if (reaction.emoji.id !== '1099386036133560391') {
+            console.log('Wrong emoji');
+            await reaction.users.remove(user.id);
+            return;
+        }
         if (messageDOC.users.includes(user.id)) return;
         // Channel and message that is the daily
         const channelDaily = await disClient.channels.fetch(
