@@ -298,8 +298,8 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
 }
 
 async function makeDaily(disClient, manual = false, manualXP, manualUses) {
-    // Determine if we want to make a daily (chance 1 in 10)
-    if (Math.floor(Math.random() * 10) !== 7) return;
+    // Determine if we want to make a daily (chance 1 in 5)
+    if (Math.floor(Math.random() * 5) !== 5) return;
 
     // Channel to send it in
     const channelID = '1091539145127641098';
@@ -314,7 +314,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     }
 
     let maxReactions = Math.floor(Math.random() * 5) + 1;
-    let xp = (Math.floor(Math.random() * 20) + 1) * 100;
+    let xp = (Math.floor(Math.random() * 25) + 1) * 100;
     if (manual) {
         maxReactions = manualUses;
         xp = manualXP;
