@@ -31,6 +31,9 @@ async function improvedLevelUpMessage(message, disClient) {
     const channelID = '1103780086810955846';
     const channel = await disClient.channels.fetch(channelID);
 
+    const channelID2 = '1091539145127641098';
+    const channel2 = await disClient.channels.fetch(channelID2);
+
     // Loop over current roles
     for (let i in current_roles) {
         let name = (await message.guild.roles.fetch(current_roles[i])).name;
@@ -56,8 +59,8 @@ async function improvedLevelUpMessage(message, disClient) {
                 await member.roles.remove(previousRole);
                 await member.roles.add(role);
 
-                await message.channel.send(
-                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
+                await channel2.send(
+                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
                 );
 
                 return;
@@ -72,8 +75,8 @@ async function improvedLevelUpMessage(message, disClient) {
     );
     await member.roles.add(role);
 
-    await message.channel.send(
-        `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
+    await channel2.send(
+        `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
     );
 }
 
@@ -83,6 +86,9 @@ async function improvedLevelUp(guild, userID, disClient) {
     const member = await guild.members.fetch(userID);
     const channelID = '1103780086810955846';
     const channel = await disClient.channels.fetch(channelID);
+
+    const channelID2 = '1091539145127641098';
+    const channel2 = await disClient.channels.fetch(channelID2);
 
     let newLevelRange = levelRanges.find(
         (range) => range.start <= user.level && range.end >= user.level,
@@ -123,8 +129,8 @@ async function improvedLevelUp(guild, userID, disClient) {
 
                 await member.roles.remove(previousRole);
                 await member.roles.add(role);
-                channel.send(
-                    `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the role **${role.name}!**`,
+                channel2.send(
+                    `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
                 );
                 return;
             }
@@ -137,6 +143,9 @@ async function improvedLevelUp(guild, userID, disClient) {
         (role) => role.name === newLevelName,
     );
     await member.roles.add(role);
+    channel2.send(
+        `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
+    );
 }
 
 async function updateXpLeaderboard(guildID, disClient) {
@@ -290,7 +299,7 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
 
 async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     // Determine if we want to make a daily (chance 1 in 10)
-    //if (Math.floor(Math.random() * 10) !== 7) return;
+    if (Math.floor(Math.random() * 10) !== 7) return;
 
     // Channel to send it in
     const channelID = '1091539145127641098';
@@ -304,8 +313,8 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
         if (lastMessage.author.bot) return;
     }
 
-    let maxReactions = Math.floor(Math.random() * 10) + 1;
-    let xp = (Math.floor(Math.random() * 10) + 1) * 100;
+    let maxReactions = Math.floor(Math.random() * 5) + 1;
+    let xp = (Math.floor(Math.random() * 20) + 1) * 100;
     if (manual) {
         maxReactions = manualUses;
         xp = manualXP;
