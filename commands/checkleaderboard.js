@@ -8,7 +8,13 @@ const db = client.db('xpDatabase');
 async function checkLeaderboard(interaction) {
     const limit = interaction.options.getInteger('leaderboard_length');
 
-    const all_members = await interaction.guild.members.fetch();
+    let all_members = await interaction.guild.members.fetch();
+
+    all_members.forEach(function (item, key) {
+        if (item.user.bot) {
+            all_members.delete(key);
+        }
+    });
     const all_memberIDs = Array.from(all_members.keys());
 
     const xp_leaderboard = await db.collection('levels');

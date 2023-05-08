@@ -44,7 +44,12 @@ async function UpdateLinks(invites) {
 // Update the leaderboard file, not sorted (yet)
 async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     // Read in file
-    const all_members = await guild.members.fetch();
+    let all_members = await guild.members.fetch();
+    all_members.forEach(function (item, key) {
+        if (item.user.bot) {
+            all_members.delete(key);
+        }
+    });
     const all_memberIDs = Array.from(all_members.keys());
     let modified_memberIDs = all_memberIDs.map((id) => 'u' + id);
     const invite_links = db.collection('invite_links');
