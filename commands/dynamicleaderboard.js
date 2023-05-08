@@ -37,7 +37,12 @@ module.exports = {
         };
 
         // Get all member ID's and change them to fit the wanted id format
-        const all_members = await interaction.guild.members.fetch();
+        let all_members = await interaction.guild.members.fetch();
+        all_members.forEach(function (item, key) {
+            if (item.user.bot) {
+                all_members.delete(key);
+            }
+        });
         const all_memberIDs = Array.from(all_members.keys());
         let modified_memberIDs = all_memberIDs.map((id) => 'u' + id);
 

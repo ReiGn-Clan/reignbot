@@ -159,7 +159,14 @@ async function updateXpLeaderboard(guildID, disClient) {
     };
 
     const limit = 10000;
-    const all_members = await guild.members.fetch();
+    let all_members = await guild.members.fetch();
+
+    all_members.forEach(function (item, key) {
+        if (item.user.bot) {
+            all_members.delete(key);
+        }
+    });
+
     const all_memberIDs = Array.from(all_members.keys());
     const timestamp = new Date().toLocaleString();
     const xp_leaderboard = await db.collection('levels');
