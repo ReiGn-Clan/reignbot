@@ -14,7 +14,6 @@ async function CreateInviteLinkObject(invites, invite_links) {
     while (1) {
         const curr_key = keys.next();
         if (curr_key.done == true) break;
-
         let doc = {
             _id: curr_key.value,
             InviterID: invites.get(curr_key.value).inviterId,
@@ -26,11 +25,14 @@ async function CreateInviteLinkObject(invites, invite_links) {
         let exist = await invite_links.findOne({ _id: curr_key.value });
 
         if (exist === null) {
-            invite_links.insertOne(doc);
+            await invite_links.insertOne(doc);
         } else {
             delete doc._id;
 
-            invite_links.updateOne({ _id: curr_key.value }, { $set: doc });
+            await invite_links.updateOne(
+                { _id: curr_key.value },
+                { $set: doc },
+            );
         }
     }
 }
@@ -44,6 +46,7 @@ async function UpdateLinks(invites) {
 // Update the leaderboard file, not sorted (yet)
 async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     // Read in file
+
     let all_members = await guild.members.fetch();
     all_members.forEach(function (item, key) {
         if (item.user.bot) {
@@ -73,11 +76,23 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
 
     // Retrieve the link
     if (increase) {
-        link_used = await RetrieveLinkUsed(invites, invite_links);
-        if (link_used === 0) return;
+        link_used = await RetrieveLinkUsed(invites, invite_links, guild);
+        if ((link_used == 0) | (link_used == null)) {
+            console.log('No link found');
+            return null;
+        }
     } else {
-        link_used = (await what_links.findOne({ _id: memberID })).link;
-        console.log(link_used);
+        try {
+            link_used = (await what_links.findOne({ _id: memberID })).link;
+            console.log(link_used);
+            if ((link_used == 0) | (link_used == null)) {
+                console.log('Not in What Links');
+                return null;
+            }
+        } catch (error) {
+            console.log('User does not exist in what_links');
+            return null;
+        }
     }
 
     console.log(link_used);
@@ -173,13 +188,31 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     }
 }
 
-async function RetrieveLinkUsed(invites, invite_links_old) {
+async function RetrieveLinkUsed(invites, invite_links_old, guild) {
     const temp_invite_links = db.collection('temp_invite_links');
 
     let link_used = null;
 
     // Retrieve the current existing links
     await CreateInviteLinkObject(invites, temp_invite_links);
+    // Dealing with the vanity link
+    const vanityData = await guild.fetchVanityData();
+    console.log(vanityData);
+    let exist = await temp_invite_links.findOne({ _id: vanityData.code });
+    const doc = {
+        _id: vanityData.code,
+        LinkUses: vanityData.uses,
+    };
+    if (exist === null) {
+        await temp_invite_links.insertOne(doc);
+    } else {
+        delete doc._id;
+
+        await temp_invite_links.updateOne(
+            { _id: vanityData.code },
+            { $set: doc },
+        );
+    }
 
     let intersected = await invite_links_old
         .aggregate([
@@ -211,7 +244,20 @@ async function RetrieveLinkUsed(invites, invite_links_old) {
         .toArray();
 
     if (intersected.length > 0) {
+        console.log(intersected);
+        console.log('User joined through non temp link');
         link_used = intersected[0]._id;
+
+        await invite_links_old.updateOne(
+            { _id: link_used },
+            { $inc: { LinkUses: 1 } },
+        );
+
+        if (link_used == 'reignclan') {
+            console.log('User used vanity URL', link_used);
+            await temp_invite_links.deleteMany({});
+            return null;
+        }
     }
 
     if (link_used === null) {
@@ -264,15 +310,15 @@ async function RetrieveLinkUsed(invites, invite_links_old) {
 
         if (difference.length > 0) {
             link_used = difference[0]._id;
+            console.log('User joined through temp link');
+            // Increase the link uses
+            await invite_links_old.updateOne(
+                { _id: link_used },
+                { $inc: { LinkUses: 1 } },
+            );
         }
-
-        // Increase the link uses
-        await invite_links_old.updateOne(
-            { _id: link_used },
-            { $inc: { LinkUses: 1 } },
-        );
     }
-    console.log('Retrieving link used 2222');
+
     console.log('LINK USED', link_used);
 
     if (link_used != null) {
@@ -281,7 +327,7 @@ async function RetrieveLinkUsed(invites, invite_links_old) {
     } else {
         await temp_invite_links.deleteMany({});
         console.log('User didnt join with a link, most likely bot');
-        return 0;
+        return null;
     }
 }
 
