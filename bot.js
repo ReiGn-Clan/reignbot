@@ -315,9 +315,9 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     const oldBoostStatus = oldMember.premiumSince;
     const newBoostStatus = newMember.premiumSince;
 
-    if (!oldBoostStatus && newBoostStatus){
+    if (!oldBoostStatus && newBoostStatus) {
         const guildID = newMember.guild.id;
-        const user= newMember.user;
+        const user = newMember.user;
 
         await xp_roles.rewardBoost(guildID, user, client);
     }
