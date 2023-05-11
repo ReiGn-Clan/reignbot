@@ -419,6 +419,16 @@ async function rewardDaily(reaction, user, disClient) {
     }
 }
 
+async function rewardBoost (guildID, user, client){
+    await Levels.appendXp(user.id, guildID, 10000);
+
+    const channelID = '1091539145127641098';
+    const channel = await client.channels.fetch(channelID);
+
+    channel.message.send ({
+        content: `${user} boosted the server and has been awarded 10,000XP!`,
+    });
+}
 module.exports = {
     updateXpLeaderboard,
     improvedLevelUp,
@@ -426,4 +436,5 @@ module.exports = {
     rewardVoiceUsers,
     makeDaily,
     rewardDaily,
+    rewardBoost,
 };
