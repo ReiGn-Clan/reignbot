@@ -158,7 +158,7 @@ async function updateXpLeaderboard(guildID, disClient) {
         NEW: '🆕',
     };
 
-    const limit = 10000;
+    const limit = 50;
     let all_members = await guild.members.fetch();
 
     all_members.forEach(function (item, key) {

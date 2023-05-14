@@ -80,7 +80,7 @@ module.exports = {
                 .setDescription('Length of the leaderboard')
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(30),
+                .setMaxValue(10),
         ),
     execute: checkLeaderboard,
 };
