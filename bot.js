@@ -311,14 +311,12 @@ client.on(Events.InviteCreate, async () => {
     });
 });
 
-client.on('guildMemberUpdate', async (oldMember, newMember) => {
+client.on(Events.guildMemberUpdate, async (oldMember, newMember) => {
     const oldBoostStatus = oldMember.premiumSince;
     const newBoostStatus = newMember.premiumSince;
 
     if (!oldBoostStatus && newBoostStatus) {
-        const guildID = newMember.guild.id;
         const user = newMember.user;
-
         await xp_roles.rewardBoost(guildID, user, client);
     }
 });

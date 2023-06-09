@@ -212,7 +212,7 @@ async function updateXpLeaderboard(guildID, disClient) {
     const memberPromises = updatedLeaderboard.map(async (user, index) => {
         const member = await guild.members.fetch(user.userID);
         return [
-            `${index + 1}. ${member.nickname ?? member.user.username}`,
+            `${index + 1}:  ${member.nickname ?? member.user.username}`,
             `Level ${user.level} (${user.xp} XP)`,
             `${emote_dict[user.change]}`,
         ];
