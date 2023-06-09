@@ -53,7 +53,7 @@ module.exports = {
                 String(user._id).substring(1),
             );
             return [
-                `${index + 1}. ${member.nickname ?? member.user.username}`,
+                `${index + 1}:  ${member.nickname ?? member.user.username}`,
                 `${user.score}`,
                 `${emote_dict[user.change]}`,
             ];
