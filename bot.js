@@ -161,10 +161,16 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
+    if (newMember.member.user.bot) {
+        console.log('Bot Detected');
+        return;
+    }
+
     const newUserChannel = newMember.channel;
     const oldUserChannel = oldMember.channel;
 
     const newDeafened = newMember.deaf;
+    const newMuted = newMember.mute;
 
     if (oldUserChannel === null && newUserChannel !== null) {
         // User Joins a voice channel
@@ -213,9 +219,9 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
             }
         }
     }
-    if (newDeafened) {
+    if (newDeafened || newMuted) {
         if (voiceChannelUsers.includes(newMember.id)) {
-            console.log('User deafened');
+            console.log('User deafened or muted');
             let index = voiceChannelUsers.indexOf(newMember.id);
 
             if (index > -1) {
@@ -226,7 +232,7 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
         if (!voiceChannelUsers.includes(newMember.id)) {
             if (newUserChannel !== null) {
                 if (newUserChannel.id !== afk_channel) {
-                    console.log('User undeafened');
+                    console.log('User undeafened or unmuted');
                     voiceChannelUsers.push(newMember.id);
                 }
             }
