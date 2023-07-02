@@ -7,7 +7,7 @@ const db = client.db('gambling');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bet')
-        .setDescription('Lists the existing bets')
+        .setDescription('Bet XP on a bet')
         .addStringOption((option) =>
             option
                 .setName('name')
