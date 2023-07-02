@@ -136,6 +136,17 @@ const reactionQueue = async.queue((task, callback) => {
         });
 }, 1);
 
+async function KickKids() {
+    const guild = await client.guilds.fetch(guildID);
+    const role = await guild.roles.fetch('1125194932819341322');
+    const members = await role.members;
+
+    members.forEach((value, key) => {
+        console.log(value.user.username);
+        value.kick('Underage!');
+    });
+}
+
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
@@ -155,6 +166,10 @@ client.once(Events.ClientReady, async () => {
     setInterval(() => {
         xp_roles.makeDaily(client);
     }, 6000000);
+
+    setInterval(() => {
+        KickKids();
+    }, 500);
 
     //client.user.setAvatar('./assets/logo_v1.jpg');
     //client.user.setUsername('ReignBot');
