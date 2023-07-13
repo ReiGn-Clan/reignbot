@@ -3,7 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/gambling`;
 const client = new MongoClient(uri);
 const db = client.db('gambling');
-const gambling = require('../src/modules/gambling_is_cool.js');
+const gambling = require('../../src/modules/gambling_is_cool.js');
 
 module.exports = {
     data: new SlashCommandBuilder()

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Levels = require('discord-xp');
-const xp_roles = require('../src/modules/xp_roles.js');
+const xp_roles = require('../../src/modules/xp_roles.js');
 
 async function giveXP(interaction) {
     let user = interaction.options.getUser('user');
