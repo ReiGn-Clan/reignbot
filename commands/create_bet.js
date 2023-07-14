@@ -97,7 +97,8 @@ module.exports = {
             if (!members_betted.includes(collected.user.id)) {
                 // Prompt the user to enter a number
                 collected.reply({
-                    content: 'Please enter a number:',
+                    content:
+                        'Please type the amount of xp you wanna bet in chat:',
                     ephemeral: true,
                 });
 
@@ -115,7 +116,7 @@ module.exports = {
                     // Process the entered number
                     const enteredNumber = parseInt(response.content);
                     if (Number.isInteger(enteredNumber)) {
-                        response.reply({
+                        collected.followUp({
                             content: `You betted ${enteredNumber}!`,
                             ephemeral: true,
                         });
@@ -151,6 +152,8 @@ module.exports = {
                                 components: [row],
                             })
                             .then(console.log('Bet Updated'));
+
+                        response.delete();
                     } else {
                         // Invalid input, prompt the user to enter a valid number
                         collected.followUp({
