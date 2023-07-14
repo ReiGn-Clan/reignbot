@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const xp_roles = require('../../src/modules/xp_roles.js');
+const xp_roles = require('../src/modules/xp_roles.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
