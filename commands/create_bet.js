@@ -55,12 +55,19 @@ module.exports = {
         const button_option_1 = new ButtonBuilder()
             .setCustomId('option_1')
             .setLabel(option_1)
-            .setStyle(ButtonStyle.Success);
+            .setStyle(ButtonStyle.Primary);
 
         const button_option_2 = new ButtonBuilder()
             .setCustomId('option_2')
             .setLabel(option_2)
+            .setStyle(ButtonStyle.Success);
+
+        /*
+        const CancelButton = new ButtonBuilder()
+            .setCustomId('cancelbet')
+            .setLabel('Cancel Bet')
             .setStyle(ButtonStyle.Danger);
+        */
 
         const row = new ActionRowBuilder().addComponents(
             button_option_1,
@@ -81,7 +88,7 @@ module.exports = {
 
         interaction.channel
             .send({
-                content: `A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: ${50}%  - ${option_2}: ${50}%`,
+                content: `A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${50}%**  - ${option_2}: **${50}%**`,
                 components: [row],
             })
             .then(async (sent) => {
@@ -140,15 +147,15 @@ module.exports = {
 
                         bet_message
                             .edit({
-                                content: `A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${
+                                content: `A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
                                     (option_1_total /
                                         (option_1_total + option_2_total)) *
                                     100
-                                }%**  - ${option_2}: **${
+                                ).toFixed(2)}%**  - ${option_2}: **${(
                                     (option_2_total /
                                         (option_1_total + option_2_total)) *
                                     100
-                                }%**`,
+                                ).toFixed(2)}%**`,
                                 components: [row],
                             })
                             .then(console.log('Bet Updated'));
