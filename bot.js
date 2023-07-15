@@ -169,6 +169,17 @@ const reactionQueue = async.queue((task, callback) => {
         });
 }, 1);
 
+async function KickKids() {
+    const guild = await client.guilds.fetch(guildID);
+    const role = await guild.roles.fetch('1125194932819341322');
+    const members = await role.members;
+
+    members.forEach((value, key) => {
+        console.log(value.user.username);
+        value.kick('Underage!');
+    });
+}
+
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
@@ -189,15 +200,25 @@ client.once(Events.ClientReady, async () => {
         xp_roles.makeDaily(client);
     }, 6000000);
 
+    setInterval(() => {
+        KickKids();
+    }, 500);
+
     //client.user.setAvatar('./assets/logo_v1.jpg');
     //client.user.setUsername('ReignBot');
 });
 
 client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
+    if (newMember.member.user.bot) {
+        console.log('Bot Detected');
+        return;
+    }
+
     const newUserChannel = newMember.channel;
     const oldUserChannel = oldMember.channel;
 
     const newDeafened = newMember.deaf;
+    const newMuted = newMember.mute;
 
     if (oldUserChannel === null && newUserChannel !== null) {
         // User Joins a voice channel
@@ -246,9 +267,9 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
             }
         }
     }
-    if (newDeafened) {
+    if (newDeafened || newMuted) {
         if (voiceChannelUsers.includes(newMember.id)) {
-            console.log('User deafened');
+            console.log('User deafened or muted');
             let index = voiceChannelUsers.indexOf(newMember.id);
 
             if (index > -1) {
@@ -259,7 +280,7 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
         if (!voiceChannelUsers.includes(newMember.id)) {
             if (newUserChannel !== null) {
                 if (newUserChannel.id !== afk_channel) {
-                    console.log('User undeafened');
+                    console.log('User undeafened or unmuted');
                     voiceChannelUsers.push(newMember.id);
                 }
             }
