@@ -165,7 +165,7 @@ module.exports = {
                         // Invalid input, prompt the user to enter a valid number
                         collected.followUp({
                             content:
-                                'Invalid input. Please enter a valid number.',
+                                'Invalid input, click a button again and enter a number',
                             ephemeral: true,
                         });
                     }
