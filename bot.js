@@ -3,6 +3,7 @@ const path = require('node:path');
 const Levels = require('discord-xp');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
+const gambling = require('./src/modules/gambling_is_cool.js');
 const async = require('async');
 
 const mongo_uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`; //set uri for mongoDB
@@ -32,6 +33,13 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
     ],
 });
+
+// Set up a mongoDB
+const { MongoClient } = require('mongodb');
+const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
+const mongo_client = new MongoClient(uri);
+const db_xp = mongo_client.db('xpDatabase');
+const db_gamble = mongo_client.db('gambling');
 
 // Create a new Collection to store the commands
 client.commands = new Collection();
@@ -124,15 +132,40 @@ const roleQueue = async.queue((task, callback) => {
 
 const reactionQueue = async.queue((task, callback) => {
     // execute the task function with its arguments
-    xp_roles
-        .rewardDaily(task.reaction, task.user, client)
-        .then(() => {
-            console.log(`Rewarded daily`);
-            callback();
-        })
-        .catch((err) => {
-            console.error(`Error rewarding daily, ${err}`);
-            callback(err);
+
+    const dailies = db_xp.collection('dailies');
+    dailies.findOne({ _id: task.reaction.message.id }).then((messageDOC) => {
+        if (messageDOC !== null) {
+            xp_roles
+                .rewardDaily(task.reaction, task.user, client, messageDOC)
+                .then(() => {
+                    console.log(`Rewarded daily`);
+                    callback();
+                })
+                .catch((err) => {
+                    console.error(`Error rewarding daily, ${err}`);
+                    callback(err);
+                });
+        }
+    });
+
+    const gamble_coll = db_gamble.collection('gambles');
+
+    gamble_coll
+        .findOne({ _id: task.reaction.message.id })
+        .then((messageDOC) => {
+            if (messageDOC !== null) {
+                gambling
+                    .rewardGamble(task.reaction, task.user, client, messageDOC)
+                    .then(() => {
+                        console.log(`Rewarded gamble`);
+                        callback();
+                    })
+                    .catch((err) => {
+                        console.error(`Error rewarding daily, ${err}`);
+                        callback(err);
+                    });
+            }
         });
 }, 1);
 
