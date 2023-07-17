@@ -12,7 +12,13 @@ module.exports = {
     async execute(interaction) {
         const bets = await db.collection('bets');
 
-        const bet_array = await bets.aggregate().toArray();
+        const bet_array = await bets
+            .aggregate({
+                $match: {
+                    active: true,
+                },
+            })
+            .toArray();
 
         if (bet_array.length === 0) {
             await interaction.reply('There is no existing bets');
