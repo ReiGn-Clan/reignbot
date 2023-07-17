@@ -130,18 +130,14 @@ module.exports = {
                             );
 
                             if (userXP.xp >= enteredNumber) {
-                                await Levels.subtractXp(
+                                let hasLeveledUp = await Levels.subtractXp(
                                     collected.user.id,
                                     interaction.guild.id,
                                     enteredNumber,
                                 );
-                                let userTotalXP = await Levels.fetch(
-                                    collected.user.id,
-                                    interaction.guild.id,
-                                    true,
-                                );
-
-                                if (userTotalXP) {
+                                /*
+                                console.log(hasLeveledUp);
+                                if (hasLeveledUp) {
                                     try {
                                         await xp_roles.improvedLevelUp(
                                             interaction.guild,
@@ -150,10 +146,12 @@ module.exports = {
                                         );
                                     } catch (error) {
                                         console.error(error); // add error handling for levelUp functio
+                                 
                                     }
                                 }
+                                */
                                 collected.followUp({
-                                    content: `You betted ${enteredNumber}!`,
+                                    content: `You bet ${enteredNumber}!`,
                                     ephemeral: true,
                                 });
                                 members_betted.push(collected.user.id);
@@ -206,10 +204,10 @@ module.exports = {
                         numberCollector.stop();
                     });
 
-                    numberCollector.on('end', (collected, reason) => {
+                    numberCollector.on('end', (response, reason) => {
                         if (reason === 'time') {
                             // No response received within the given time, handle accordingly
-                            interaction.followUp({
+                            collected.followUp({
                                 content:
                                     'No number entered. Interaction timed out.',
                                 ephemeral: true,
@@ -243,18 +241,13 @@ module.exports = {
                         option_2_total -= found_bet.amount;
                     }
 
-                    await Levels.appendXp(
+                    let hasLeveledUp = await Levels.appendXp(
                         collected.user.id,
                         interaction.guild.id,
                         found_bet.amount,
                     );
-                    let userTotalXP = await Levels.fetch(
-                        collected.user.id,
-                        interaction.guild.id,
-                        true,
-                    );
 
-                    if (userTotalXP) {
+                    if (hasLeveledUp) {
                         try {
                             await xp_roles.improvedLevelUp(
                                 interaction.guild,
@@ -297,8 +290,50 @@ module.exports = {
         collector.on('end', async () => {
             // Remove the buttons after the interaction ends
             row.components.forEach((button) => button.setDisabled(true));
+
+            if (option_1_total === 0 || option_2_total === 0) {
+                bet_message.edit({
+                    content: `BET CANCELED, NOT ENOUGH PARTICIPATION RETURNING XP \n A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
+                        (option_1_total / (option_1_total + option_2_total)) *
+                            100 || 0
+                    ).toFixed(2)}%**  - ${option_2}: **${(
+                        (option_2_total / (option_1_total + option_2_total)) *
+                            100 || 0
+                    ).toFixed(2)}%**`,
+                    components: [row],
+                });
+
+                all_bets.forEach(async (obj) => {
+                    let hasLeveledUp = await Levels.appendXp(
+                        obj.user,
+                        interaction.guild.id,
+                        obj.amount,
+                    );
+
+                    if (hasLeveledUp) {
+                        try {
+                            await xp_roles.improvedLevelUp(
+                                interaction.guild,
+                                obj.user,
+                                interaction.client,
+                            );
+                        } catch (error) {
+                            console.error(error); // add error handling for levelUp functio
+                        }
+                    }
+                });
+
+                return;
+            }
+
             bet_message.edit({
-                content: 'Betting time has ended',
+                content: `BETTING TIME HAS ENDED \n A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
+                    (option_1_total / (option_1_total + option_2_total)) *
+                        100 || 0
+                ).toFixed(2)}%**  - ${option_2}: **${(
+                    (option_2_total / (option_1_total + option_2_total)) *
+                        100 || 0
+                ).toFixed(2)}%**`,
                 components: [row],
             });
 

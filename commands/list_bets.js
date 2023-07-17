@@ -13,11 +13,13 @@ module.exports = {
         const bets = await db.collection('bets');
 
         const bet_array = await bets
-            .aggregate({
-                $match: {
-                    active: true,
+            .aggregate([
+                {
+                    $match: {
+                        active: true,
+                    },
                 },
-            })
+            ])
             .toArray();
 
         if (bet_array.length === 0) {
@@ -26,11 +28,7 @@ module.exports = {
         }
 
         const memberPromises = bet_array.map(async (bet) => {
-            return [
-                `${bet._id}`,
-                `${bet.description}`,
-                `${[bet.option_1, bet.option_2]}`,
-            ];
+            return [`${bet._id}`, `${bet.description}`, `${bet.options}`];
         });
 
         const betsData = (await Promise.all(memberPromises)).filter(
