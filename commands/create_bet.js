@@ -227,6 +227,21 @@ module.exports = {
                     const found_bet = all_bets.find(
                         (obj) => obj.user === collected.user.id,
                     );
+                    const index = all_bets.findIndex(
+                        (obj) => obj.name === collected.user.id,
+                    );
+
+                    all_bets.splice(index, 1);
+
+                    const index2 = members_betted.indexOf(collected.user.id);
+                    members_betted.splice(index2, 1);
+
+                    console.log(found_bet);
+                    if (found_bet.option === 'option_1') {
+                        option_1_total -= found_bet.amount;
+                    } else {
+                        option_2_total -= found_bet.amount;
+                    }
 
                     await Levels.appendXp(
                         collected.user.id,
@@ -250,6 +265,21 @@ module.exports = {
                             console.error(error); // add error handling for levelUp functio
                         }
                     }
+
+                    bet_message
+                        .edit({
+                            content: `A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
+                                (option_1_total /
+                                    (option_1_total + option_2_total)) *
+                                    100 || 0
+                            ).toFixed(2)}%**  - ${option_2}: **${(
+                                (option_2_total /
+                                    (option_1_total + option_2_total)) *
+                                    100 || 0
+                            ).toFixed(2)}%**`,
+                            components: [row],
+                        })
+                        .then(console.log('Bet Updated'));
 
                     collected.reply({
                         content: `Canceled the bet, ${found_bet.amount} added back to account`,
@@ -275,10 +305,20 @@ module.exports = {
             const doc = {
                 _id: name,
                 description: description,
-                options: [{ one: option_1, two: option_2 }],
-                xp_option_1: option_1_total,
-                xp_option_2: option_2_total,
+                options: [
+                    {
+                        option: 1,
+                        description: option_1,
+                        XPbetted: option_1_total,
+                    },
+                    {
+                        option: 2,
+                        description: option_2,
+                        XPbetted: option_2_total,
+                    },
+                ],
                 bets: all_bets,
+                active: true,
             };
 
             await bets.insertOne(doc);
