@@ -42,9 +42,9 @@ module.exports = {
 
         bet_array.forEach(async function (item) {
             const string_option = new StringSelectMenuOptionBuilder()
-                .setLabel(item._id)
+                .setLabel(item.name)
                 .setDescription(item.description)
-                .setValue(item._id);
+                .setValue(item.name);
 
             menu_options.push(string_option);
         });
@@ -73,7 +73,7 @@ module.exports = {
 
             const bet_id = collected.values[0];
 
-            const found_bet = bet_array.find((obj) => obj._id === bet_id);
+            const found_bet = bet_array.find((obj) => obj.name === bet_id);
 
             const button_option_1 = new ButtonBuilder()
                 .setCustomId('option_1')
@@ -122,12 +122,12 @@ module.exports = {
                 const convertor = { option_1: 0, option_2: 1 };
 
                 interaction.channel.send({
-                    content: `A bet has been concluded! The bet was: ${
+                    content: `A bet has been concluded! The bet was: *${
                         found_bet.description
-                    }, the option ${
+                    }*, the option: **${
                         found_bet.options[convertor[button_collected.customId]]
                             .description
-                    } has won. XP will be handed out shortly to the winners!}`,
+                    }** has won. XP will be handed out shortly to the winners!}`,
                 });
 
                 // Calculate the odds:
@@ -173,7 +173,7 @@ module.exports = {
                 });
 
                 await bets.updateOne(
-                    { _id: bet_id },
+                    { _id: found_bet._id },
                     { $set: { active: false } },
                 );
 

@@ -28,7 +28,7 @@ module.exports = {
         }
 
         const memberPromises = bet_array.map(async (bet) => {
-            return [`${bet._id}`, `${bet.description}`, `${bet.options}`];
+            return [`${bet.name}`, `${bet.description}`, `${bet.options}`];
         });
 
         const betsData = (await Promise.all(memberPromises)).filter(
