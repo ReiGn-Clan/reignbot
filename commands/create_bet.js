@@ -8,6 +8,8 @@ const {
 const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/gambling`;
 const client = new MongoClient(uri);
 const db = client.db('gambling');
+const Levels = require('discord-xp');
+const xp_roles = require('../src/modules/xp_roles.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -62,20 +64,18 @@ module.exports = {
             .setLabel(option_2)
             .setStyle(ButtonStyle.Success);
 
-        /*
         const CancelButton = new ButtonBuilder()
             .setCustomId('cancelbet')
             .setLabel('Cancel Bet')
             .setStyle(ButtonStyle.Danger);
-        */
 
         const row = new ActionRowBuilder().addComponents(
             button_option_1,
             button_option_2,
+            CancelButton,
         );
 
-        let option_1_bets = [];
-        let option_2_bets = [];
+        let all_bets = [];
         let option_1_total = 0;
         let option_2_total = 0;
         let members_betted = [];
@@ -100,93 +100,167 @@ module.exports = {
             time: time,
         });
 
-        collector.on('collect', (collected) => {
+        collector.on('collect', async (collected) => {
             if (!members_betted.includes(collected.user.id)) {
-                // Prompt the user to enter a number
-                collected.reply({
-                    content:
-                        'Please type the amount of xp you wanna bet in chat:',
-                    ephemeral: true,
-                });
-
-                // Listen for the number entered by the user
-                const numberFilter = (response) =>
-                    response.author.id === collected.user.id;
-
-                const numberCollector =
-                    collected.channel.createMessageCollector({
-                        filter: numberFilter,
-                        time: 30000,
+                if (collected.customId !== 'cancelbet') {
+                    // Prompt the user to enter a number
+                    collected.reply({
+                        content:
+                            'Please type the amount of xp you wanna bet in chat:',
+                        ephemeral: true,
                     });
 
-                numberCollector.on('collect', (response) => {
-                    // Process the entered number
-                    const enteredNumber = parseInt(response.content);
-                    if (Number.isInteger(enteredNumber)) {
-                        collected.followUp({
-                            content: `You betted ${enteredNumber}!`,
-                            ephemeral: true,
+                    // Listen for the number entered by the user
+                    const numberFilter = (response) =>
+                        response.author.id === collected.user.id;
+
+                    const numberCollector =
+                        collected.channel.createMessageCollector({
+                            filter: numberFilter,
+                            time: 30000,
                         });
-                        members_betted.push(collected.user.id);
 
-                        console.log(collected.customId);
+                    numberCollector.on('collect', async (response) => {
+                        // Process the entered number
+                        const enteredNumber = parseInt(response.content);
+                        if (Number.isInteger(enteredNumber)) {
+                            const userXP = await Levels.fetch(
+                                collected.user.id,
+                                interaction.guild.id,
+                            );
 
-                        if (collected.customId == 'option_1') {
-                            option_1_total += enteredNumber;
-                            option_1_bets.push({
-                                user: collected.user.id,
-                                amount: enteredNumber,
-                            });
+                            if (userXP.xp >= enteredNumber) {
+                                await Levels.subtractXp(
+                                    collected.user.id,
+                                    interaction.guild.id,
+                                    enteredNumber,
+                                );
+                                let userTotalXP = await Levels.fetch(
+                                    collected.user.id,
+                                    interaction.guild.id,
+                                    true,
+                                );
+
+                                if (userTotalXP) {
+                                    try {
+                                        await xp_roles.improvedLevelUp(
+                                            interaction.guild,
+                                            collected.user.id,
+                                            interaction.client,
+                                        );
+                                    } catch (error) {
+                                        console.error(error); // add error handling for levelUp functio
+                                    }
+                                }
+                                collected.followUp({
+                                    content: `You betted ${enteredNumber}!`,
+                                    ephemeral: true,
+                                });
+                                members_betted.push(collected.user.id);
+
+                                if (collected.customId == 'option_1') {
+                                    option_1_total += enteredNumber;
+                                } else {
+                                    option_2_total += enteredNumber;
+                                }
+
+                                all_bets.push({
+                                    user: collected.user.id,
+                                    amount: enteredNumber,
+                                    option: collected.customId,
+                                });
+
+                                bet_message
+                                    .edit({
+                                        content: `A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
+                                            (option_1_total /
+                                                (option_1_total +
+                                                    option_2_total)) *
+                                            100
+                                        ).toFixed(2)}%**  - ${option_2}: **${(
+                                            (option_2_total /
+                                                (option_1_total +
+                                                    option_2_total)) *
+                                            100
+                                        ).toFixed(2)}%**`,
+                                        components: [row],
+                                    })
+                                    .then(console.log('Bet Updated'));
+
+                                response.delete();
+                            } else {
+                                collected.followUp({
+                                    content: `You do not have enough XP for this, you only have ${userXP.xp}`,
+                                    ephemeral: true,
+                                });
+                                response.delete();
+                            }
                         } else {
-                            option_2_total += enteredNumber;
-                            option_2_bets.push({
-                                user: collected.user.id,
-                                amount: enteredNumber,
+                            // Invalid input, prompt the user to enter a valid number
+                            collected.followUp({
+                                content:
+                                    'Invalid input, click a button again and enter a number',
+                                ephemeral: true,
                             });
                         }
+                        numberCollector.stop();
+                    });
 
-                        bet_message
-                            .edit({
-                                content: `A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
-                                    (option_1_total /
-                                        (option_1_total + option_2_total)) *
-                                    100
-                                ).toFixed(2)}%**  - ${option_2}: **${(
-                                    (option_2_total /
-                                        (option_1_total + option_2_total)) *
-                                    100
-                                ).toFixed(2)}%**`,
-                                components: [row],
-                            })
-                            .then(console.log('Bet Updated'));
-
-                        response.delete();
-                    } else {
-                        // Invalid input, prompt the user to enter a valid number
-                        collected.followUp({
-                            content:
-                                'Invalid input, click a button again and enter a number',
-                            ephemeral: true,
-                        });
-                    }
-                    numberCollector.stop();
-                });
-
-                numberCollector.on('end', (collected, reason) => {
-                    if (reason === 'time') {
-                        // No response received within the given time, handle accordingly
-                        interaction.followUp({
-                            content:
-                                'No number entered. Interaction timed out.',
-                            ephemeral: true,
-                        });
-                    }
-                });
+                    numberCollector.on('end', (collected, reason) => {
+                        if (reason === 'time') {
+                            // No response received within the given time, handle accordingly
+                            interaction.followUp({
+                                content:
+                                    'No number entered. Interaction timed out.',
+                                ephemeral: true,
+                            });
+                        }
+                    });
+                } else {
+                    collected.reply({
+                        content: `You need to bet first before you can cancel!`,
+                        ephemeral: true,
+                    });
+                }
             } else {
-                collected.reply({
-                    content: 'You already betted!',
-                    ephemeral: true,
-                });
+                if (collected.customId === 'cancelbet') {
+                    const found_bet = all_bets.find(
+                        (obj) => obj.user === collected.user.id,
+                    );
+
+                    await Levels.appendXp(
+                        collected.user.id,
+                        interaction.guild.id,
+                        found_bet.amount,
+                    );
+                    let userTotalXP = await Levels.fetch(
+                        collected.user.id,
+                        interaction.guild.id,
+                        true,
+                    );
+
+                    if (userTotalXP) {
+                        try {
+                            await xp_roles.improvedLevelUp(
+                                interaction.guild,
+                                collected.user.id,
+                                interaction.client,
+                            );
+                        } catch (error) {
+                            console.error(error); // add error handling for levelUp functio
+                        }
+                    }
+
+                    collected.reply({
+                        content: `Canceled the bet, ${found_bet.amount} added back to account`,
+                        ephemeral: true,
+                    });
+                } else {
+                    collected.reply({
+                        content: 'You already betted!',
+                        ephemeral: true,
+                    });
+                }
             }
         });
 
@@ -204,8 +278,7 @@ module.exports = {
                 options: [{ one: option_1, two: option_2 }],
                 xp_option_1: option_1_total,
                 xp_option_2: option_2_total,
-                users_option_1: option_1_bets,
-                users_option_2: option_2_bets,
+                bets: all_bets,
             };
 
             await bets.insertOne(doc);
