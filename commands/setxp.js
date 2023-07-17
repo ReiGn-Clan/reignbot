@@ -6,7 +6,11 @@ async function setxp(interaction) {
     let user = interaction.options.getUser('user');
     let amount = interaction.options.getInteger('amount');
 
-    await Levels.setXp(user.id, interaction.guild.id, amount);
+    let hasLeveledUp = await Levels.setXp(
+        user.id,
+        interaction.guild.id,
+        amount,
+    );
 
     setTimeout(async function () {
         let userTotalXP = await Levels.fetch(
@@ -17,7 +21,7 @@ async function setxp(interaction) {
 
         await interaction.reply(`Set ${user}'s XP to ${userTotalXP.xp}.`);
 
-        if (userTotalXP) {
+        if (hasLeveledUp) {
             try {
                 await xp_roles.improvedLevelUp(
                     interaction.guild,
