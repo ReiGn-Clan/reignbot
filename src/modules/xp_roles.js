@@ -351,63 +351,70 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
         });
 }
 
-async function rewardDaily(reaction, user, disClient, messageDOC) {
+async function rewardDaily(reaction, user, disClient) {
     // Avoid the bot reaction
     if (user.id == '1089665817160978553') return;
 
     const dailies = await db.collection('dailies');
+    let messageDOC = await dailies.findOne({ _id: reaction.message.id });
     const guild = await disClient.guilds.fetch(reaction.message.guildId);
 
-    if (reaction.emoji.id !== '1099386036133560391') {
-        console.log('Wrong emoji');
-        await reaction.users.remove(user.id);
-        return;
-    }
-    if (messageDOC.users.includes(user.id)) return;
-    // Channel and message that is the daily
-    const channelDaily = await disClient.channels.fetch(messageDOC.channelID);
-    const messageDaily = await channelDaily.messages.fetch(messageDOC._id);
-    if (
-        (messageDOC.uses + 1 == messageDOC.maxUses) |
-        (messageDOC.uses >= messageDOC.maxUses)
-    ) {
-        await dailies.deleteOne({ _id: reaction.message.id });
-
-        messageDaily.delete().catch(console.error);
-    } else {
-        messageDOC.users.push(user.id);
-        await dailies.updateOne(
-            { _id: reaction.message.id },
-            { $inc: { uses: 1 }, $set: { users: messageDOC.users } },
+    if (messageDOC !== null) {
+        if (reaction.emoji.id !== '1099386036133560391') {
+            console.log('Wrong emoji');
+            await reaction.users.remove(user.id);
+            return;
+        }
+        if (messageDOC.users.includes(user.id)) return;
+        // Channel and message that is the daily
+        const channelDaily = await disClient.channels.fetch(
+            messageDOC.channelID,
         );
-        messageDaily.edit({
-            content: `React to this message to gain **${
-                messageDOC.xp
-            }** xp \n This message has max ${messageDOC.maxUses} uses \n **${
-                messageDOC.maxUses - messageDOC.uses - 1
-            }** uses left`,
+        const messageDaily = await channelDaily.messages.fetch(messageDOC._id);
+        if (
+            (messageDOC.uses + 1 == messageDOC.maxUses) |
+            (messageDOC.uses >= messageDOC.maxUses)
+        ) {
+            await dailies.deleteOne({ _id: reaction.message.id });
+
+            messageDaily.delete().catch(console.error);
+        } else {
+            messageDOC.users.push(user.id);
+            await dailies.updateOne(
+                { _id: reaction.message.id },
+                { $inc: { uses: 1 }, $set: { users: messageDOC.users } },
+            );
+            messageDaily.edit({
+                content: `React to this message to gain **${
+                    messageDOC.xp
+                }** xp \n This message has max ${
+                    messageDOC.maxUses
+                } uses \n **${
+                    messageDOC.maxUses - messageDOC.uses - 1
+                }** uses left`,
+            });
+        }
+
+        let hasLeveledUp = await Levels.appendXp(
+            user.id,
+            reaction.message.guildId,
+            messageDOC.xp,
+        ).catch(console.error); // add error handling for appendXp function
+
+        // Let user know they earned xp
+        const channelID = '1103780086810955846';
+        const channel = await disClient.channels.fetch(channelID);
+
+        channel.send({
+            content: `${user} has earned **${messageDOC.xp}** xp with a pop-up!`,
         });
-    }
 
-    let hasLeveledUp = await Levels.appendXp(
-        user.id,
-        reaction.message.guildId,
-        messageDOC.xp,
-    ).catch(console.error); // add error handling for appendXp function
-
-    // Let user know they earned xp
-    const channelID = '1103780086810955846';
-    const channel = await disClient.channels.fetch(channelID);
-
-    channel.send({
-        content: `${user} has earned **${messageDOC.xp}** xp with a pop-up!`,
-    });
-
-    if (hasLeveledUp) {
-        try {
-            await improvedLevelUp(guild, user.id, disClient);
-        } catch (error) {
-            console.error(error); // add error handling for levelUp functio
+        if (hasLeveledUp) {
+            try {
+                await improvedLevelUp(guild, user.id, disClient);
+            } catch (error) {
+                console.error(error); // add error handling for levelUp functio
+            }
         }
     }
 }
