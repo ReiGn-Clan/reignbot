@@ -28,10 +28,10 @@ async function improvedLevelUpMessage(message, disClient) {
         role_array.push(levelRanges[i].value);
     }
 
-    const channelID = '1103780086810955846';
+    const channelID = '';
     const channel = await disClient.channels.fetch(channelID);
 
-    const channelID2 = '1091539145127641098';
+    const channelID2 = '';
     const channel2 = await disClient.channels.fetch(channelID2);
 
     // Loop over current roles
@@ -84,10 +84,10 @@ async function improvedLevelUp(guild, userID, disClient) {
     // What role should the user
     let user = await Levels.fetch(userID, guild.id);
     const member = await guild.members.fetch(userID);
-    const channelID = '1103780086810955846';
+    const channelID = '';
     const channel = await disClient.channels.fetch(channelID);
 
-    const channelID2 = '1091539145127641098';
+    const channelID2 = '';
     const channel2 = await disClient.channels.fetch(channelID2);
 
     let newLevelRange = levelRanges.find(
@@ -248,8 +248,8 @@ async function updateXpLeaderboard(guildID, disClient) {
         )
         .addFields(fields);
 
-    const channel = await guild.channels.fetch('1095411283882426488');
-    const message = await channel.messages.fetch('1098278074254110740');
+    const channel = await guild.channels.fetch('');
+    const message = await channel.messages.fetch('');
 
     message
         .edit({ embeds: [embed] })
@@ -311,7 +311,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     }
 
     // Channel to send it in
-    const channelID = '1091539145127641098';
+    const channelID = '';
     const channel = await disClient.channels.fetch(channelID);
     const dailies = await db.collection('dailies');
 
@@ -336,7 +336,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
             fetchReply: true,
         })
         .then(async (sent) => {
-            sent.react('1099386036133560391');
+            sent.react('');
             let id_ = sent.id;
             console.log(id_);
             const doc = {
@@ -353,14 +353,14 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
 
 async function rewardDaily(reaction, user, disClient) {
     // Avoid the bot reaction
-    if (user.id == '1089665817160978553') return;
+    if (user.id == '') return;
 
     const dailies = await db.collection('dailies');
     let messageDOC = await dailies.findOne({ _id: reaction.message.id });
     const guild = await disClient.guilds.fetch(reaction.message.guildId);
 
     if (messageDOC !== null) {
-        if (reaction.emoji.id !== '1099386036133560391') {
+        if (reaction.emoji.id !== '') {
             console.log('Wrong emoji');
             await reaction.users.remove(user.id);
             return;
@@ -402,7 +402,7 @@ async function rewardDaily(reaction, user, disClient) {
         ).catch(console.error); // add error handling for appendXp function
 
         // Let user know they earned xp
-        const channelID = '1103780086810955846';
+        const channelID = '';
         const channel = await disClient.channels.fetch(channelID);
 
         channel.send({
@@ -422,7 +422,7 @@ async function rewardDaily(reaction, user, disClient) {
 async function rewardBoost(guildID, user, disClient) {
     await Levels.appendXp(user.id, guildID, 10000);
 
-    const channelID = '1091539145127641098';
+    const channelID = '';
     const channel = await disClient.channels.fetch(channelID);
 
     channel.message.send({

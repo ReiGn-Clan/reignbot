@@ -139,7 +139,7 @@ const reactionQueue = async.queue((task, callback) => {
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
-    const guild = client.guilds.cache.get('1089665371923026053');
+    const guild = client.guilds.cache.get('');
     afk_channel = guild.afkChannelId;
 
     xp_roles.makeDaily(client);

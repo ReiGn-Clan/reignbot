@@ -1,4 +1,6 @@
-async function createLobby(lobby, interaction) {}
+async function createLobby(lobby, interaction) {
+    
+}
 
 module.exports = {
     createLobby,
