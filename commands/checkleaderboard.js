@@ -38,7 +38,7 @@ async function checkLeaderboard(interaction) {
     const memberPromises = sorted_leaderboard.map(async (user, index) => {
         const member = await interaction.guild.members.fetch(user.userID);
         return [
-            `${index + 1}. ${member.nickname ?? member.user.username}`,
+            `${index + 1}:  ${member.nickname ?? member.user.username}`,
             `Level ${user.level} (${user.xp} XP)`,
         ];
     });
@@ -80,7 +80,7 @@ module.exports = {
                 .setDescription('Length of the leaderboard')
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(30),
+                .setMaxValue(10),
         ),
     execute: checkLeaderboard,
 };
