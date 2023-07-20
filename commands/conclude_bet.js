@@ -9,7 +9,7 @@ const {
     ComponentType,
 } = require('discord.js');
 
-const {mongoUris} = require('../prod_config.json');
+const { mongoUris } = require('../prod_config.json');
 const client = new MongoClient(mongoUris[2]);
 const db = client.db('gambling');
 const Levels = require('discord-xp');
