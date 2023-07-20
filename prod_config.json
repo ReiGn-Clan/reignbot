@@ -1,0 +1,7 @@
+{
+    "token" : "MTA4OTY2NTgxNzE2MDk3ODU1Mw.G5VL0B.zgrCgRHrUiC9w_8jsswZ-hBvWgs0k8VtkUsyn0",
+    "clientID" : "1089665817160978553",
+    "guildID" : "1089665371923026053",
+    "xpDatabaseUri": "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase",
+    "recruiterDatabaseUri": "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/recruiter"
+}

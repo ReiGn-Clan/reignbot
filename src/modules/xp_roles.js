@@ -6,8 +6,8 @@ const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelRanges = JSON.parse(levelNamesData).ranges;
 
 const { MongoClient } = require('mongodb');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
-const client = new MongoClient(uri);
+const {xpDatabaseUri} = require('../../prod_config.json');
+const client = new MongoClient(xpDatabaseUri);
 const db = client.db('xpDatabase');
 
 async function improvedLevelUpMessage(message, disClient) {
