@@ -21,14 +21,14 @@ module.exports = {
         .setDescription('Make a new lobby.')
         .addStringOption((gameName) => {
             gameName.setName('Game');
-                setDescription('The game to make a lobby for.');
-                setRequired(true);
+            setDescription('The game to make a lobby for.');
+            setRequired(true);
         })
 
         .addStringOption((freeSpaces) => {
             freeSpaces.setName('Free spaces');
-                setDescription('The amount of free spaces in the lobby.');
-                setRequired('true');
+            setDescription('The amount of free spaces in the lobby.');
+            setRequired('true');
         })
 
         .addStringOption((rank) => {
