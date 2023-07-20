@@ -1,8 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Levels = require('discord-xp');
 
-//Test
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('checkxp')

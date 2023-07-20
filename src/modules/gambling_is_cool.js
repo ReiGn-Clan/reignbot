@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/gambling`;
-const client = new MongoClient(uri);
+const {mongoUris, variousIDs} = require('../../prod_config.json');
+const client = new MongoClient(mongoUris[2]);
 const db = client.db('gambling');
 
 async function makeGamble(disClient, member, channelID, game, XP) {
@@ -34,7 +34,7 @@ async function makeGamble(disClient, member, channelID, game, XP) {
 
 async function rewardGamble(reaction, user, disClient, messageDOC) {
     // Avoid the bot reaction
-    if (user.id == '1089665817160978553') return;
+    if (user.id == variousIDs[2]) return;
 
     const gambles = await db.collection('gambles');
     const guild = await disClient.guilds.fetch(reaction.message.guildId);

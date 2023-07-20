@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 const { SlashCommandBuilder } = require('discord.js');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/gambling`;
-const client = new MongoClient(uri);
+const mongoUris = require('../prod_config.json');
+const client = new MongoClient(mongoUris[2]);
 const db = client.db('gambling');
 
 module.exports = {

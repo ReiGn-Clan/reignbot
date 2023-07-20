@@ -9,8 +9,8 @@ const async = require('async');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
-const { token, guildID, xpDatabaseUri } = require('./prod_config.json');
-Levels.setURL(xpDatabaseUri); //this connects to the database, then sets the URL for the database for the discord-xp library
+const {discordAPIBotStuff, mongoUris} = require('./prod_config.json');
+Levels.setURL(mongoUris[0]); //this connects to the database, then sets the URL for the database for the discord-xp library
 
 // For voice channel tracking
 let afk_channel = null;
@@ -29,12 +29,6 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
     ],
 });
-
-// Set up a mongoDB
-const { MongoClient } = require('mongodb');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
-const mongo_client = new MongoClient(uri);
-const db_xp = mongo_client.db('xpDatabase');
 
 // Create a new Collection to store the commands
 client.commands = new Collection();
@@ -379,4 +373,4 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 });
 
 // Log the client in using the token from the config file
-client.login(token);
+client.login(discordAPIBotStuff[0]);

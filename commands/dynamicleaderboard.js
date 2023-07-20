@@ -1,8 +1,8 @@
 const { MongoClient } = require('mongodb');
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/recruiter`;
-const client = new MongoClient(uri);
+const {mongoUris} = require('../prod_config.json');
+const client = new MongoClient(mongoUris[1]);
 const db = client.db('recruiter');
 
 module.exports = {

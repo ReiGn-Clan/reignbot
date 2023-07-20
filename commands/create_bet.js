@@ -8,8 +8,8 @@ const {
     TextInputBuilder,
     TextInputStyle,
 } = require('discord.js');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/gambling`;
-const client = new MongoClient(uri);
+const {mongoUris} = require ('../prod_config.json');
+const client = new MongoClient(mongoUris[2]);
 const db = client.db('gambling');
 const Levels = require('discord-xp');
 const xp_roles = require('../src/modules/xp_roles.js');

@@ -1,0 +1,20 @@
+{
+    "discordAPIBotStuff":[
+        "MTA4OTkxOTgzMDM4NTIzODEwOA.GRxb62.wGGqGD200zFbjBtxIg0LHArFGY5qYbojPRU5hM",
+        "1089665371923026053"
+    ],
+
+    "mongoUris": [
+        "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/dev_xpDatabase",
+        "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/dev_recruiter",
+        "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/dev_gambling"
+    ],
+    
+    "variousIDs":[
+        "1129188968685117520",
+       "1129188968685117520",
+       "1089919830385238108",
+       "1129188968685117520",
+       "1129188968685117520"
+    ]
+}

@@ -1,8 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { MongoClient } = require('mongodb');
 
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
-const client = new MongoClient(uri);
+const {mongoUris} = require('../prod_config.json');
+const client = new MongoClient(mongoUris[0]);
 const db = client.db('xpDatabase');
 
 async function checkLeaderboard(interaction) {
