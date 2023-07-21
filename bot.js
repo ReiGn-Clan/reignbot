@@ -10,7 +10,6 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
 const { discordAPIBotStuff, mongoUris } = require('./dev_config.json');
-Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
 
 // For voice channel tracking
 let afk_channel = null;
@@ -51,7 +50,7 @@ for (const file of commandFiles) {
 // Create queues
 const invLeaderboardQueue = async.queue((task, callback) => {
     // Fetch the guild object
-    client.guilds.fetch(guildID).then((guild) => {
+    client.guilds.fetch(discordAPIBotStuff[1].guildID).then((guild) => {
         // Fetch a list of invites
         guild.invites.fetch().then((invites) => {
             // Check if we update the leaderboard
@@ -149,6 +148,7 @@ client.once(Events.ClientReady, async () => {
     console.log('Ready!');
     const guild = client.guilds.cache.get('1089665371923026053');
     afk_channel = guild.afkChannelId;
+    Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
 
     xp_roles.makeDaily(client);
 

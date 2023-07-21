@@ -11,8 +11,8 @@
         {"gamblingDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/dev_gambling"}
     ],
     
-    "variousIDs":[
-        {"userUpdatesChannel":"1129188968685117520"},
+    "variousIDs": [
+       {"userUpdatesChannel":"1129188968685117520"},
        {"generalChannel":"1129188968685117520"},
        {"topMembersChannel":"1129188968685117520"},
        {"topMembersMessage":"1131743295471616061"}
