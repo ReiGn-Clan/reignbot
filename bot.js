@@ -9,7 +9,7 @@ const async = require('async');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
-const {discordAPIBotStuff, mongoUris} = require('./dev_config.json');
+const { discordAPIBotStuff, mongoUris } = require('./dev_config.json');
 Levels.setURL(mongoUris[0]); //this connects to the database, then sets the URL for the database for the discord-xp library
 
 // For voice channel tracking
@@ -157,7 +157,11 @@ client.once(Events.ClientReady, async () => {
     }, 60000);
 
     setInterval(() => {
-        xp_roles.rewardVoiceUsers(discordAPIBotStuff[1], voiceChannelUsers, client);
+        xp_roles.rewardVoiceUsers(
+            discordAPIBotStuff[1],
+            voiceChannelUsers,
+            client,
+        );
     }, 60000);
 
     setInterval(() => {
