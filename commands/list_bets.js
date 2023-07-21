@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const {mongoUris} = require('../dev_config.json');
+const { mongoUris } = require('../dev_config.json');
 const client = new MongoClient(mongoUris[2]);
 const db = client.db('gambling');
 

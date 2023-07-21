@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js'); // Import the REST and Routes classes from the discord.js library
-const {discordAPIBotStuff} = require('./dev_config.json'); // Import the client ID, guild ID, and token from a separate config file
+const { discordAPIBotStuff } = require('./dev_config.json'); // Import the client ID, guild ID, and token from a separate config file
 const fs = require('node:fs'); // Import the fs module to read command files from the file system
 const path = require('node:path'); // Import the path module to resolve file paths
 
@@ -32,7 +32,10 @@ const rest = new REST({ version: 10 }).setToken(discordAPIBotStuff[0]);
 
         // Use the REST API to update the guild's commands with the data in the commands array
         const data = await rest.put(
-            Routes.applicationGuildCommands(discordAPIBotStuff[2], discordAPIBotStuff[1]),
+            Routes.applicationGuildCommands(
+                discordAPIBotStuff[2],
+                discordAPIBotStuff[1],
+            ),
             { body: commands },
         );
 
