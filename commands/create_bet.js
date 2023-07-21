@@ -9,7 +9,7 @@ const {
     TextInputStyle,
 } = require('discord.js');
 const { mongoUris } = require('../dev_config.json');
-const client = new MongoClient(mongoUris[2]);
+const client = new MongoClient(mongoUris[2].gamblingDatabase);
 const db = client.db('gambling');
 const Levels = require('discord-xp');
 const xp_roles = require('../src/modules/xp_roles.js');

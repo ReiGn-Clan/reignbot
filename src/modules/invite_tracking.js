@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 const { mongoUris } = require('../../dev_config.json');
-const client = new MongoClient(mongoUris[1]);
+const client = new MongoClient(mongoUris[1].recruiterDatabase);
 const db = client.db('recruiter');
 const fs = require('fs');
 const { EmbedBuilder } = require('discord.js');

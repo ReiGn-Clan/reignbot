@@ -20,7 +20,7 @@ for (const file of commandFiles) {
 }
 
 // Create a new REST instance and set the token
-const rest = new REST({ version: 10 }).setToken(discordAPIBotStuff[0]);
+const rest = new REST({ version: 10 }).setToken(discordAPIBotStuff[0].token);
 
 // Define an asynchronous function that will refresh the application commands
 (async () => {
@@ -33,8 +33,8 @@ const rest = new REST({ version: 10 }).setToken(discordAPIBotStuff[0]);
         // Use the REST API to update the guild's commands with the data in the commands array
         const data = await rest.put(
             Routes.applicationGuildCommands(
-                discordAPIBotStuff[2],
-                discordAPIBotStuff[1],
+                discordAPIBotStuff[2].clientID,
+                discordAPIBotStuff[1].guildID,
             ),
             { body: commands },
         );

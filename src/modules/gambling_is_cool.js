@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
-const { mongoUris, variousIDs } = require('../../dev_config.json');
-const client = new MongoClient(mongoUris[2]);
+const { mongoUris, discordAPIBotStuff } = require('../../dev_config.json');
+const client = new MongoClient(mongoUris[2].gamblingDatabase);
 const db = client.db('gambling');
 
 async function makeGamble(disClient, member, channelID, game, XP) {
@@ -34,7 +34,7 @@ async function makeGamble(disClient, member, channelID, game, XP) {
 
 async function rewardGamble(reaction, user, disClient, messageDOC) {
     // Avoid the bot reaction
-    if (user.id == variousIDs[2]) return;
+    if (user.id == discordAPIBotStuff[2].botUserID) return;
 
     const gambles = await db.collection('gambles');
     const guild = await disClient.guilds.fetch(reaction.message.guildId);

@@ -10,7 +10,7 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
 const { discordAPIBotStuff, mongoUris } = require('./dev_config.json');
-Levels.setURL(mongoUris[0]); //this connects to the database, then sets the URL for the database for the discord-xp library
+Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
 
 // For voice channel tracking
 let afk_channel = null;
@@ -134,7 +134,7 @@ const reactionQueue = async.queue((task, callback) => {
 }, 1);
 
 async function KickKids() {
-    const guild = await client.guilds.fetch(discordAPIBotStuff[1]);
+    const guild = await client.guilds.fetch(discordAPIBotStuff[1].guildID);
     const role = await guild.roles.fetch('1125194932819341322');
     const members = await role.members;
 
@@ -153,12 +153,12 @@ client.once(Events.ClientReady, async () => {
     xp_roles.makeDaily(client);
 
     setInterval(() => {
-        xp_roles.updateXpLeaderboard(discordAPIBotStuff[1], client);
+        xp_roles.updateXpLeaderboard(discordAPIBotStuff[1].guildID, client);
     }, 60000);
 
     setInterval(() => {
         xp_roles.rewardVoiceUsers(
-            discordAPIBotStuff[1],
+            discordAPIBotStuff[1].guildID,
             voiceChannelUsers,
             client,
         );
@@ -320,7 +320,7 @@ client.on('messageCreate', async (message) => {
 
 // Run once to make sure all invites are stored
 client.once(Events.ClientReady, () => {
-    client.guilds.fetch(discordAPIBotStuff[1]).then((guild) => {
+    client.guilds.fetch(discordAPIBotStuff[1].guildID).then((guild) => {
         guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
     });
 });
@@ -339,7 +339,7 @@ client.on(Events.guildMemberUpdate, async (oldMember, newMember) => {
 
     if (!oldBoostStatus && newBoostStatus) {
         const user = newMember.user;
-        await xp_roles.rewardBoost(discordAPIBotStuff[1], user, client);
+        await xp_roles.rewardBoost(discordAPIBotStuff[1].guildID, user, client);
     }
 });
 
@@ -377,4 +377,4 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 });
 
 // Log the client in using the token from the config file
-client.login(discordAPIBotStuff[0]);
+client.login(discordAPIBotStuff[0].token);
