@@ -6,7 +6,7 @@ const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelRanges = JSON.parse(levelNamesData).ranges;
 
 const { MongoClient } = require('mongodb');
-const {mongoUris, variousIDs} = require('../../prod_config.json');
+const {mongoUris, variousIDs} = require('../../dev_config.json');
 const client = new MongoClient(mongoUris[0]);
 const db = client.db('xpDatabase');
 

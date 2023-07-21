@@ -1,20 +1,21 @@
 {
     "discordAPIBotStuff":[
-        {"token" : "MTA4OTY2NTgxNzE2MDk3ODU1Mw.G5VL0B.zgrCgRHrUiC9w_8jsswZ-hBvWgs0k8VtkUsyn0"},
-        {"guildID" : "1089665371923026053"}
+        "MTA4OTY2NTgxNzE2MDk3ODU1Mw.G5VL0B.zgrCgRHrUiC9w_8jsswZ-hBvWgs0k8VtkUsyn0",
+        "1089665371923026053",
+        "1089665817160978553"
     ],
 
     "mongoUris": [
-        {"xpDatabaseUri": "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase"},
-        {"recruiterDatabaseUri": "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/recruiter"},
-        {"gamblingDatabaseUri": "mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/gambling"}
+        "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/xpDatabase",
+        "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/recruiter",
+        "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/gambling"
     ],
     
     "variousIDs":[
-       {"userUpdatesChannelID": "1103780086810955846"},
-       {"generalChannelID": "1091539145127641098"},
-       {"botUserID" : "1089665817160978553"},
-       {"topMembersChannelID": "1095411283882426488"},
-       {"topMembersMessageID": "1098278074254110740"}
+       "1103780086810955846",
+       "1091539145127641098",
+       "1089665817160978553",
+       "1095411283882426488",
+       "1098278074254110740"
     ]
 }
