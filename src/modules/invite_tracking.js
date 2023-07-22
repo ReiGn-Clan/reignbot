@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/recruiter`;
-const client = new MongoClient(uri);
+const { mongoUris } = require('../../prod_config.json');
+const client = new MongoClient(mongoUris[1].recruiterDatabase);
 const db = client.db('recruiter');
 const fs = require('fs');
 const { EmbedBuilder } = require('discord.js');

@@ -6,8 +6,12 @@ const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelRanges = JSON.parse(levelNamesData).ranges;
 
 const { MongoClient } = require('mongodb');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
-const client = new MongoClient(uri);
+const {
+    mongoUris,
+    variousIDs,
+    discordAPIBotStuff,
+} = require('../../prod_config.json');
+const client = new MongoClient(mongoUris[0].xpDatabase);
 const db = client.db('xpDatabase');
 
 async function improvedLevelUpMessage(message, disClient) {
@@ -28,11 +32,12 @@ async function improvedLevelUpMessage(message, disClient) {
         role_array.push(levelRanges[i].value);
     }
 
-    const channelID = '1103780086810955846';
-    const channel = await disClient.channels.fetch(channelID);
-
-    const channelID2 = '1091539145127641098';
-    const channel2 = await disClient.channels.fetch(channelID2);
+    const channel = await disClient.channels.fetch(
+        variousIDs[0].userUpdatesChannel,
+    );
+    const channel2 = await disClient.channels.fetch(
+        variousIDs[1].generalChannel,
+    );
 
     // Loop over current roles
     for (let i in current_roles) {
@@ -84,11 +89,13 @@ async function improvedLevelUp(guild, userID, disClient) {
     // What role should the user
     let user = await Levels.fetch(userID, guild.id);
     const member = await guild.members.fetch(userID);
-    const channelID = '1103780086810955846';
-    const channel = await disClient.channels.fetch(channelID);
 
-    const channelID2 = '1091539145127641098';
-    const channel2 = await disClient.channels.fetch(channelID2);
+    const channel = await disClient.channels.fetch(
+        variousIDs[0].userUpdatesChannel,
+    );
+    const channel2 = await disClient.channels.fetch(
+        variousIDs[1].generalChannel,
+    );
 
     let newLevelRange = levelRanges.find(
         (range) => range.start <= user.level && range.end >= user.level,
@@ -248,8 +255,10 @@ async function updateXpLeaderboard(guildID, disClient) {
         )
         .addFields(fields);
 
-    const channel = await guild.channels.fetch('1095411283882426488');
-    const message = await channel.messages.fetch('1098278074254110740');
+    const channel = await guild.channels.fetch(variousIDs[2].topMembersChannel);
+    const message = await channel.messages.fetch(
+        variousIDs[3].topMembersMessage,
+    );
 
     message
         .edit({ embeds: [embed] })
@@ -311,8 +320,9 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     }
 
     // Channel to send it in
-    const channelID = '1091539145127641098';
-    const channel = await disClient.channels.fetch(channelID);
+    const channel = await disClient.channels.fetch(
+        variousIDs[1].generalChannel,
+    );
     const dailies = await db.collection('dailies');
 
     if (!manual) {
@@ -344,7 +354,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
                 maxUses: maxReactions,
                 uses: 0,
                 xp: xp,
-                channelID: channelID,
+                channelID: variousIDs[1].generalChannel,
                 users: [],
             };
             await dailies.insertOne(doc);
@@ -353,7 +363,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
 
 async function rewardDaily(reaction, user, disClient) {
     // Avoid the bot reaction
-    if (user.id == '1089665817160978553') return;
+    if (user.id == discordAPIBotStuff[2].clientID) return;
 
     const dailies = await db.collection('dailies');
     let messageDOC = await dailies.findOne({ _id: reaction.message.id });
@@ -402,8 +412,9 @@ async function rewardDaily(reaction, user, disClient) {
         ).catch(console.error); // add error handling for appendXp function
 
         // Let user know they earned xp
-        const channelID = '1103780086810955846';
-        const channel = await disClient.channels.fetch(channelID);
+        const channel = await disClient.channels.fetch(
+            variousIDs[0].userUpdatesChannel,
+        );
 
         channel.send({
             content: `${user} has earned **${messageDOC.xp}** xp with a pop-up!`,
@@ -422,8 +433,9 @@ async function rewardDaily(reaction, user, disClient) {
 async function rewardBoost(guildID, user, disClient) {
     await Levels.appendXp(user.id, guildID, 10000);
 
-    const channelID = '1091539145127641098';
-    const channel = await disClient.channels.fetch(channelID);
+    const channel = await disClient.channels.fetch(
+        variousIDs[1].generalChannel,
+    );
 
     channel.message.send({
         content: `${user} boosted the server and has been awarded 10,000XP!`,

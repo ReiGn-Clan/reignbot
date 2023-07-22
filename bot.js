@@ -5,15 +5,11 @@ const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
 const async = require('async');
 
-const mongo_uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`; //set uri for mongoDB
-Levels.setURL(mongo_uri); //this connects to the database, then sets the URL for the database for the discord-xp library
-//NOTE: You don't need to connect to the database in a command file if you need to access it, it's only needed in the main file
-
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
-const { token, guildID } = require('./config.json');
+const { discordAPIBotStuff, mongoUris } = require('./prod_config.json');
 
 // For voice channel tracking
 let afk_channel = null;
@@ -32,12 +28,6 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
     ],
 });
-
-// Set up a mongoDB
-const { MongoClient } = require('mongodb');
-const uri = `mongodb+srv://admin:x6UPPGjB2JPaTlYG@cluster0.jialcet.mongodb.net/xpDatabase`;
-const mongo_client = new MongoClient(uri);
-const db_xp = mongo_client.db('xpDatabase');
 
 // Create a new Collection to store the commands
 client.commands = new Collection();
@@ -60,7 +50,7 @@ for (const file of commandFiles) {
 // Create queues
 const invLeaderboardQueue = async.queue((task, callback) => {
     // Fetch the guild object
-    client.guilds.fetch(guildID).then((guild) => {
+    client.guilds.fetch(discordAPIBotStuff[1].guildID).then((guild) => {
         // Fetch a list of invites
         guild.invites.fetch().then((invites) => {
             // Check if we update the leaderboard
@@ -143,7 +133,7 @@ const reactionQueue = async.queue((task, callback) => {
 }, 1);
 
 async function KickKids() {
-    const guild = await client.guilds.fetch(guildID);
+    const guild = await client.guilds.fetch(discordAPIBotStuff[1].guildID);
     const role = await guild.roles.fetch('1125194932819341322');
     const members = await role.members;
 
@@ -158,15 +148,20 @@ client.once(Events.ClientReady, async () => {
     console.log('Ready!');
     const guild = client.guilds.cache.get('1089665371923026053');
     afk_channel = guild.afkChannelId;
+    Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
 
     xp_roles.makeDaily(client);
 
     setInterval(() => {
-        xp_roles.updateXpLeaderboard(guildID, client);
+        xp_roles.updateXpLeaderboard(discordAPIBotStuff[1].guildID, client);
     }, 60000);
 
     setInterval(() => {
-        xp_roles.rewardVoiceUsers(guildID, voiceChannelUsers, client);
+        xp_roles.rewardVoiceUsers(
+            discordAPIBotStuff[1].guildID,
+            voiceChannelUsers,
+            client,
+        );
     }, 60000);
 
     setInterval(() => {
@@ -325,7 +320,7 @@ client.on('messageCreate', async (message) => {
 
 // Run once to make sure all invites are stored
 client.once(Events.ClientReady, () => {
-    client.guilds.fetch(guildID).then((guild) => {
+    client.guilds.fetch(discordAPIBotStuff[1].guildID).then((guild) => {
         guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
     });
 });
@@ -344,7 +339,7 @@ client.on(Events.guildMemberUpdate, async (oldMember, newMember) => {
 
     if (!oldBoostStatus && newBoostStatus) {
         const user = newMember.user;
-        await xp_roles.rewardBoost(guildID, user, client);
+        await xp_roles.rewardBoost(discordAPIBotStuff[1].guildID, user, client);
     }
 });
 
@@ -382,4 +377,4 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 });
 
 // Log the client in using the token from the config file
-client.login(token);
+client.login(discordAPIBotStuff[0].token);
