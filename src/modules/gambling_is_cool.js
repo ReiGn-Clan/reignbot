@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const { mongoUris, discordAPIBotStuff } = require('../../dev_config.json');
+const { mongoUris, discordAPIBotStuff } = require('../../prod_config.json');
 const client = new MongoClient(mongoUris[2].gamblingDatabase);
 const db = client.db('gambling');
 
