@@ -10,9 +10,9 @@ const {
     mongoUris,
     variousIDs,
     discordAPIBotStuff,
-} = require('../../dev_config.json');
+} = require('../../prod_config.json');
 const client = new MongoClient(mongoUris[0].xpDatabase);
-const db = client.db('dev_xpDatabase');
+const db = client.db('xpDatabase');
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
