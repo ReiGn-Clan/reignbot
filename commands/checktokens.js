@@ -3,12 +3,12 @@ const Levels = require('discord-xp');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('checkxp')
-        .setDescription('Check how much XP a user has.')
+        .setName('checktokens')
+        .setDescription('Check how much ReiGn Tokens a user has.')
         .addUserOption((option) =>
             option
                 .setName('user')
-                .setDescription('The user to check the XP of')
+                .setDescription('The user to check the ReiGn Tokens of')
                 .setRequired(true),
         ),
     async execute(interaction) {
@@ -22,14 +22,14 @@ module.exports = {
         let xpNeeded = await Levels.xpFor(userXP.level + 1);
 
         if (!userXP) {
-            await interaction.reply(`${name} has 0 XP.`);
+            await interaction.reply(`${name} has 0 ReiGn Tokens.`);
         } else {
             await interaction.reply(
-                `${name} has **${userXP.xp} XP and is Level ${
+                `${name} has **${userXP.xp} ReiGn Tokens and is Level ${
                     userXP.level
-                }! They need ${xpNeeded} XP to reach Level ${
-                    userXP.level + 1
-                }.**`,
+                }! They need ${
+                    xpNeeded - userXP.xp
+                } more ReiGn Tokens to reach Level ${userXP.level + 1}.**`,
             );
         }
     },

@@ -19,7 +19,9 @@ async function setxp(interaction) {
             true,
         );
 
-        await interaction.reply(`Set ${user}'s XP to ${userTotalXP.xp}.`);
+        await interaction.reply(
+            `Set ${user}'s ReiGn Tokens to ${userTotalXP.xp}.`,
+        );
 
         if (hasLeveledUp) {
             try {
@@ -37,18 +39,18 @@ async function setxp(interaction) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('setxp')
-        .setDescription("Set a user's xp to a specified amount.")
+        .setName('settokens')
+        .setDescription("Set a user's ReiGn Tokens to a specified amount.")
         .addUserOption((option) =>
             option
                 .setName('user')
-                .setDescription('The user to set XP for.')
+                .setDescription('The user to set ReiGn Tokens for.')
                 .setRequired(true),
         )
         .addIntegerOption((option) =>
             option
                 .setName('amount')
-                .setDescription("What to set the user's XP to.")
+                .setDescription("What to set the user's ReiGn Tokens to.")
                 .setMinValue(1)
                 .setRequired(true),
         ),

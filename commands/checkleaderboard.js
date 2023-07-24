@@ -39,7 +39,7 @@ async function checkLeaderboard(interaction) {
         const member = await interaction.guild.members.fetch(user.userID);
         return [
             `${index + 1}:  ${member.nickname ?? member.user.username}`,
-            `Level ${user.level} (${user.xp} XP)`,
+            `Level ${user.level} (${user.xp} ReiGn Tokens)`,
         ];
     });
 
@@ -54,7 +54,7 @@ async function checkLeaderboard(interaction) {
             inline: true,
         },
         {
-            name: 'XP',
+            name: 'ReiGn Tokens',
             value: leaderboardData.map((entry) => entry[1]).join('\n'),
             inline: true,
         },
@@ -63,11 +63,15 @@ async function checkLeaderboard(interaction) {
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle('XP Leaderboard')
-        .setDescription('Here are the top 10 users in this server by XP:')
+        .setDescription(
+            'Here are the top 10 users in this server by ReiGn Tokens:',
+        )
         .addFields(fields);
 
     await interaction.channel.send({ embeds: [embed] });
-    await interaction.reply('The top ' + String(limit) + ' users by xp');
+    await interaction.reply(
+        'The top ' + String(limit) + ' users by ReiGn Tokens',
+    );
 }
 
 module.exports = {

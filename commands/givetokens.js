@@ -26,24 +26,24 @@ async function giveXP(interaction) {
     }
 
     await interaction.reply(
-        `Added ${amount}XP to ${user}. They now have ${userTotalXP.xp} XP!`,
+        `Added ${amount} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
     );
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('givexp')
-        .setDescription('Give a user a specified amount of XP.')
+        .setName('givetokens')
+        .setDescription('Give a user a specified amount of ReiGn Tokens.')
         .addUserOption((option) =>
             option
                 .setName('user')
-                .setDescription('The user to give XP to.')
+                .setDescription('The user to give ReiGn Tokens to.')
                 .setRequired(true),
         )
         .addIntegerOption((option) =>
             option
                 .setName('amount')
-                .setDescription('Amount of XP to give to the user')
+                .setDescription('Amount of ReiGn Tokens to give to the user')
                 .setMinValue(1)
                 .setRequired(true),
         ),
