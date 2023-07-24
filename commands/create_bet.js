@@ -322,7 +322,7 @@ module.exports = {
                         .then(console.log('Bet Updated'));
 
                     collected.reply({
-                        content: `Canceled the bet, ${found_bet.amount} added back to account`,
+                        content: `Canceled the bet, ${found_bet.amount} ReiGn Tokens added back to account`,
                         ephemeral: true,
                     });
                 } else {
