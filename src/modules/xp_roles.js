@@ -220,7 +220,7 @@ async function updateXpLeaderboard(guildID, disClient) {
         const member = await guild.members.fetch(user.userID);
         return [
             `${index + 1}:  ${member.nickname ?? member.user.username}`,
-            `Level ${user.level} (${user.xp} XP)`,
+            `Level ${user.level} (${user.xp} RT)`,
             `${emote_dict[user.change]}`,
         ];
     });
@@ -236,7 +236,7 @@ async function updateXpLeaderboard(guildID, disClient) {
             inline: true,
         },
         {
-            name: 'XP',
+            name: 'RT',
             value: leaderboardData.map((entry) => entry[1]).join('\n'),
             inline: true,
         },
@@ -251,7 +251,7 @@ async function updateXpLeaderboard(guildID, disClient) {
         .setColor('#0099ff')
         .setTitle('Top Members')
         .setDescription(
-            `Here are the top members by XP in this server: \n Changes are from the last minute only \n Last update: ${timestamp}`,
+            `Here are the top members by ReiGn Tokens in this server: \n Changes are from the last minute only \n Last update: ${timestamp}`,
         )
         .addFields(fields);
 
@@ -262,7 +262,7 @@ async function updateXpLeaderboard(guildID, disClient) {
 
     message
         .edit({ embeds: [embed] })
-        .then(console.log('Updated XP leaderboard'))
+        .then(console.log('Updated RT leaderboard'))
         .catch(console.error);
 
     await old_leaderboard.deleteMany();
@@ -273,7 +273,7 @@ async function rewardVoiceUsers(guildID, voiceChannelUsers, disClient) {
     const guild = await disClient.guilds.fetch(guildID);
 
     const xpPerMinute = 10;
-    console.log('Updating xp for users', voiceChannelUsers);
+    console.log('Updating RT for users', voiceChannelUsers);
     voiceChannelUsers.forEach(async function (item) {
         let hasLeveledUp = await Levels.appendXp(
             item,
@@ -342,7 +342,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     // Sending the message
     channel
         .send({
-            content: `React to this message to gain **${xp}** xp \n This message has max ${maxReactions} uses \n **${maxReactions}** uses left`,
+            content: `React to this message to gain **${xp}** ReiGn Tokens \n This message has max ${maxReactions} uses \n **${maxReactions}** uses left`,
             fetchReply: true,
         })
         .then(async (sent) => {
@@ -397,7 +397,7 @@ async function rewardDaily(reaction, user, disClient) {
             messageDaily.edit({
                 content: `React to this message to gain **${
                     messageDOC.xp
-                }** xp \n This message has max ${
+                }** ReiGn Tokens \n This message has max ${
                     messageDOC.maxUses
                 } uses \n **${
                     messageDOC.maxUses - messageDOC.uses - 1
@@ -417,7 +417,7 @@ async function rewardDaily(reaction, user, disClient) {
         );
 
         channel.send({
-            content: `${user} has earned **${messageDOC.xp}** xp with a pop-up!`,
+            content: `${user} has earned **${messageDOC.xp}** ReiGn Tokens with a pop-up!`,
         });
 
         if (hasLeveledUp) {
@@ -438,7 +438,7 @@ async function rewardBoost(guildID, user, disClient) {
     );
 
     channel.message.send({
-        content: `${user} boosted the server and has been awarded 10,000XP!`,
+        content: `${user} boosted the server and has been awarded 10.000 ReiGn Tokens!`,
     });
 
     const guild = await disClient.guilds.fetch(guildID);

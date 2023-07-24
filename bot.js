@@ -6,7 +6,13 @@ const xp_roles = require('./src/modules/xp_roles.js');
 const async = require('async');
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const {
+    Client,
+    Collection,
+    Events,
+    GatewayIntentBits,
+    EmbedBuilder,
+} = require('discord.js');
 
 // Require the 'token' property from the 'config.json' file
 const { discordAPIBotStuff, mongoUris } = require('./prod_config.json');
@@ -137,7 +143,7 @@ async function KickKids() {
     const role = await guild.roles.fetch('1125194932819341322');
     const members = await role.members;
 
-    members.forEach((value, key) => {
+    members.forEach((value) => {
         console.log(value.user.username);
         value.kick('Underage!');
     });
@@ -296,6 +302,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 //event for each message posted, awards xp to every user per message
 client.on('messageCreate', async (message) => {
+    if (
+        message.embeds.length &&
+        message.author.username == 'DISBOARD' &&
+        message.embeds[0].description.indexOf('Bump done') > -1
+    ) {
+        setTimeout(() => {
+            const embed = new EmbedBuilder()
+                .setTitle("Bump timer's out!")
+                .setDescription(
+                    `It's time to bump again! <@&${1124800405189185536}>`,
+                )
+                .setTimestamp();
+            message.channel.send(embed);
+        }, 7200000);
+    }
+
     //if the message starts with the command prefix or if the author is the bot, skip this method
     if (message.content.startsWith('/') || message.author.bot) {
         return;
