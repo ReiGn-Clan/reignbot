@@ -24,13 +24,14 @@ module.exports = {
         if (!userXP) {
             await interaction.reply(`${name} has 0 ReiGn Tokens.`);
         } else {
-            await interaction.reply(
-                `${name} has **${userXP.xp} ReiGn Tokens and is Level ${
+            await interaction.reply({
+                content: `You have **${userXP.xp} ReiGn Tokens and is Level ${
                     userXP.level
                 }! They need ${
                     xpNeeded - userXP.xp
                 } more ReiGn Tokens to reach Level ${userXP.level + 1}.**`,
-            );
+                ephemeral: true,
+            });
         }
     },
 };

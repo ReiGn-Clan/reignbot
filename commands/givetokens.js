@@ -25,9 +25,10 @@ async function giveXP(interaction) {
         }
     }
 
-    await interaction.reply(
-        `Added ${amount} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
-    );
+    await interaction.reply({
+        content: `Added ${amount} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
+        ephemeral: true,
+    });
 }
 
 module.exports = {

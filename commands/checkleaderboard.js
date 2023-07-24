@@ -68,7 +68,7 @@ async function checkLeaderboard(interaction) {
         )
         .addFields(fields);
 
-    await interaction.channel.send({ embeds: [embed] });
+    await interaction.channel.send({ embeds: [embed], ephemeral: true });
     await interaction.reply(
         'The top ' + String(limit) + ' users by ReiGn Tokens',
     );

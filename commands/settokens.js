@@ -19,9 +19,10 @@ async function setxp(interaction) {
             true,
         );
 
-        await interaction.reply(
-            `Set ${user}'s ReiGn Tokens to ${userTotalXP.xp}.`,
-        );
+        await interaction.reply({
+            content: `Set ${user}'s ReiGn Tokens to ${userTotalXP.xp}.`,
+            ephemeral: true,
+        });
 
         if (hasLeveledUp) {
             try {

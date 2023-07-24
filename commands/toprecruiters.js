@@ -87,6 +87,6 @@ module.exports = {
             .setDescription('Here are the top recruiters in this server:')
             .addFields(fields);
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed], ephemeral: true });
     },
 };
