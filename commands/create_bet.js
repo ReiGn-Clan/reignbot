@@ -109,7 +109,7 @@ module.exports = {
         const XPinput = new TextInputBuilder()
             .setCustomId('xp_modal')
             // The label is the prompt the user sees for this input
-            .setLabel('How much XP do you want to bet?')
+            .setLabel('How many ReiGn Tokens do you want to bet?')
             // Short means only a single line of text
             .setStyle(TextInputStyle.Short);
 
@@ -232,7 +232,7 @@ module.exports = {
                                     opened_modals.splice(index2, 1);
                                 } else {
                                     collected.followUp({
-                                        content: `You do not have enough XP for this, you only have ${userXP.xp}`,
+                                        content: `You do not have enough ReiGn Tokens for this, you only have ${userXP.xp}`,
                                         ephemeral: true,
                                     });
                                 }
@@ -343,7 +343,7 @@ module.exports = {
 
             if (option_1_total === 0 || option_2_total === 0) {
                 bet_message.edit({
-                    content: `BET CANCELED, NOT ENOUGH PARTICIPATION RETURNING XP \n A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
+                    content: `BET CANCELED, NOT ENOUGH PARTICIPATION RETURNING REIGN TOKENS \n A bet has been created! The bet is: ${description} \n The current standing = ${option_1}: **${(
                         (option_1_total / (option_1_total + option_2_total)) *
                             100 || 0
                     ).toFixed(2)}%**  - ${option_2}: **${(
