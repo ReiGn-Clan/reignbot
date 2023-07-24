@@ -62,7 +62,7 @@ async function checkLeaderboard(interaction) {
 
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
-        .setTitle('XP Leaderboard')
+        .setTitle('Top Members')
         .setDescription(
             'Here are the top 10 users in this server by ReiGn Tokens:',
         )
