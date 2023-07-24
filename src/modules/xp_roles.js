@@ -220,7 +220,7 @@ async function updateXpLeaderboard(guildID, disClient) {
         const member = await guild.members.fetch(user.userID);
         return [
             `${index + 1}:  ${member.nickname ?? member.user.username}`,
-            `Level ${user.level} (${user.xp} ReiGn Tokens)`,
+            `Level ${user.level} (${user.xp} RT)`,
             `${emote_dict[user.change]}`,
         ];
     });
@@ -236,7 +236,7 @@ async function updateXpLeaderboard(guildID, disClient) {
             inline: true,
         },
         {
-            name: 'ReiGn Tokens',
+            name: 'RT',
             value: leaderboardData.map((entry) => entry[1]).join('\n'),
             inline: true,
         },
@@ -262,7 +262,7 @@ async function updateXpLeaderboard(guildID, disClient) {
 
     message
         .edit({ embeds: [embed] })
-        .then(console.log('Updated ReiGn Tokens leaderboard'))
+        .then(console.log('Updated RT leaderboard'))
         .catch(console.error);
 
     await old_leaderboard.deleteMany();
@@ -273,7 +273,7 @@ async function rewardVoiceUsers(guildID, voiceChannelUsers, disClient) {
     const guild = await disClient.guilds.fetch(guildID);
 
     const xpPerMinute = 10;
-    console.log('Updating ReiGn Tokens for users', voiceChannelUsers);
+    console.log('Updating RT for users', voiceChannelUsers);
     voiceChannelUsers.forEach(async function (item) {
         let hasLeveledUp = await Levels.appendXp(
             item,
@@ -438,7 +438,7 @@ async function rewardBoost(guildID, user, disClient) {
     );
 
     channel.message.send({
-        content: `${user} boosted the server and has been awarded 10,000 ReiGn Tokens!`,
+        content: `${user} boosted the server and has been awarded 10.000 ReiGn Tokens!`,
     });
 
     const guild = await disClient.guilds.fetch(guildID);
