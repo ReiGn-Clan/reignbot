@@ -128,10 +128,16 @@ module.exports = {
             });
         } else {
             const collectorFilter = (i) => {
-                if (i.user.id === user_challenge.id) {
+                if (
+                    i.user.id === user_challenge.id ||
+                    i.user.id === interaction.user.id
+                ) {
                     return true;
                 } else {
-                    i.deferUpdate();
+                    i.reply({
+                        content: `Only the challenged person is allowed to respond!`,
+                        ephemeral: true,
+                    });
                 }
             };
 
@@ -146,10 +152,10 @@ module.exports = {
         let allowed = true;
 
         collector.on('collect', async (collected) => {
-            if (allowed) {
-                allowed = false;
-                if (collected.customId !== 'cancel') {
-                    if (collected.message === bet_message) {
+            if (collected.message === bet_message) {
+                if (allowed) {
+                    allowed = false;
+                    if (collected.customId !== 'cancel') {
                         if (collected.user.id !== interaction.user.id) {
                             const userXP = await Levels.fetch(
                                 collected.user.id,
@@ -325,27 +331,29 @@ module.exports = {
                                 ephemeral: true,
                             });
                         }
+
+                        allowed = true;
+                    } else {
+                        if (collected.user.id == interaction.user.id) {
+                            collected.reply({
+                                content: 'Cancelled the coinflip',
+                                ephemeral: true,
+                            });
+                            collector.stop();
+                        } else {
+                            collected.reply({
+                                content: 'You are not the coinflip initiator!',
+                                ephemeral: true,
+                            });
+                            allowed = true;
+                        }
                     }
                 } else {
-                    if (collected.user.id == interaction.user.id) {
-                        collected.reply({
-                            content: 'Cancelled the coinflip',
-                            ephemeral: true,
-                        });
-                        collector.stop();
-                    } else {
-                        collected.reply({
-                            content: 'You are not the coinflip initiator!',
-                            ephemeral: true,
-                        });
-                        allowed = true;
-                    }
+                    collected.reply({
+                        content: 'Either too slow or try again in a sec!',
+                        ephemeral: true,
+                    });
                 }
-            } else {
-                collected.reply({
-                    content: 'Either too slow or try again in a sec!',
-                    ephemeral: true,
-                });
             }
         });
 
