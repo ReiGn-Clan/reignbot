@@ -46,7 +46,7 @@ async function giveXP(interaction) {
     }
 
     await interaction.reply({
-        content: `Donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
+        content: `${interaction.user} donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
         ephemeral: false,
     });
 

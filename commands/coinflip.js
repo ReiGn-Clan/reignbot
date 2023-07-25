@@ -54,7 +54,7 @@ module.exports = {
         const button_option_tails = new ButtonBuilder()
             .setCustomId('tails')
             .setLabel('Tails')
-            .setStyle(ButtonStyle.Secondary);
+            .setStyle(ButtonStyle.Success);
 
         const button_option_cancel = new ButtonBuilder()
             .setCustomId('cancel')
