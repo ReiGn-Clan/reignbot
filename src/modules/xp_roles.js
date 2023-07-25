@@ -85,7 +85,7 @@ async function improvedLevelUpMessage(message, disClient) {
     );
 }
 
-async function improvedLevelUp(guild, userID, disClient) {
+async function improvedLevelUp(guild, userID, disClient, deranking = false) {
     // What role should the user
     let user = await Levels.fetch(userID, guild.id);
     const member = await guild.members.fetch(userID);
@@ -118,12 +118,21 @@ async function improvedLevelUp(guild, userID, disClient) {
         if (role_array.includes(name)) {
             console.log('Found', name);
             if (name === newLevelName) {
-                // Nothing has to be done
-                channel.send(
-                    `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
-                );
-                console.log('No Action needed');
-                return;
+                if (!deranking) {
+                    // Nothing has to be done
+                    channel.send(
+                        `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
+                    );
+                    console.log('No Action needed');
+                    return;
+                } else {
+                    // Nothing has to be done
+                    channel.send(
+                        `${member.user}, oh no! You've lost tokens and are now  **Level ${user.level}!**`,
+                    );
+                    console.log('No Action needed');
+                    return;
+                }
             } else {
                 console.log('Removing old role and adding new');
                 const role = await guild.roles.cache.find(
@@ -136,9 +145,16 @@ async function improvedLevelUp(guild, userID, disClient) {
 
                 await member.roles.remove(previousRole);
                 await member.roles.add(role);
-                channel2.send(
-                    `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
-                );
+
+                if (!deranking) {
+                    channel2.send(
+                        `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
+                    );
+                } else {
+                    channel2.send(
+                        `${member.user}, Oh no! You've lost tokens and are now **Level ${user.level}**, you deranked to **${role.name}!**`,
+                    );
+                }
                 return;
             }
         }
