@@ -25,11 +25,11 @@ module.exports = {
             await interaction.reply(`${name} has 0 ReiGn Tokens.`);
         } else {
             await interaction.reply({
-                content: `You have **${userXP.xp} ReiGn Tokens and is Level ${
-                    userXP.level
-                }! They need ${
+                content: `Person has **${
+                    userXP.xp
+                }** ReiGn Tokens and is Level ${userXP.level}! They need ${
                     xpNeeded - userXP.xp
-                } more ReiGn Tokens to reach Level ${userXP.level + 1}.**`,
+                } more ReiGn Tokens to reach Level ${userXP.level + 1}.`,
                 ephemeral: true,
             });
         }
