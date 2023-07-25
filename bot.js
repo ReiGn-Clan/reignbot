@@ -14,8 +14,8 @@ const {
     EmbedBuilder,
 } = require('discord.js');
 
-// Require the 'token' property from the 'config.json' file
-const { discordAPIBotStuff, mongoUris } = require('./prod_config.json');
+
+const { discordAPIBotStuff, mongoUris } = require('./dev_config.json');
 
 // For voice channel tracking
 let afk_channel = null;
