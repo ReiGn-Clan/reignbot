@@ -12,13 +12,13 @@ def switch_config_references(directory_path, from_config, to_config):
         # Determine the relative path prefix based on the directory location
         if relative_path.startswith("commands"):
             relative_prefix = "../"
-            print("In commands!")
+            print("Traversed /commands/!")
         elif relative_path.startswith(os.path.join("src", "modules")):
             relative_prefix = "../../"
-            print("In src/modules/!")
+            print("Traversed /src/modules/!")
         elif relative_path == ".":
             relative_prefix = "./"
-            print("In /bot/!")
+            print("Traversed /bot/!")
         else:
             continue  # Skip directories other than bot, commands, and src/modules
 
