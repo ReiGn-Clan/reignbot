@@ -151,7 +151,7 @@ async function KickKids() {
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
-    const guild = client.guilds.cache.get('1089665371923026053');
+    const guild = client.guilds.cache.get('');
     afk_channel = guild.afkChannelId;
     Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
 
