@@ -6,6 +6,14 @@ async function giveXP(interaction) {
     const user = interaction.options.getUser('user');
     const tokens = interaction.options.getInteger('amount');
 
+    if (interaction.user == user) {
+        interaction.reply({
+            content: 'You cannot donate to yourself!',
+            ephemeral: true,
+        });
+        return;
+    }
+
     // Check if the user donating has enough XP
     const init_userXP = await Levels.fetch(
         interaction.user.id,
