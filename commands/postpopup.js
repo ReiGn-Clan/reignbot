@@ -26,8 +26,12 @@ module.exports = {
         const uses = interaction.options.getInteger('uses');
 
         const xp = interaction.options.getInteger('xp');
-        await xp_roles.makeDaily(interaction.client, true, xp, uses);
 
-        await interaction.reply('Posted pop-up xp message');
+        await interaction.reply({
+            content: 'Posting pop-up xp message',
+            ephemeral: true,
+        });
+
+        await xp_roles.makeDaily(interaction.client, true, xp, uses);
     },
 };

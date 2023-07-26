@@ -264,6 +264,7 @@ async function RetrieveLinkUsed(invites, invite_links_old, guild) {
         // Check what links are in old but not new
         // Filter out the links that have reached their maximum uses
         // Filter out the links that have expired
+        const currentDate = new Date(); // Get the current date
         let difference = await invite_links_old
             .aggregate([
                 {
@@ -276,7 +277,7 @@ async function RetrieveLinkUsed(invites, invite_links_old, guild) {
                 },
                 {
                     $match: {
-                        temp: { $size: 0 }, // filter out documents with no matching documents in temp_invite_links
+                        temp: { $size: 0 }, // Filter out documents with no matching documents in temp_invite_links
                     },
                 },
                 {
@@ -296,7 +297,15 @@ async function RetrieveLinkUsed(invites, invite_links_old, guild) {
                 {
                     $match: {
                         $expr: {
-                            $lt: [Date.parse('$ExpirationDate'), Date.now()], // filter out documents where ExpirationDate has passed
+                            $lt: [
+                                currentDate,
+                                {
+                                    $convert: {
+                                        input: '$ExpirationDate',
+                                        to: 'date',
+                                    },
+                                },
+                            ],
                         },
                     },
                 },
@@ -309,6 +318,8 @@ async function RetrieveLinkUsed(invites, invite_links_old, guild) {
             .toArray();
 
         if (difference.length > 0) {
+            console.log(difference);
+            //console.log(await temp_invite_links.find({}).toArray());
             link_used = difference[0]._id;
             console.log('User joined through temp link');
             // Increase the link uses
