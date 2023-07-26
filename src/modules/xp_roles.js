@@ -10,10 +10,17 @@ const {
     mongoUris,
     variousIDs,
     discordAPIBotStuff,
+<<<<<<< HEAD
     environment
 } = require('../../prod_config.json');
 const client = new MongoClient(mongoUris[0].xpDatabase);
 const db = client.db(environment);
+=======
+    xpDbEnvironment,
+} = require('../../prod_config.json');
+const client = new MongoClient(mongoUris[0].xpDatabase);
+const db = client.db(xpDbEnvironment);
+>>>>>>> e384dacdcfe26c45c7fe9d1c90f1f9d377f5a5d0
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
@@ -86,7 +93,14 @@ async function improvedLevelUpMessage(message, disClient) {
     );
 }
 
-async function improvedLevelUp(guild, userID, disClient, deranking = false) {
+async function improvedLevelUp(
+    guild,
+    userID,
+    disClient,
+    deranking = false,
+    gambling = false,
+) {
+    console.log(deranking, gambling);
     // What role should the user
     let user = await Levels.fetch(userID, guild.id);
     const member = await guild.members.fetch(userID);
@@ -119,19 +133,23 @@ async function improvedLevelUp(guild, userID, disClient, deranking = false) {
         if (role_array.includes(name)) {
             console.log('Found', name);
             if (name === newLevelName) {
-                if (!deranking) {
-                    // Nothing has to be done
-                    channel.send(
-                        `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
-                    );
-                    console.log('No Action needed');
-                    return;
+                if (!gambling) {
+                    if (!deranking) {
+                        // Nothing has to be done
+                        await channel.send(
+                            `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
+                        );
+                        console.log('No Action needed');
+                        return;
+                    } else {
+                        // Nothing has to be done
+                        await channel.send(
+                            `${member.user}, oh no! You've lost tokens and are now  **Level ${user.level}!**`,
+                        );
+                        console.log('No Action needed');
+                        return;
+                    }
                 } else {
-                    // Nothing has to be done
-                    channel.send(
-                        `${member.user}, oh no! You've lost tokens and are now  **Level ${user.level}!**`,
-                    );
-                    console.log('No Action needed');
                     return;
                 }
             } else {
@@ -147,16 +165,31 @@ async function improvedLevelUp(guild, userID, disClient, deranking = false) {
                 await member.roles.remove(previousRole);
                 await member.roles.add(role);
 
-                if (!deranking) {
-                    channel2.send(
-                        `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
-                    );
+                if (!gambling) {
+                    console.log('We are not gambling');
+                    if (!deranking) {
+                        await channel2.send(
+                            `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
+                        );
+                    } else {
+                        await channel2.send(
+                            `${member.user}, Oh no! You've lost tokens and are now **Level ${user.level}**, you deranked to **${role.name}!**`,
+                        );
+                    }
+                    return;
                 } else {
-                    channel2.send(
-                        `${member.user}, Oh no! You've lost tokens and are now **Level ${user.level}**, you deranked to **${role.name}!**`,
-                    );
+                    console.log('We are gambling');
+                    if (!deranking) {
+                        await channel.send(
+                            `${member.user}, congratulations! You've received tokens and leveled up to **Level ${user.level}**. You have been awarded the rank **${role.name}!**`,
+                        );
+                    } else {
+                        await channel.send(
+                            `${member.user}, Oh no! You've lost tokens in gambling and are now **Level ${user.level}**, you deranked to **${role.name}!**`,
+                        );
+                    }
+                    return;
                 }
-                return;
             }
         }
     }

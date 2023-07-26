@@ -4,13 +4,31 @@ const xp_roles = require('../src/modules/xp_roles.js');
 
 async function giveXP(interaction) {
     const user = interaction.options.getUser('user');
-    const amount = interaction.options.getInteger('amount');
+    const tokens = interaction.options.getInteger('amount');
+
+    // Check if the user donating has enough XP
+    const init_userXP = await Levels.fetch(
+        interaction.user.id,
+        interaction.guild.id,
+    );
+
+    if (init_userXP.xp <= tokens) {
+        interaction.reply({
+            content: 'You do not have enough tokens for this!',
+            ephemeral: true,
+        });
+        return;
+    }
+
+    // Remove the tokens from the user donating
+    await Levels.subtractXp(interaction.user.id, interaction.guild.id, tokens);
 
     let hasLeveledUp = await Levels.appendXp(
         user.id,
         interaction.guild.id,
-        amount,
+        tokens,
     );
+
     let userTotalXP = await Levels.fetch(user.id, interaction.guild.id, true);
 
     if (hasLeveledUp) {
@@ -19,6 +37,8 @@ async function giveXP(interaction) {
                 interaction.guild,
                 user.id,
                 interaction.client,
+                false,
+                true,
             );
         } catch (error) {
             console.error(error); // add error handling for levelUp functio
@@ -26,14 +46,37 @@ async function giveXP(interaction) {
     }
 
     await interaction.reply({
-        content: `Added ${amount} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
-        ephemeral: true,
+        content: `${interaction.user} donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
+        ephemeral: false,
     });
+
+    let init_userXP_after = await Levels.fetch(
+        interaction.user.id,
+        interaction.guild.id,
+    );
+
+    while (init_userXP_after.xp == init_userXP.xp) {
+        init_userXP_after = await Levels.fetch(
+            interaction.user.id,
+            interaction.guild.id,
+        );
+    }
+
+    if (init_userXP_after.level < init_userXP.level) {
+        console.log('Deranked');
+        xp_roles.improvedLevelUp(
+            interaction.guild,
+            interaction.user.id,
+            interaction.client,
+            true,
+            true,
+        );
+    }
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('givetokens')
+        .setName('donatetokens')
         .setDescription('Give a user a specified amount of ReiGn Tokens.')
         .addUserOption((option) =>
             option
