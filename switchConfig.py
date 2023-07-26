@@ -1,7 +1,8 @@
 import os
 import re
+import argparse
 
-def switch_config_references(directory_path, from_config, to_config):
+def switch_configs(directory_path, from_config, to_config):
     for root, _, files in os.walk(directory_path):
         # Check if the current directory is "node_modules" and skip it
         if os.path.basename(root) == "node_modules":
@@ -12,19 +13,17 @@ def switch_config_references(directory_path, from_config, to_config):
         # Determine the relative path prefix based on the directory location
         if relative_path.startswith("commands"):
             relative_prefix = "../"
-            print("Traversed /commands/!")
         elif relative_path.startswith(os.path.join("src", "modules")):
             relative_prefix = "../../"
-            print("Traversed /src/modules/!")
         elif relative_path == ".":
             relative_prefix = "./"
-            print("Traversed /bot/!")
         else:
             continue  # Skip directories other than bot, commands, and src/modules
 
         for file in files:
             if file.endswith(".js"):
                 filepath = os.path.join(root, file)
+                print ("Traversed " + filepath)
                 with open(filepath, "r", encoding="utf-8") as f:
                     content = f.read()
 
@@ -49,10 +48,16 @@ def switch_config_references(directory_path, from_config, to_config):
                     f.write(updated_bot_content)
 
 if __name__ == "__main__":
-    # Set the current script's directory as the directory_path
-    directory_path = os.path.dirname(os.path.abspath(__file__))
-    from_config_file = "prod_config.json" #<-- current config
-    to_config_file = "dev_config.json" #<-- config you want to switch to
 
-    switch_config_references(directory_path, from_config_file, to_config_file)
-    print("Configuration references switched successfully.")
+    parser = argparse.ArgumentParser(description="Switch configs to change environments")
+    parser.add_argument("from_config", help="The name of the current config")
+    parser.add_argument("to_config", help="The name of the target config")
+    args = parser.parse_args()
+
+    directory_path = os.path.dirname(os.path.abspath(__file__))# Set the current script's directory as the directory_path
+
+    from_config = args.from_config #<-- current config
+    to_config = args.to_config #<-- config you want to switch to
+
+    switch_configs(directory_path, from_config, to_config)
+    print("Configs switched successfully.")
