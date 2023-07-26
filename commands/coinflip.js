@@ -17,7 +17,8 @@ module.exports = {
             option
                 .setName('tokens')
                 .setDescription('How many do you want to bet?')
-                .setRequired(true),
+                .setRequired(true)
+                .setMinValue(1),
         )
 
         .addUserOption((option) =>
@@ -39,7 +40,7 @@ module.exports = {
         );
 
         if (init_userXP.xp <= tokens) {
-            interaction.reply({
+            await interaction.reply({
                 content: 'You do not have enough tokens for this!',
                 ephemeral: true,
             });
@@ -84,7 +85,7 @@ module.exports = {
         let bet_message = null;
 
         if (user_challenge == null) {
-            interaction.channel
+            await interaction.channel
                 .send({
                     content: `${
                         interaction.user
@@ -101,7 +102,7 @@ module.exports = {
                     bet_message = sent;
                 });
         } else {
-            interaction.channel
+            await interaction.channel
                 .send({
                     content: `${
                         interaction.user
@@ -127,14 +128,14 @@ module.exports = {
                 time: 60000,
             });
         } else {
-            const collectorFilter = (i) => {
+            const collectorFilter = async (i) => {
                 if (
                     i.user.id === user_challenge.id ||
                     i.user.id === interaction.user.id
                 ) {
                     return true;
                 } else {
-                    i.reply({
+                    await i.reply({
                         content: `Only the challenged person is allowed to respond!`,
                         ephemeral: true,
                     });
@@ -227,7 +228,7 @@ module.exports = {
                                         winner,
                                     );
 
-                                interaction.channel.send({
+                                await interaction.channel.send({
                                     content: `The coin landed on ${winning_side}! ${
                                         member.user
                                     } has won ${(tokens * 2 * 0.9).toFixed(
@@ -318,7 +319,7 @@ module.exports = {
                             } else {
                                 allowed = true;
 
-                                collected.reply({
+                                await collected.reply({
                                     content: `You do not have enough tokens for this!`,
                                     ephemeral: true,
                                 });
@@ -326,7 +327,7 @@ module.exports = {
                         } else {
                             allowed = true;
 
-                            collected.reply({
+                            await collected.reply({
                                 content: 'You cant coinflip against yourself!',
                                 ephemeral: true,
                             });
@@ -335,13 +336,13 @@ module.exports = {
                         allowed = true;
                     } else {
                         if (collected.user.id == interaction.user.id) {
-                            collected.reply({
+                            await collected.reply({
                                 content: 'Cancelled the coinflip',
                                 ephemeral: true,
                             });
                             collector.stop();
                         } else {
-                            collected.reply({
+                            await collected.reply({
                                 content: 'You are not the coinflip initiator!',
                                 ephemeral: true,
                             });
@@ -349,7 +350,7 @@ module.exports = {
                         }
                     }
                 } else {
-                    collected.reply({
+                    await collected.reply({
                         content: 'Either too slow or try again in a sec!',
                         ephemeral: true,
                     });

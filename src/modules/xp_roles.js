@@ -389,7 +389,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
             fetchReply: true,
         })
         .then(async (sent) => {
-            sent.react('');
+            sent.react('1099386036133560391');
             let id_ = sent.id;
             console.log(id_);
             const doc = {
@@ -413,7 +413,7 @@ async function rewardDaily(reaction, user, disClient) {
     const guild = await disClient.guilds.fetch(reaction.message.guildId);
 
     if (messageDOC !== null) {
-        if (reaction.emoji.id !== '') {
+        if (reaction.emoji.id !== '1099386036133560391') {
             console.log('Wrong emoji');
             await reaction.users.remove(user.id);
             return;
