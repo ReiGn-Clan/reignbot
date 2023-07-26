@@ -10,9 +10,10 @@ const {
     mongoUris,
     variousIDs,
     discordAPIBotStuff,
-} = require('../../prod_config.json');
+    xpDbEnvironment,
+} = require('../../dev_config.json');
 const client = new MongoClient(mongoUris[0].xpDatabase);
-const db = client.db('xpDatabase');
+const db = client.db(xpDbEnvironment);
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
@@ -388,7 +389,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
             fetchReply: true,
         })
         .then(async (sent) => {
-            sent.react('1099386036133560391');
+            sent.react('');
             let id_ = sent.id;
             console.log(id_);
             const doc = {
@@ -412,7 +413,7 @@ async function rewardDaily(reaction, user, disClient) {
     const guild = await disClient.guilds.fetch(reaction.message.guildId);
 
     if (messageDOC !== null) {
-        if (reaction.emoji.id !== '1099386036133560391') {
+        if (reaction.emoji.id !== '') {
             console.log('Wrong emoji');
             await reaction.users.remove(user.id);
             return;

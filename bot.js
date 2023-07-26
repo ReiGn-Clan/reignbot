@@ -14,8 +14,7 @@ const {
     EmbedBuilder,
 } = require('discord.js');
 
-// Require the 'token' property from the 'config.json' file
-const { discordAPIBotStuff, mongoUris } = require('./prod_config.json');
+const { discordAPIBotStuff, mongoUris } = require('./dev_config.json');
 
 // For voice channel tracking
 let afk_channel = null;
@@ -152,7 +151,7 @@ async function KickKids() {
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
-    const guild = client.guilds.cache.get('1089665371923026053');
+    const guild = client.guilds.cache.get(discordAPIBotStuff[1].guildID);
     afk_channel = guild.afkChannelId;
     Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
 
