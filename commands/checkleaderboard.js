@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { MongoClient } = require('mongodb');
 
-const { mongoUris } = require('../dev_config.json');
+const { mongoUris } = require('../prod_config.json');
 const client = new MongoClient(mongoUris[0].xpDatabase);
 const db = client.db('xpDatabase');
 
