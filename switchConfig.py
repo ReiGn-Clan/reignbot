@@ -51,8 +51,8 @@ def switch_config_references(directory_path, from_config, to_config):
 if __name__ == "__main__":
     # Set the current script's directory as the directory_path
     directory_path = os.path.dirname(os.path.abspath(__file__))
-    from_config_file = "dev_config.json" #<-- current config
-    to_config_file = "prod_config.json" #<-- config you want to switch to
+    from_config_file = "prod_config.json" #<-- current config
+    to_config_file = "dev_config.json" #<-- config you want to switch to
 
     switch_config_references(directory_path, from_config_file, to_config_file)
     print("Configuration references switched successfully.")
