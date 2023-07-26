@@ -16,5 +16,6 @@
        {"generalChannel":"1129188968685117520"},
        {"topMembersChannel":"1129188968685117520"},
        {"topMembersMessage":"1131743295471616061"}
-    ]
+    ],
+    "xpDbEnvironment": "dev_xpDatabase"
 }
