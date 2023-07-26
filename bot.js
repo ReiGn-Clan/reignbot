@@ -14,8 +14,7 @@ const {
     EmbedBuilder,
 } = require('discord.js');
 
-
-const { discordAPIBotStuff, mongoUris } = require('dev_config.json');
+const { discordAPIBotStuff, mongoUris } = require('./dev_config.json');
 
 // For voice channel tracking
 let afk_channel = null;
