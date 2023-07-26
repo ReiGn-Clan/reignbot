@@ -17,9 +17,5 @@
        {"topMembersChannel":"1095411283882426488"},
        {"topMembersMessage":"1098278074254110740"}
     ],
-<<<<<<< HEAD
-    "environment":"xpDatabase"
-=======
     "xpDbEnvironment": "xpDatabase"
->>>>>>> e384dacdcfe26c45c7fe9d1c90f1f9d377f5a5d0
 }
