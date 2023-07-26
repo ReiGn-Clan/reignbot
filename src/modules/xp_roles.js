@@ -10,7 +10,7 @@ const {
     mongoUris,
     variousIDs,
     discordAPIBotStuff,
-    xpDbEnvironment
+    xpDbEnvironment,
 } = require('../../prod_config.json');
 const client = new MongoClient(mongoUris[0].xpDatabase);
 const db = client.db(xpDbEnvironment);
