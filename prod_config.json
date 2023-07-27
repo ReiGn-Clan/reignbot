@@ -17,5 +17,6 @@
        {"topMembersChannel":"1095411283882426488"},
        {"topMembersMessage":"1098278074254110740"}
     ],
-    "xpDbEnvironment": "xpDatabase"
+    "xpDbEnvironment": "xpDatabase",
+    "recruiterDbEnvironment":"recruiter"
 }
