@@ -4,6 +4,8 @@ const dbMongoObj = new MongoClient(mongoUris[1].recruiterDatabase);
 const db = dbMongoObj.db(recruiterDbEnvironment);
 const fs = require('fs');
 const { EmbedBuilder } = require('discord.js');
+const Levels = require('discord-xp');
+const xp_roles = require('./xp_roles.js');
 
 async function CreateInviteLinkObject(invites, invite_links) {
     // Get the keys == invite link
@@ -44,7 +46,13 @@ async function UpdateLinks(invites) {
 }
 
 // Update the leaderboard file, not sorted (yet)
-async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
+async function UpdateLeaderboard(
+    invites,
+    memberID,
+    guild,
+    disClient,
+    increase = true,
+) {
     // Read in file
 
     let all_members = await guild.members.fetch();
@@ -101,6 +109,7 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
     if (link_used != null) {
         const userID =
             'u' + (await invite_links.findOne({ _id: link_used })).InviterID;
+        const userIDv2 = userID.slice(1);
 
         const exist = await invite_leaderboard.findOne({ _id: userID });
         console.log(exist);
@@ -114,6 +123,26 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
 
                 let doc = { _id: memberID, link: link_used };
                 await what_links.insertOne(doc);
+
+                let hasLeveledUp = await Levels.appendXp(
+                    userIDv2,
+                    guild.id,
+                    2000,
+                ).catch(console.error); // add error handling for appendXp function
+
+                if (hasLeveledUp) {
+                    try {
+                        await xp_roles.improvedLevelUp(
+                            guild,
+                            userIDv2,
+                            disClient,
+                            false,
+                            true,
+                        );
+                    } catch (error) {
+                        console.error(error); // add error handling for levelUp functio
+                    }
+                }
             } else {
                 await invite_leaderboard.updateOne(
                     { _id: userID },
@@ -128,6 +157,32 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
                 console.log('SCORE', score);
                 if (score === 0)
                     await invite_leaderboard.deleteOne({ _id: userID });
+
+                const init_userXP = await Levels.fetch(userIDv2, guild.id);
+
+                if (init_userXP.xp > 2000) {
+                    //  Subtract tokens
+                    await Levels.subtractXp(userIDv2, guild.id, 2000);
+                } else {
+                    await Levels.subtractXp(userIDv2, guild.id, init_userXP.xp);
+                }
+
+                let init_userXP_after = await Levels.fetch(userIDv2, guild.id);
+
+                while (init_userXP_after.xp == init_userXP.xp) {
+                    init_userXP_after = await Levels.fetch(userIDv2, guild.id);
+                }
+
+                if (init_userXP_after.level < init_userXP.level) {
+                    console.log('Deranked');
+                    xp_roles.improvedLevelUp(
+                        guild,
+                        userIDv2,
+                        disClient,
+                        true,
+                        true,
+                    );
+                }
             }
         } else {
             let doc = { _id: memberID, link: link_used };
@@ -139,6 +194,26 @@ async function UpdateLeaderboard(invites, memberID, guild, increase = true) {
                 change: 'NEW',
             };
             await invite_leaderboard.insertOne(doc);
+
+            let hasLeveledUp = await Levels.appendXp(
+                userIDv2,
+                guild.id,
+                2000,
+            ).catch(console.error); // add error handling for appendXp function
+
+            if (hasLeveledUp) {
+                try {
+                    await xp_roles.improvedLevelUp(
+                        guild,
+                        userIDv2,
+                        disClient,
+                        false,
+                        true,
+                    );
+                } catch (error) {
+                    console.error(error); // add error handling for levelUp functio
+                }
+            }
         }
 
         // Sort the leaderboard top to low and save
