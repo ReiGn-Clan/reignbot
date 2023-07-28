@@ -7,7 +7,7 @@ module.exports = {
         .setDescription('Create a popup message manually')
         .addIntegerOption((option) =>
             option
-                .setName('xp')
+                .setName('tokens')
                 .setDescription('How much xp the user gets')
                 .setRequired(true)
                 .setMinValue(1)
@@ -25,10 +25,10 @@ module.exports = {
     async execute(interaction) {
         const uses = interaction.options.getInteger('uses');
 
-        const xp = interaction.options.getInteger('xp');
+        const xp = interaction.options.getInteger('tokens');
 
         await interaction.reply({
-            content: 'Posting pop-up xp message',
+            content: 'Posting pop-up token message',
             ephemeral: true,
         });
 

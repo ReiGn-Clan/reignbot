@@ -91,7 +91,13 @@ const invLeaderboardQueue = async.queue((task, callback) => {
                 }
                 // Execute the task function with its arguments
                 inv_l
-                    .UpdateLeaderboard(invites, task.id, guild, task.increase)
+                    .UpdateLeaderboard(
+                        invites,
+                        task.id,
+                        guild,
+                        client,
+                        task.increase,
+                    )
                     .then(() => {
                         console.log(
                             `Updated leaderboard for member ${task.id}`,
