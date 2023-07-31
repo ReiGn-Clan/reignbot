@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const { mongoUris, recruiterDbEnvironment } = require('../../prod_config.json');
+const { mongoUris, recruiterDbEnvironment } = require('../../dev_config.json');
 const dbMongoObj = new MongoClient(mongoUris[1].recruiterDatabase);
 const db = dbMongoObj.db(recruiterDbEnvironment);
 const fs = require('fs');
