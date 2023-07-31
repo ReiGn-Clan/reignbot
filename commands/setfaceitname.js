@@ -1,4 +1,4 @@
-const {SlashCommandBuilder} = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const faceitIntegration = require('../src/modules/faceit_integration');
 const {MongoClient} = require('mongodb');
 const {mongoUris, faceitDbEnvironment} = require('../dev_config.json');
@@ -10,12 +10,14 @@ const collection = db.collection('usernames');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('setfaceitname')
-        .setDescription('Link your discord and faceit name to receive token awards')
+        .setDescription(
+            'Link your discord and faceit name to receive token awards',
+        )
         .addStringOption((option) =>
             option
                 .setName('faceitusername')
                 .setDescription('Your faceit username')
-                .setRequired(true)
+                .setRequired(true),
         ),
         
         async execute (interaction){
@@ -36,14 +38,10 @@ module.exports = {
                 await interaction.followUp(`Updated ${discordUsername}'s FaceIt username to ${faceitUsername}`);
             }
 
-            if(!existingEntry){
-                // If no entry exists, insert a new data entry into the MongoDB collection
-                const dataEntry = {
-                    discordUsername,
-                    faceitUsername,
-                };
-                await collection.insertOne(dataEntry);
-                await interaction.reply(`Successfully linked ${discordUsername} to ${faceitUsername}`);
+            if (allHubMembers.includes(faceitUsername)) {
+                console.log('Success!');
+            }else{
+                console.log('Fail!');
             }
-        }    
+    }
 }
