@@ -8,7 +8,8 @@
     "mongoUris": [
         {"xpDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/dev_xpDatabase"},
         {"recruiterDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/dev_recruiter"},
-        {"gamblingDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/dev_gambling"}
+        {"gamblingDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/dev_gambling"},
+        {"faceitDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/dev_faceitIntegration"}
     ],
     
     "variousIDs": [
@@ -18,5 +19,7 @@
        {"topMembersMessage":"1131743295471616061"}
     ],
     "xpDbEnvironment": "dev_xpDatabase",
-    "recruiterDbEnvironment":"dev_recruiter"
+    "recruiterDbEnvironment":"dev_recruiter",
+    "gamblingDbEnvironment":"dev_gambling",
+    "faceitDbEnvironment":"dev_faceitIntegration"
 }
