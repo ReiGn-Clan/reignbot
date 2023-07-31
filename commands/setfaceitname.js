@@ -1,5 +1,7 @@
-const {SlashCommandBuilder} = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const faceitIntegration = require('../src/modules/faceit_integration');
+const { MongoClient } = require('mongodb');
+const { mongoUris, faceitDbEnvironment } = require('../dev_config.json');
 const {MongoClient} = require('mongodb');
 const {mongoUris, faceitDbEnvironment} = require('../dev_config.json');
 const Levels = require('discord-xp');
@@ -12,7 +14,9 @@ const collection = db.collection('usernames');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('setfaceitname')
-        .setDescription('Link your discord and faceit name to receive token awards')
+        .setDescription(
+            'Link your discord and faceit name to receive token awards',
+        )
         .addStringOption((option) =>
             option
                 .setName('faceitusername')
