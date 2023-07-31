@@ -1,6 +1,6 @@
-const {SlashCommandBuilder} = require('discord.js');
-const {MongoClient} = require('mongodb');
-const {mongoUris, faceitDbEnvironment} = require('../dev_config.json');
+const { SlashCommandBuilder } = require('discord.js');
+const { MongoClient } = require('mongodb');
+const { mongoUris, faceitDbEnvironment } = require('../dev_config.json');
 
 const client = new MongoClient(mongoUris[3].faceitDatabase);
 const db = client.db(faceitDbEnvironment);
@@ -14,21 +14,25 @@ module.exports = {
             option
                 .setName('faceitusername')
                 .setDescription('Your FaceIt username')
-                .setRequired(true)
+                .setRequired(true),
         ),
 
-        async execute (interaction){
-            let faceitUsername = interaction.options.getString('faceitusername');
-            let discordUsername = interaction.user.username;
+    async execute(interaction) {
+        let faceitUsername = interaction.options.getString('faceitusername');
+        let discordUsername = interaction.user.username;
 
-            const existingEntry = await collection.findOne({discordUsername});
-            if (existingEntry){
-                const updatedEntry = {$set: {faceitUsername}};
-                await collection.updateOne({discordUsername}, updatedEntry);
-                await interaction.reply(`Updated ${discordUsername}'s FaceIt username to ${faceitUsername}`);
-                return;
-            } else {
-                await interaction.reply('Unable to find your FaceIt username in the database, maybe try /setfaceitname?');
-            }
+        const existingEntry = await collection.findOne({ discordUsername });
+        if (existingEntry) {
+            const updatedEntry = { $set: { faceitUsername } };
+            await collection.updateOne({ discordUsername }, updatedEntry);
+            await interaction.reply(
+                `Updated ${discordUsername}'s FaceIt username to ${faceitUsername}`,
+            );
+            return;
+        } else {
+            await interaction.reply(
+                'Unable to find your FaceIt username in the database, maybe try /setfaceitname?',
+            );
         }
-}
+    },
+};
