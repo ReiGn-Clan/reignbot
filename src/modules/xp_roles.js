@@ -20,19 +20,6 @@ async function improvedLevelUpMessage(message, disClient) {
     let user = await Levels.fetch(message.author.id, message.guild.id);
     const member = await message.guild.members.fetch(message.author.id);
 
-    let newLevelRange = levelRanges.find(
-        (range) => range.start <= user.level && range.end >= user.level,
-    );
-    let newLevelName = newLevelRange ? newLevelRange.value : null;
-
-    // Find what level the user currently has
-    let current_roles = member._roles;
-    let role_array = [];
-    // Check if it has one of the roles
-    for (let i in levelRanges) {
-        role_array.push(levelRanges[i].value);
-    }
-
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
     );
@@ -40,50 +27,12 @@ async function improvedLevelUpMessage(message, disClient) {
         variousIDs[1].generalChannel,
     );
 
-    // Loop over current roles
-    for (let i in current_roles) {
-        let name = (await message.guild.roles.fetch(current_roles[i])).name;
-
-        if (role_array.includes(name)) {
-            console.log('Found', name);
-            if (name === newLevelName) {
-                // Nothing has to be done
-                console.log('No Action needed');
-                channel.send(
-                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}!**`,
-                );
-                return;
-            } else {
-                console.log('Removing old role and adding new');
-                const role = await message.guild.roles.cache.find(
-                    (role) => role.name === newLevelName,
-                );
-                const previousRole = await member.guild.roles.cache.find(
-                    (role) => role.name === name,
-                );
-
-                await member.roles.remove(previousRole);
-                await member.roles.add(role);
-
-                await channel2.send(
-                    `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
-                );
-
-                return;
-            }
-        }
-    }
-    // if we come to this it means that the user did not have a rank role, which should not happen
-    // but in case
-    console.log('No role found wtf, adding it');
-    const role = await message.guild.roles.cache.find(
-        (role) => role.name === newLevelName,
+    // Nothing has to be done
+    console.log('No Action needed');
+    channel.send(
+        `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
     );
-    await member.roles.add(role);
-
-    await channel2.send(
-        `${message.author}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
-    );
+    return;
 }
 
 async function improvedLevelUp(
@@ -105,97 +54,25 @@ async function improvedLevelUp(
         variousIDs[1].generalChannel,
     );
 
-    let newLevelRange = levelRanges.find(
-        (range) => range.start <= user.level && range.end >= user.level,
-    );
-    let newLevelName = newLevelRange ? newLevelRange.value : null;
-
-    // Find what level the user currently has
-    let current_roles = member._roles;
-    let role_array = [];
-    // Check if it has one of the roles
-    for (let i in levelRanges) {
-        role_array.push(levelRanges[i].value);
-    }
-
-    console.log(newLevelName);
-    // Loop over current roles
-    for (let i in current_roles) {
-        let name = (await guild.roles.fetch(current_roles[i])).name;
-
-        if (role_array.includes(name)) {
-            console.log('Found', name);
-            if (name === newLevelName) {
-                if (!gambling) {
-                    if (!deranking) {
-                        // Nothing has to be done
-                        await channel.send(
-                            `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
-                        );
-                        console.log('No Action needed');
-                        return;
-                    } else {
-                        // Nothing has to be done
-                        await channel.send(
-                            `${member.user}, oh no! You've lost tokens and are now  **Level ${user.level}!**`,
-                        );
-                        console.log('No Action needed');
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            } else {
-                console.log('Removing old role and adding new');
-                const role = await guild.roles.cache.find(
-                    (role) => role.name === newLevelName,
-                );
-
-                const previousRole = await member.guild.roles.cache.find(
-                    (role) => role.name === name,
-                );
-
-                await member.roles.remove(previousRole);
-                await member.roles.add(role);
-
-                if (!gambling) {
-                    console.log('We are not gambling');
-                    if (!deranking) {
-                        await channel2.send(
-                            `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
-                        );
-                    } else {
-                        await channel2.send(
-                            `${member.user}, Oh no! You've lost tokens and are now **Level ${user.level}**, you deranked to **${role.name}!**`,
-                        );
-                    }
-                    return;
-                } else {
-                    console.log('We are gambling');
-                    if (!deranking) {
-                        await channel.send(
-                            `${member.user}, congratulations! You've received tokens and leveled up to **Level ${user.level}**. You have been awarded the rank **${role.name}!**`,
-                        );
-                    } else {
-                        await channel.send(
-                            `${member.user}, Oh no! You've lost tokens in gambling and are now **Level ${user.level}**, you deranked to **${role.name}!**`,
-                        );
-                    }
-                    return;
-                }
-            }
+    if (!gambling) {
+        if (!deranking) {
+            // Nothing has to be done
+            await channel.send(
+                `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
+            );
+            console.log('No Action needed');
+            return;
+        } else {
+            // Nothing has to be done
+            await channel.send(
+                `${member.user}, oh no! You've lost tokens and are now  **Level ${user.level}!**`,
+            );
+            console.log('No Action needed');
+            return;
         }
+    } else {
+        return;
     }
-    // if we come to this it means that the user did not have a rank role, which should not happen
-    // but in case
-    console.log('No role found wtf, adding it');
-    const role = await guild.roles.cache.find(
-        (role) => role.name === newLevelName,
-    );
-    await member.roles.add(role);
-    channel2.send(
-        `${member.user}, congratulations! You've leveled up to **Level ${user.level}** and have been awarded the rank **${role.name}!**`,
-    );
 }
 
 async function updateXpLeaderboard(guildID, disClient) {

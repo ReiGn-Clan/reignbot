@@ -8,7 +8,7 @@
         {
             "start": 10,
             "end": 19,
-            "value" : "Hoplite" 
+            "value": "Hoplite"
         },
         {
             "start": 20,
@@ -60,5 +60,19 @@
             "end": 119,
             "value": "Olympian"
         }
+    ],
+    "names": [
+        "Neophyte",
+        "Hoplite",
+        "Phalanx Guard",
+        "Spartan Warrior",
+        "Myrmidon",
+        "Champion",
+        "Strategos",
+        "Strategos Major",
+        "Archon",
+        "Basileus",
+        "Demi-God",
+        "Olympian"
     ]
 }
