@@ -2,6 +2,8 @@ const {SlashCommandBuilder} = require('discord.js');
 const faceitIntegration = require('../src/modules/faceit_integration');
 const {MongoClient} = require('mongodb');
 const {mongoUris, faceitDbEnvironment} = require('../dev_config.json');
+const Levels = require('discord-xp');
+const xp_roles = require('../src/modules/xp_roles.js');
 
 const client = new MongoClient(mongoUris[3].faceitDatabase);
 const db = client.db(faceitDbEnvironment);
@@ -14,36 +16,47 @@ module.exports = {
         .addStringOption((option) =>
             option
                 .setName('faceitusername')
-                .setDescription('Your faceit username')
+                .setDescription('Your FaceIt username')
                 .setRequired(true)
         ),
         
         async execute (interaction){
-            await interaction.deferReply();
-            let faceitUsername = interaction.options.getString('faceitusername');
-            //let allHubMembers = await faceitIntegration.parseNicknames();
+            let faceitUsername = interaction.options.getString('faceitusername').toLowerCase();
+            let allHubMembers = await faceitIntegration.parseNicknames();
             let discordUsername = interaction.user.username;
 
-            /*if (!allHubMembers.includes(faceitUsername)){
-                await interaction.followUp(`${faceitUsername} not found in the FaceIt hub!`);
+            //user not found in hub member array
+            if (!allHubMembers.includes(faceitUsername)){
+                await interaction.reply(`${faceitUsername} not found in the FaceIt hub!`);
                 return;
-            }*/
-
-            const existingEntry = await collection.findOne({discordUsername});
-            if (existingEntry){
-                const updatedEntry = {$set: {faceitUsername}};
-                await collection.updateOne({discordUsername}, updatedEntry);
-                await interaction.followUp(`Updated ${discordUsername}'s FaceIt username to ${faceitUsername}`);
             }
 
-            if(!existingEntry){
-                // If no entry exists, insert a new data entry into the MongoDB collection
-                const dataEntry = {
-                    discordUsername,
-                    faceitUsername,
-                };
-                await collection.insertOne(dataEntry);
-                await interaction.reply(`Successfully linked ${discordUsername} to ${faceitUsername}`);
+            //continue
+            let hasLeveledUp = await Levels.appendXp(
+                interaction.user.id,
+                interaction.guild.id,
+                5000,
+            );
+        
+            if (hasLeveledUp) {
+                try {
+                    await xp_roles.improvedLevelUp(
+                        interaction.guild,
+                        interaction.user.id,
+                        interaction.client,
+                    );
+                } catch (error) {
+                    console.error(error); // add error handling for levelUp functio
+                }
             }
+
+            
+            //no entry exists and the user is in the hub, bongo into mongo
+            const dataEntry = {
+                discordUsername,
+                faceitUsername,
+            };
+            await collection.insertOne(dataEntry);
+            await interaction.reply(`Successfully linked ${discordUsername} (Discord) to ${faceitUsername} (FaceIt)`);
         }    
 }

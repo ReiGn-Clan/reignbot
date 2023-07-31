@@ -1,14 +1,15 @@
 const fetch = require('cross-fetch');
+const {faceitJsonAccept, faceitAuth} = require('../../dev_config.json');
 const headers = {
-    accept: 'application/json',
-    Authorization: 'Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44',
+    accept: faceitJsonAccept,
+    Authorization: faceitAuth,
 };
 
 async function parseNicknames() {
     const faceitData = await getAllHubMembers();
     let nicknameArray = [];
     if (faceitData && faceitData.items) {
-        nicknameArray = faceitData.items.map((item) => item.nickname);
+        nicknameArray = faceitData.items.map((item) => item.nickname.toLowerCase());
     } else {
         console.error(
             'Failed to get Faceit data or data structure is incorrect.',
@@ -76,6 +77,8 @@ async function getAllHubMatches() {
         }
 
         const data = await response.json();
+        //console.log(data.items[0].teams.faction1.roster);
+        //console.log(data.items[0].results);
         return data; // Return the JSON data
     } catch (error) {
         console.error('Error: ', error);

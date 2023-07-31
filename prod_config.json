@@ -8,7 +8,8 @@
     "mongoUris": [
         {"xpDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/xpDatabase"},
         {"recruiterDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/recruiter"},
-        {"gamblingDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/gambling"}
+        {"gamblingDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/gambling"},
+        {"faceitDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/faceitIntegration"}
     ],
     
     "variousIDs":[
@@ -18,5 +19,8 @@
        {"topMembersMessage":"1098278074254110740"}
     ],
     "xpDbEnvironment": "xpDatabase",
-    "recruiterDbEnvironment":"recruiter"
+    "recruiterDbEnvironment":"recruiter",
+    "faceitDbEnvironment":"faceitIntegration",
+    "faceitHeadersAccept": "application/json",
+    "faceitAuth":"Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44"
 }

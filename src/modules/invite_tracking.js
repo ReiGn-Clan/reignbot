@@ -127,7 +127,7 @@ async function UpdateLeaderboard(
                 let hasLeveledUp = await Levels.appendXp(
                     userIDv2,
                     guild.id,
-                    2000,
+                    5000,
                 ).catch(console.error); // add error handling for appendXp function
 
                 if (hasLeveledUp) {
