@@ -1,9 +1,5 @@
-const fs = require('node:fs');
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
-
-const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
-const levelRanges = JSON.parse(levelNamesData).ranges;
 
 const { variousIDs, discordAPIBotStuff } = require('../../dev_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
@@ -16,9 +12,6 @@ async function improvedLevelUpMessage(message, disClient) {
 
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
-    );
-    const channel2 = await disClient.channels.fetch(
-        variousIDs[1].generalChannel,
     );
 
     // Nothing has to be done
@@ -43,9 +36,6 @@ async function improvedLevelUp(
 
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
-    );
-    const channel2 = await disClient.channels.fetch(
-        variousIDs[1].generalChannel,
     );
 
     if (!gambling) {
