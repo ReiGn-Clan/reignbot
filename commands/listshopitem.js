@@ -42,5 +42,10 @@ module.exports = {
             .insertOne(doc)
             .then(console.log('Added item to the shop'))
             .catch((e) => console.log(`Failed to save new user, error`, e));
+
+        interaction.reply({
+            content: `Added ${name} to the shop!`,
+            ephemeral: true,
+        });
     },
 };
