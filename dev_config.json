@@ -16,6 +16,9 @@
         },
         {
             "gamblingDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/dev_gambling"
+        },
+        {
+            "shopDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/shop"
         }
     ],
 

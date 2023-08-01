@@ -8,10 +8,9 @@ const {
     ComponentType,
 } = require('discord.js');
 const fs = require('node:fs');
-
+const { mongoUris } = require('../dev_config.json');
 const { MongoClient } = require('mongodb');
-const client = new MongoClient(mongoUris[2].gamblingDatabase);
-const { mongoUris } = require('../../prod_config.json');
+const client = new MongoClient(mongoUris[3].shopDatabase);
 
 const Levels = require('discord-xp');
 
@@ -27,10 +26,27 @@ module.exports = {
         const member = await interaction.guild.members.fetch(
             interaction.user.id,
         );
-        const shop_items = client.db('gambling');
+        const shop_items = await client.db('shop_items');
 
         // List the different shop categories
-        const category_array = await shop_items.distinct('category');
+        let category_array = await shop_items
+            .aggregate([
+                {
+                    $group: {
+                        _id: '$category',
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        category: '$_id',
+                    },
+                },
+            ])
+            .toArray();
+
+        category_array = category_array.map((entry) => entry.category);
+
         let menu_options = [];
 
         category_array.forEach(async function (item) {

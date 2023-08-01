@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js'); // Import the REST and Routes classes from the discord.js library
-const { discordAPIBotStuff } = require('./prod_config.json');
+const { discordAPIBotStuff } = require('./dev_config.json');
 const fs = require('node:fs'); // Import the fs module to read command files from the file system
 const path = require('node:path'); // Import the path module to resolve file paths
 

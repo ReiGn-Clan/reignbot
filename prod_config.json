@@ -1,22 +1,33 @@
 {
-    "discordAPIBotStuff":[
-        {"token": "MTA4OTY2NTgxNzE2MDk3ODU1Mw.G5VL0B.zgrCgRHrUiC9w_8jsswZ-hBvWgs0k8VtkUsyn0"},
-        {"guildID":"1089665371923026053"},
-        {"clientID":"1089665817160978553"}
+    "discordAPIBotStuff": [
+        {
+            "token": "MTA4OTY2NTgxNzE2MDk3ODU1Mw.G5VL0B.zgrCgRHrUiC9w_8jsswZ-hBvWgs0k8VtkUsyn0"
+        },
+        { "guildID": "1089665371923026053" },
+        { "clientID": "1089665817160978553" }
     ],
 
     "mongoUris": [
-        {"xpDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/xpDatabase"},
-        {"recruiterDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/recruiter"},
-        {"gamblingDatabase":"mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/gambling"}
+        {
+            "xpDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/xpDatabase"
+        },
+        {
+            "recruiterDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/recruiter"
+        },
+        {
+            "gamblingDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/gambling"
+        },
+        {
+            "shopDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/shop"
+        }
     ],
-    
-    "variousIDs":[
-       {"userUpdatesChannel":"1103780086810955846"},
-       {"generalChannel":"1091539145127641098"},
-       {"topMembersChannel":"1095411283882426488"},
-       {"topMembersMessage":"1098278074254110740"}
+
+    "variousIDs": [
+        { "userUpdatesChannel": "1103780086810955846" },
+        { "generalChannel": "1091539145127641098" },
+        { "topMembersChannel": "1095411283882426488" },
+        { "topMembersMessage": "1098278074254110740" }
     ],
     "xpDbEnvironment": "xpDatabase",
-    "recruiterDbEnvironment":"recruiter"
+    "recruiterDbEnvironment": "recruiter"
 }
