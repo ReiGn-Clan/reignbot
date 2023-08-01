@@ -1,8 +1,6 @@
-const { MongoClient } = require('mongodb');
 const { SlashCommandBuilder } = require('discord.js');
-const { mongoUris } = require('../dev_config.json');
-const client = new MongoClient(mongoUris[2].gamblingDatabase);
-const db = client.db('gambling');
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const db = mongo_bongo.getDbInstance('dev_gambling');
 
 module.exports = {
     data: new SlashCommandBuilder()

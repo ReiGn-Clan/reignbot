@@ -1,4 +1,3 @@
-const { MongoClient } = require('mongodb');
 const {
     SlashCommandBuilder,
     ActionRowBuilder,
@@ -9,10 +8,9 @@ const {
     ComponentType,
 } = require('discord.js');
 
-const { mongoUris } = require('../dev_config.json');
-const client = new MongoClient(mongoUris[2].gamblingDatabase);
-const db = client.db('gambling');
-const Levels = require('discord-xp');
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const db = mongo_bongo.getDbInstance('dev_gambling');
+const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 
 module.exports = {

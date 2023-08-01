@@ -1,19 +1,13 @@
 const fs = require('node:fs');
-const Levels = require('discord-xp');
+const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
 
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelRanges = JSON.parse(levelNamesData).ranges;
 
-const { MongoClient } = require('mongodb');
-const {
-    mongoUris,
-    variousIDs,
-    discordAPIBotStuff,
-    xpDbEnvironment,
-} = require('../../dev_config.json');
-const client = new MongoClient(mongoUris[0].xpDatabase);
-const db = client.db(xpDbEnvironment);
+const { variousIDs, discordAPIBotStuff } = require('../../dev_config.json');
+const mongo_bongo = require('../utils/mongo_bongo.js');
+const db = mongo_bongo.getDbInstance('dev_xpDatabase');
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
@@ -243,6 +237,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     const channel = await disClient.channels.fetch(
         variousIDs[1].generalChannel,
     );
+
     const dailies = await db.collection('dailies');
 
     if (!manual) {
