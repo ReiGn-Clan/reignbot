@@ -37,9 +37,8 @@ async function appendXp(userId, guildId, xp) {
             lastUpdated: new Date(),
         };
 
-        collection
+        await collection
             .insertOne(doc)
-            .then(console.log('Success'))
             .catch((e) => console.log(`Failed to save new user, error`, e));
 
         return Math.floor(0.1 * Math.sqrt(xp)) > 0;
@@ -50,9 +49,8 @@ async function appendXp(userId, guildId, xp) {
     user.level = Math.floor(0.1 * Math.sqrt(user.xp));
     user.lastUpdated = new Date();
 
-    collection
+    await collection
         .updateOne({ _id: user._id }, { $set: user })
-        .then(console.log('Success!'))
         .catch((e) => console.log(`Failed to append xp, error`, e));
 
     return prev_level < user.level;
@@ -83,9 +81,8 @@ async function subtractXp(userId, guildId, xp) {
     user.level = Math.floor(0.1 * Math.sqrt(user.xp));
     user.lastUpdated = new Date();
 
-    collection
+    await collection
         .updateOne({ _id: user._id }, { $set: user })
-        .then(console.log('Success!'))
         .catch((e) => console.log(`Failed to subtract xp, error`, e));
 
     return prev_level > user.level;
@@ -112,9 +109,8 @@ async function setXp(userId, guildId, xp) {
     user.level = Math.floor(0.1 * Math.sqrt(user.xp));
     user.lastUpdated = new Date();
 
-    collection
+    await collection
         .updateOne({ _id: user._id }, { $set: user })
-        .then(console.log('Success!'))
         .catch((e) => console.log(`Failed to append xp, error`, e));
 
     return prev_level > user.xp;
