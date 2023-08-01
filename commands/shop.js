@@ -10,7 +10,7 @@ const {
 const fs = require('node:fs');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance('dev_shop');
-
+const { variousIDs } = require('../dev_config.json');
 const Levels = require('../src/utils/syb_xp.js');
 
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
@@ -203,6 +203,16 @@ module.exports = {
 
                                         await member.roles.remove(previousRole);
                                         await member.roles.add(role);
+
+                                        const channel =
+                                            await interaction.client.channels.fetch(
+                                                variousIDs[1].generalChannel,
+                                            );
+
+                                        await channel.send(
+                                            `${member.user}, has bought the rank **${next_rank}**!`,
+                                        );
+
                                         collector_btn.stop();
                                         collector.stop();
                                     } else {
