@@ -29,5 +29,7 @@
         { "topMembersMessage": "1098278074254110740" }
     ],
     "xpDbEnvironment": "xpDatabase",
-    "recruiterDbEnvironment": "recruiter"
+    "recruiterDbEnvironment": "recruiter",
+    "faceitJsonAccept": "application/json",
+    "faceitAuth": "Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44"
 }
