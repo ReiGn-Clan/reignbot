@@ -1,5 +1,4 @@
 const mongo_bongo = require('./src/utils/mongo_bongo.js');
-
 mongo_bongo.connectToDatabase();
 
 const fs = require('node:fs');
@@ -38,6 +37,27 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
     ],
 });
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+app.post('/webhook/', (req,res)=>{
+    const matchData = req.body;
+    console.log("Received webhook notification: ", matchData);
+    faceit_integration.rewardParticipants(matchData);
+    res.sendStatus(200);
+});
+
+app.listen(port, () => {
+    console.log(`Web server listening on port ${port}`);
+  });
+
+const faceit_integration = require('./src/modules/faceit_integration.js');
+const { match } = require('node:assert');
+faceit_integration.setClient(client);
 
 // Create a new Collection to store the commands
 client.commands = new Collection();

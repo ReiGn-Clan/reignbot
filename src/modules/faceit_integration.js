@@ -1,5 +1,5 @@
 const fetch = require('cross-fetch');
-const { faceitJsonAccept, faceitAuth, faceitDbEnvironment, discordAPIBotStuff, xpDbEnvironment } = require('../../dev_config.json');
+const { faceitJsonAccept, faceitAuth, faceitDbEnvironment, discordAPIBotStuff, xpDbEnvironment, variousIDs } = require('../../dev_config.json');
 const headers = {
     accept: faceitJsonAccept,
     Authorization: faceitAuth,
@@ -14,6 +14,12 @@ Levels.set_collection(xpDbEnvironment, 'levels');
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
 const usernamesCollection = db.collection('usernames');
 const awardedMatchesCollection = db.collection('awardedMatches');
+
+let discordClient;
+
+function setClient(client){
+  discordClient = client
+}
 
 async function parseNicknames() {
     const faceitData = await getAllHubMembers();
@@ -30,8 +36,8 @@ async function parseNicknames() {
     return nicknameArray;
 }
 
-async function rewardParticipants (){
-    let {nicknames, matchID} = await parseMatches();
+async function rewardParticipants (matchData){
+    let {nicknames, matchID} = await parseMatches(matchData);
     const alreadyAwarded = await awardedMatchesCollection.findOne({matchID});
     if (alreadyAwarded) {
         console.log(`MatchID: ${matchID} has already been awarded!`);
@@ -45,42 +51,53 @@ async function rewardParticipants (){
             for (const player of linkedUsernames) {
                 if (player.discordUsername) {
                     let hasLeveledUp = await Levels.appendXp(
-                        player.discordUsername,
+                        player.discordUserID,
                         discordAPIBotStuff[1].guildID,
-                        5000,
+                        1500,
                         console.log('Awarded xp for match!')
                     );
+                    const channel = await discordClient.channels.fetch(
+                        variousIDs[0].userUpdatesChannel,
+                    );
 
+                    const guild = await discordClient.guilds.fetch(discordAPIBotStuff[1].guildID);
+                    const member = await guild.members.fetch(player.discordUserID);
+                    await channel.send({
+                        content: `${member.user} has earned 1500 ReiGn Tokens for participating in a 10 man!`,
+                    });
+                    
                     if (hasLeveledUp) {
                         try{
                             await xp_roles.improvedLevelUp(
-                                discordAPIBotStuff[1].guildID,
-                                player.discordUsername,
+                                guild,
+                                player.discordUserID,
                                 discordClient,
                             );
                         } catch(error){
                             console.error(error);
                         }
                     }
+                    
                 }
             }
+            await awardedMatchesCollection.insertOne({matchID});
         } catch (error) {
             console.error("Error while querying the database:", error);
         }
     }
 }
 
-async function parseMatches(){
-    const matchData = await getAllHubMatches();
+async function parseMatches(matchData){
+    //const matchData = await getAllHubMatches();
     let team1 = [];
     let team2 = [];
-    team1 = matchData.items[0].teams.faction1.roster;
-    team2 = matchData.items[0].teams.faction2.roster;
+    team1 = matchData.payload.teams[0].roster;
+    team2 = matchData.payload.teams[1].roster;
     
     let fullRoster = team1.concat(team2);
     let nicknamesRaw =  fullRoster.map(player => player.nickname);
     let nicknames = nicknamesRaw.map(nickname => nickname.toLowerCase());
-    let matchID = matchData.items[0].match_id;
+    let matchID = matchData.payload.id;
 
     return {nicknames, matchID};
 }
@@ -156,5 +173,6 @@ async function getHub() {
 module.exports = {
     parseMatches,
     parseNicknames,
-    rewardParticipants
+    rewardParticipants,
+    setClient
 };
