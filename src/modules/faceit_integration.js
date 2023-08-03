@@ -1,4 +1,3 @@
-const fetch = require('cross-fetch');
 const {
     faceitJsonAccept,
     faceitAuth,
