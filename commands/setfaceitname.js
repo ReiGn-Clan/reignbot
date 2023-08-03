@@ -35,13 +35,13 @@ module.exports = {
             return;
         }
 
-        if (allHubMembers.includes(faceitUsername)){
+        if (allHubMembers.includes(faceitUsername)) {
             let hasLeveledUp = await Levels.appendXp(
                 interaction.user.id,
                 interaction.guild.id,
                 5000,
             );
-    
+
             if (hasLeveledUp) {
                 try {
                     await xp_roles.improvedLevelUp(

@@ -44,10 +44,12 @@ async function rewardParticipants (matchData){
         return;
     }
 
-    if (!alreadyAwarded){
+    if (!alreadyAwarded) {
         try {
             // Use MongoDB driver to find players in the database based on lowercase nicknames
-            const linkedUsernames = await usernamesCollection.find({ faceitUsername: { $in: nicknames } }).toArray();
+            const linkedUsernames = await usernamesCollection
+                .find({ faceitUsername: { $in: nicknames } })
+                .toArray();
             for (const player of linkedUsernames) {
                 if (player.discordUsername) {
                     let hasLeveledUp = await Levels.appendXp(
@@ -67,13 +69,13 @@ async function rewardParticipants (matchData){
                     });
                     
                     if (hasLeveledUp) {
-                        try{
+                        try {
                             await xp_roles.improvedLevelUp(
                                 guild,
                                 player.discordUserID,
                                 discordClient,
                             );
-                        } catch(error){
+                        } catch (error) {
                             console.error(error);
                         }
                     }
@@ -82,7 +84,7 @@ async function rewardParticipants (matchData){
             }
             await awardedMatchesCollection.insertOne({matchID});
         } catch (error) {
-            console.error("Error while querying the database:", error);
+            console.error('Error while querying the database:', error);
         }
     }
 }
@@ -99,7 +101,7 @@ async function parseMatches(matchData){
     let nicknames = nicknamesRaw.map(nickname => nickname.toLowerCase());
     let matchID = matchData.payload.id;
 
-    return {nicknames, matchID};
+    return { nicknames, matchID };
 }
 
 async function getAllHubMembers() {
