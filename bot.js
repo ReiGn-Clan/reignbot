@@ -1,8 +1,13 @@
+const mongo_bongo = require('./src/utils/mongo_bongo.js');
+
+mongo_bongo.connectToDatabase();
+
 const fs = require('node:fs');
 const path = require('node:path');
-const Levels = require('discord-xp');
+const Levels = require('./src/utils/syb_xp.js');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
+
 const async = require('async');
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
@@ -14,7 +19,7 @@ const {
     EmbedBuilder,
 } = require('discord.js');
 
-const { discordAPIBotStuff, mongoUris } = require('./prod_config.json');
+const { discordAPIBotStuff } = require('./dev_config.json');
 
 // For voice channel tracking
 let afk_channel = null;
@@ -159,7 +164,8 @@ client.once(Events.ClientReady, async () => {
     console.log('Ready!');
     const guild = client.guilds.cache.get(discordAPIBotStuff[1].guildID);
     afk_channel = guild.afkChannelId;
-    Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
+
+    Levels.set_collection('xpDatabase', 'levels'); //this connects to the database, then sets the URL for the database for the discord-xp library
 
     xp_roles.makeDaily(client);
 
@@ -183,8 +189,13 @@ client.once(Events.ClientReady, async () => {
         KickKids();
     }, 500);
 
+    console.log('Invite event triggered');
+    invLeaderboardQueue.push({
+        fetchinv: true,
+    });
+
     //client.user.setAvatar('./assets/logo_v1.jpg');
-    //client.user.setUsername('ReignBot');
+    //client.user.setUsername('ReignBotDEV');
 });
 
 client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
@@ -343,21 +354,6 @@ client.on('messageCreate', async (message) => {
             console.error(error); // add error handling for levelUp functio
         }
     }
-});
-
-// Run once to make sure all invites are stored
-client.once(Events.ClientReady, () => {
-    client.guilds.fetch(discordAPIBotStuff[1].guildID).then((guild) => {
-        guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
-    });
-});
-
-// Event for when invite is created
-client.on(Events.InviteCreate, async () => {
-    console.log('Invite event triggered');
-    invLeaderboardQueue.push({
-        fetchinv: true,
-    });
 });
 
 client.on(Events.guildMemberUpdate, async (oldMember, newMember) => {

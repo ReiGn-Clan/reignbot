@@ -1,10 +1,9 @@
-const { MongoClient } = require('mongodb');
-const { mongoUris, recruiterDbEnvironment } = require('../../prod_config.json');
-const dbMongoObj = new MongoClient(mongoUris[1].recruiterDatabase);
-const db = dbMongoObj.db(recruiterDbEnvironment);
+const mongo_bongo = require('../utils/mongo_bongo.js');
+const db = mongo_bongo.getDbInstance('dev_recruiter');
+
 const fs = require('fs');
 const { EmbedBuilder } = require('discord.js');
-const Levels = require('discord-xp');
+const Levels = require('../utils/syb_xp.js');
 const xp_roles = require('./xp_roles.js');
 
 async function CreateInviteLinkObject(invites, invite_links) {
@@ -63,8 +62,11 @@ async function UpdateLeaderboard(
     });
     const all_memberIDs = Array.from(all_members.keys());
     let modified_memberIDs = all_memberIDs.map((id) => 'u' + id);
+
     const invite_links = db.collection('invite_links');
+
     const invite_leaderboard = db.collection('invite_leaderboard');
+
     const what_links = db.collection('what_links');
 
     let sorted_array_old = await invite_leaderboard
