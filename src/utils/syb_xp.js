@@ -1,7 +1,7 @@
 // Better version of dicord XP shit
 const mongo_bongo = require('./mongo_bongo.js');
 
-var collection;
+let collection;
 
 function set_collection(database_name, collection_name) {
     if (!database_name)
