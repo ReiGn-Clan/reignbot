@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const {faceitDbEnvironment} = require('../dev_config.json');
+const { faceitDbEnvironment } = require('../dev_config.json');
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
 const collection = db.collection('usernames');
 

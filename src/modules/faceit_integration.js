@@ -1,5 +1,12 @@
 const fetch = require('cross-fetch');
-const { faceitJsonAccept, faceitAuth, faceitDbEnvironment, discordAPIBotStuff, xpDbEnvironment, variousIDs } = require('../../dev_config.json');
+const {
+    faceitJsonAccept,
+    faceitAuth,
+    faceitDbEnvironment,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+    variousIDs,
+} = require('../../dev_config.json');
 const headers = {
     accept: faceitJsonAccept,
     Authorization: faceitAuth,
@@ -17,8 +24,8 @@ const awardedMatchesCollection = db.collection('awardedMatches');
 
 let discordClient;
 
-function setClient(client){
-  discordClient = client
+function setClient(client) {
+    discordClient = client;
 }
 
 async function parseNicknames() {
@@ -36,9 +43,9 @@ async function parseNicknames() {
     return nicknameArray;
 }
 
-async function rewardParticipants (matchData){
-    let {nicknames, matchID} = await parseMatches(matchData);
-    const alreadyAwarded = await awardedMatchesCollection.findOne({matchID});
+async function rewardParticipants(matchData) {
+    let { nicknames, matchID } = await parseMatches(matchData);
+    const alreadyAwarded = await awardedMatchesCollection.findOne({ matchID });
     if (alreadyAwarded) {
         console.log(`MatchID: ${matchID} has already been awarded!`);
         return;
@@ -56,18 +63,22 @@ async function rewardParticipants (matchData){
                         player.discordUserID,
                         discordAPIBotStuff[1].guildID,
                         1500,
-                        console.log('Awarded xp for match!')
+                        console.log('Awarded xp for match!'),
                     );
                     const channel = await discordClient.channels.fetch(
                         variousIDs[0].userUpdatesChannel,
                     );
 
-                    const guild = await discordClient.guilds.fetch(discordAPIBotStuff[1].guildID);
-                    const member = await guild.members.fetch(player.discordUserID);
+                    const guild = await discordClient.guilds.fetch(
+                        discordAPIBotStuff[1].guildID,
+                    );
+                    const member = await guild.members.fetch(
+                        player.discordUserID,
+                    );
                     await channel.send({
                         content: `${member.user} has earned 1500 ReiGn Tokens for participating in a 10 man!`,
                     });
-                    
+
                     if (hasLeveledUp) {
                         try {
                             await xp_roles.improvedLevelUp(
@@ -79,26 +90,25 @@ async function rewardParticipants (matchData){
                             console.error(error);
                         }
                     }
-                    
                 }
             }
-            await awardedMatchesCollection.insertOne({matchID});
+            await awardedMatchesCollection.insertOne({ matchID });
         } catch (error) {
             console.error('Error while querying the database:', error);
         }
     }
 }
 
-async function parseMatches(matchData){
+async function parseMatches(matchData) {
     //const matchData = await getAllHubMatches();
     let team1 = [];
     let team2 = [];
     team1 = matchData.payload.teams[0].roster;
     team2 = matchData.payload.teams[1].roster;
-    
+
     let fullRoster = team1.concat(team2);
-    let nicknamesRaw =  fullRoster.map(player => player.nickname);
-    let nicknames = nicknamesRaw.map(nickname => nickname.toLowerCase());
+    let nicknamesRaw = fullRoster.map((player) => player.nickname);
+    let nicknames = nicknamesRaw.map((nickname) => nickname.toLowerCase());
     let matchID = matchData.payload.id;
 
     return { nicknames, matchID };
@@ -176,5 +186,5 @@ module.exports = {
     parseMatches,
     parseNicknames,
     rewardParticipants,
-    setClient
+    setClient,
 };
