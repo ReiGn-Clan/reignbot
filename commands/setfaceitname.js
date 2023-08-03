@@ -3,8 +3,8 @@ const faceitIntegration = require('../src/modules/faceit_integration');
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-
-const db = mongo_bongo.getDbInstance('dev_faceitIntegration');
+const { faceitDbEnvironment } = require('../dev_config.json');
+const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
 const collection = db.collection('usernames');
 
 module.exports = {
@@ -35,33 +35,36 @@ module.exports = {
             return;
         }
 
-        //continue
-        let hasLeveledUp = await Levels.appendXp(
-            interaction.user.id,
-            interaction.guild.id,
-            5000,
-        );
+        if (allHubMembers.includes(faceitUsername)) {
+            let hasLeveledUp = await Levels.appendXp(
+                interaction.user.id,
+                interaction.guild.id,
+                5000,
+            );
 
-        if (hasLeveledUp) {
-            try {
-                await xp_roles.improvedLevelUp(
-                    interaction.guild,
-                    interaction.user.id,
-                    interaction.client,
-                );
-            } catch (error) {
-                console.error(error); // add error handling for levelUp functio
+            if (hasLeveledUp) {
+                try {
+                    await xp_roles.improvedLevelUp(
+                        interaction.guild,
+                        interaction.user.id,
+                        interaction.client,
+                    );
+                } catch (error) {
+                    console.error(error); // add error handling for levelUp functio
+                }
             }
+            let discordUserID = interaction.user.id;
+            //no entry exists and the user is in the hub, bongo into mongo
+            const dataEntry = {
+                discordUsername,
+                discordUserID,
+                faceitUsername,
+            };
+            await collection.insertOne(dataEntry);
+            await interaction.reply({
+                content: `Successfully linked ${discordUsername} (Discord) to ${faceitUsername} (FaceIt). You were awarded 5000 tokens!`,
+                ephemeral: true,
+            });
         }
-
-        //no entry exists and the user is in the hub, bongo into mongo
-        const dataEntry = {
-            discordUsername,
-            faceitUsername,
-        };
-        await collection.insertOne(dataEntry);
-        await interaction.reply(
-            `Successfully linked ${discordUsername} (Discord) to ${faceitUsername} (FaceIt)`,
-        );
     },
 };

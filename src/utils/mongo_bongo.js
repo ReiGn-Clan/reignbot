@@ -1,8 +1,3 @@
-// db.js
-// pass RaUEOQOMA9ArGg2T
-// SYB: mongodb+srv://SybrenGL:RaUEOQOMA9ArGg2T@cluster0.s2hbjjn.mongodb.net/?retryWrites=true&w=majority
-// REIGN: mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/
-
 const { MongoClient } = require('mongodb');
 
 const url =
