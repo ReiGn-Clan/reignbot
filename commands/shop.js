@@ -115,6 +115,16 @@ module.exports = {
                             name: next_rank,
                         });
 
+                        if (rank_listing == null) {
+                            await collected.reply({
+                                content: `No new rank found in the store!`,
+                                ephemeral: true,
+                            });
+
+                            collector.stop();
+                            return;
+                        }
+
                         const button_option_1 = new ButtonBuilder()
                             .setCustomId('yes')
                             .setLabel('Yes')
