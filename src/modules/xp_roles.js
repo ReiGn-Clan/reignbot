@@ -14,6 +14,11 @@ async function improvedLevelUpMessage(message, disClient) {
     let user = await Levels.fetch(message.author.id, message.guild.id);
     const member = await message.guild.members.fetch(message.author.id);
 
+    if (member.user.bot) {
+        console.log('Bot trying to lvl up');
+        return;
+    }
+
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
     );
@@ -37,6 +42,11 @@ async function improvedLevelUp(
     // What role should the user
     let user = await Levels.fetch(userID, guild.id);
     const member = await guild.members.fetch(userID);
+
+    if (member.user.bot) {
+        console.log('Bot trying to lvl up');
+        return;
+    }
 
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
