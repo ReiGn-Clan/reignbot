@@ -49,12 +49,12 @@ async function UpdateLinks(invites) {
 // Update the leaderboard file, not sorted (yet)
 async function UpdateLeaderboard(
     invites,
-    memberID,
+    member,
     guild,
     disClient,
     increase = true,
 ) {
-    // Read in file
+    const memberID = member.id;
 
     let all_members = await guild.members.fetch();
     all_members.forEach(function (item, key) {
@@ -162,34 +162,39 @@ async function UpdateLeaderboard(
                 if (score === 0)
                     await invite_leaderboard.deleteOne({ _id: userID });
 
-                const init_userXP = await Levels.fetch(userIDv2, guild.id);
-
-                let hasRankedDown;
-
-                if (init_userXP.xp > 6000) {
-                    //  Subtract tokens
-                    hasRankedDown = await Levels.subtractXp(
-                        userIDv2,
-                        guild.id,
-                        6000,
+                if (Date.now() - member.joinedTimestamp < 7890000) {
+                    console.log(
+                        'Member not older than 3 months, punishing recruiter >:)',
                     );
-                } else {
-                    hasRankedDown = await Levels.subtractXp(
-                        userIDv2,
-                        guild.id,
-                        init_userXP.xp,
-                    );
-                }
+                    const init_userXP = await Levels.fetch(userIDv2, guild.id);
 
-                if (hasRankedDown) {
-                    console.log('Deranked');
-                    xp_roles.improvedLevelUp(
-                        guild,
-                        userIDv2,
-                        disClient,
-                        true,
-                        true,
-                    );
+                    let hasRankedDown;
+
+                    if (init_userXP.xp > 6000) {
+                        //  Subtract tokens
+                        hasRankedDown = await Levels.subtractXp(
+                            userIDv2,
+                            guild.id,
+                            6000,
+                        );
+                    } else {
+                        hasRankedDown = await Levels.subtractXp(
+                            userIDv2,
+                            guild.id,
+                            init_userXP.xp,
+                        );
+                    }
+
+                    if (hasRankedDown) {
+                        console.log('Deranked');
+                        xp_roles.improvedLevelUp(
+                            guild,
+                            userIDv2,
+                            disClient,
+                            true,
+                            true,
+                        );
+                    }
                 }
             }
         } else {

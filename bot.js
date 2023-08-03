@@ -117,7 +117,7 @@ const invLeaderboardQueue = async.queue((task, callback) => {
                 inv_l
                     .UpdateLeaderboard(
                         invites,
-                        task.id,
+                        task.member,
                         guild,
                         client,
                         task.increase,
@@ -405,6 +405,7 @@ client.on(Events.GuildMemberRemove, async (member) => {
 
     invLeaderboardQueue.push({
         id: member.id,
+        member: member,
         increase: false,
         fetchinv: false,
     });
@@ -415,6 +416,14 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     reactionQueue.push({
         reaction: reaction,
         user: user,
+    });
+});
+
+// Event for when invite is created
+client.on(Events.InviteCreate, async () => {
+    console.log('Invite event triggered');
+    invLeaderboardQueue.push({
+        fetchinv: true,
     });
 });
 
