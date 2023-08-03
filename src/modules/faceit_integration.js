@@ -187,4 +187,6 @@ module.exports = {
     parseNicknames,
     rewardParticipants,
     setClient,
+    getHub,
+    getAllHubMatches,
 };

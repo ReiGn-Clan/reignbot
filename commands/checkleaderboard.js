@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance('dev_xpDatabase');
+const { xpDbEnvironment } = require('../dev_config.json');
+const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 
 async function checkLeaderboard(interaction) {
     const limit = interaction.options.getInteger('leaderboard_length');

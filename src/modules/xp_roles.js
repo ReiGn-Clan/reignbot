@@ -1,9 +1,13 @@
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
 
-const { variousIDs, discordAPIBotStuff } = require('../../dev_config.json');
+const {
+    variousIDs,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+} = require('../../dev_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance('dev_xpDatabase');
+const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user

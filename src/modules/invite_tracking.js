@@ -1,5 +1,7 @@
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance('dev_recruiter');
+const { recruiterDbEnvironment } = require('../../dev_config.json');
+
+const db = mongo_bongo.getDbInstance(recruiterDbEnvironment);
 
 const fs = require('fs');
 const { EmbedBuilder } = require('discord.js');

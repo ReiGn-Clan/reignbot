@@ -1,14 +1,13 @@
 const { MongoClient } = require('mongodb');
 
-const url =
-    'mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/';
+const { mongoUri } = require('../../dev_config.json');
 
 let client = null;
 
 function connectToDatabase() {
     console.log('We are here');
     try {
-        client = new MongoClient(url);
+        client = new MongoClient(mongoUri);
 
         console.log('Connected to MongoDB successfully');
     } catch (error) {

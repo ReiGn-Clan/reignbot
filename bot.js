@@ -6,6 +6,7 @@ const path = require('node:path');
 const Levels = require('./src/utils/syb_xp.js');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
+const faceit_integration = require('./src/modules/faceit_integration.js');
 
 const async = require('async');
 
@@ -18,7 +19,7 @@ const {
     EmbedBuilder,
 } = require('discord.js');
 
-const { discordAPIBotStuff } = require('./dev_config.json');
+const { discordAPIBotStuff, xpDbEnvironment } = require('./dev_config.json');
 
 // For voice channel tracking
 let afk_channel = null;
@@ -55,8 +56,6 @@ app.listen(port, () => {
     console.log(`Web server listening on port ${port}`);
 });
 
-const faceit_integration = require('./src/modules/faceit_integration.js');
-const { match } = require('node:assert');
 faceit_integration.setClient(client);
 
 // Create a new Collection to store the commands
@@ -185,7 +184,7 @@ client.once(Events.ClientReady, async () => {
     const guild = client.guilds.cache.get(discordAPIBotStuff[1].guildID);
     afk_channel = guild.afkChannelId;
 
-    Levels.set_collection('xpDatabase', 'levels'); //this connects to the database, then sets the URL for the database for the discord-xp library
+    Levels.set_collection(xpDbEnvironment, 'levels'); //this connects to the database, then sets the URL for the database for the discord-xp library
 
     xp_roles.makeDaily(client);
 

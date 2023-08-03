@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance('dev_shop');
+const { shopDbEnvironment } = require('../dev_config.json');
+
+const db = mongo_bongo.getDbInstance(shopDbEnvironment);
 
 module.exports = {
     data: new SlashCommandBuilder()

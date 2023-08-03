@@ -7,23 +7,7 @@
         { "clientID": "1089665817160978553" }
     ],
 
-    "mongoUris": [
-        {
-            "xpDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/xpDatabase"
-        },
-        {
-            "recruiterDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/recruiter"
-        },
-        {
-            "gamblingDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/gambling"
-        },
-        {
-            "shopDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/shop"
-        },
-        {
-            "faceitDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/faceitIntegration"
-        }
-    ],
+    "mongoUri": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/",
 
     "variousIDs": [
         { "userUpdatesChannel": "1103780086810955846" },
@@ -35,5 +19,7 @@
     "recruiterDbEnvironment": "recruiter",
     "faceitJsonAccept": "application/json",
     "faceitAuth": "Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44",
-    "faceitDbEnvironment": "faceitIntegration"
+    "faceitDbEnvironment": "faceitIntegration",
+    "shopDbEnvironment": "dev_shop",
+    "gamblingDbEnvironment": "dev_gambling"
 }

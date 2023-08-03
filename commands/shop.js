@@ -9,8 +9,8 @@ const {
 } = require('discord.js');
 const fs = require('node:fs');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance('dev_shop');
-const { variousIDs } = require('../dev_config.json');
+const { variousIDs, shopDbEnvironment } = require('../dev_config.json');
+const db = mongo_bongo.getDbInstance(shopDbEnvironment);
 const Levels = require('../src/utils/syb_xp.js');
 
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
