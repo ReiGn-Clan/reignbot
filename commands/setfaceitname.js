@@ -35,13 +35,13 @@ module.exports = {
             return;
         }
 
-        if (allHubMembers.includes(faceitUsername)){
+        if (allHubMembers.includes(faceitUsername)) {
             let hasLeveledUp = await Levels.appendXp(
                 interaction.user.id,
                 interaction.guild.id,
                 5000,
             );
-    
+
             if (hasLeveledUp) {
                 try {
                     await xp_roles.improvedLevelUp(
@@ -53,7 +53,7 @@ module.exports = {
                     console.error(error); // add error handling for levelUp functio
                 }
             }
-    
+
             //no entry exists and the user is in the hub, bongo into mongo
             const dataEntry = {
                 discordUsername,

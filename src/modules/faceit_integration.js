@@ -1,5 +1,11 @@
 const fetch = require('cross-fetch');
-const { faceitJsonAccept, faceitAuth, faceitDbEnvironment, discordAPIBotStuff, xpDbEnvironment } = require('../../dev_config.json');
+const {
+    faceitJsonAccept,
+    faceitAuth,
+    faceitDbEnvironment,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+} = require('../../dev_config.json');
 const headers = {
     accept: faceitJsonAccept,
     Authorization: faceitAuth,
@@ -30,59 +36,61 @@ async function parseNicknames() {
     return nicknameArray;
 }
 
-async function rewardParticipants (){
-    let {nicknames, matchID} = await parseMatches();
-    const alreadyAwarded = await awardedMatchesCollection.findOne({matchID});
+async function rewardParticipants() {
+    let { nicknames, matchID } = await parseMatches();
+    const alreadyAwarded = await awardedMatchesCollection.findOne({ matchID });
     if (alreadyAwarded) {
         console.log(`MatchID: ${matchID} has already been awarded!`);
         return;
     }
 
-    if (!alreadyAwarded){
+    if (!alreadyAwarded) {
         try {
             // Use MongoDB driver to find players in the database based on lowercase nicknames
-            const linkedUsernames = await usernamesCollection.find({ faceitUsername: { $in: nicknames } }).toArray();
+            const linkedUsernames = await usernamesCollection
+                .find({ faceitUsername: { $in: nicknames } })
+                .toArray();
             for (const player of linkedUsernames) {
                 if (player.discordUsername) {
                     let hasLeveledUp = await Levels.appendXp(
                         player.discordUsername,
                         discordAPIBotStuff[1].guildID,
                         5000,
-                        console.log('Awarded xp for match!')
+                        console.log('Awarded xp for match!'),
                     );
 
                     if (hasLeveledUp) {
-                        try{
+                        try {
                             await xp_roles.improvedLevelUp(
                                 discordAPIBotStuff[1].guildID,
                                 player.discordUsername,
                                 discordClient,
                             );
-                        } catch(error){
+                        } catch (error) {
                             console.error(error);
                         }
                     }
                 }
             }
         } catch (error) {
-            console.error("Error while querying the database:", error);
+            console.error('Error while querying the database:', error);
         }
     }
 }
 
-async function parseMatches(){
+async function parseMatches() {
     const matchData = await getAllHubMatches();
     let team1 = [];
     let team2 = [];
     team1 = matchData.items[0].teams.faction1.roster;
     team2 = matchData.items[0].teams.faction2.roster;
-    
+
     let fullRoster = team1.concat(team2);
-    let nicknamesRaw =  fullRoster.map(player => player.nickname);
-    let nicknames = nicknamesRaw.map(nickname => nickname.toLowerCase());
+    let nicknamesRaw = fullRoster.map((player) => player.nickname);
+    let nicknames = nicknamesRaw.map((nickname) => nickname.toLowerCase());
     let matchID = matchData.items[0].match_id;
 
-    return {nicknames, matchID};
+    return { nicknames, matchID };
 }
 
 async function getAllHubMembers() {
@@ -156,5 +164,5 @@ async function getHub() {
 module.exports = {
     parseMatches,
     parseNicknames,
-    rewardParticipants
+    rewardParticipants,
 };
