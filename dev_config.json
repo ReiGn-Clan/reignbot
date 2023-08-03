@@ -19,6 +19,9 @@
         },
         {
             "shopDatabase": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/shop"
+        },
+        {
+            "faceitIntegration": "mongodb+srv://admin:vZxUHrWiAWpVNVOdG@cluster0.jialcet.mongodb.net/dev_faceitIntegration"
         }
     ],
 
@@ -31,5 +34,6 @@
     "xpDbEnvironment": "dev_xpDatabase",
     "recruiterDbEnvironment": "dev_recruiter",
     "faceitJsonAccept": "application/json",
-    "faceitAuth": "Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44"
+    "faceitAuth": "Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44",
+    "faceitDbEnvironment": "dev_faceitIntegration"
 }
