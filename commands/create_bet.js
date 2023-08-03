@@ -175,12 +175,22 @@ module.exports = {
                                     );
 
                                     if (userXP.xp >= enteredNumber) {
-                                        await Levels.subtractXp(
-                                            collected.user.id,
-                                            interaction.guild.id,
-                                            enteredNumber,
-                                        );
+                                        const hasLeveledDown =
+                                            await Levels.subtractXp(
+                                                collected.user.id,
+                                                interaction.guild.id,
+                                                enteredNumber,
+                                            );
 
+                                        if (hasLeveledDown) {
+                                            xp_roles.improvedLevelUp(
+                                                interaction.guild,
+                                                collected.user.id,
+                                                interaction.client,
+                                                true,
+                                                true,
+                                            );
+                                        }
                                         collected.followUp({
                                             content: `You bet ${enteredNumber}!`,
                                             ephemeral: true,
@@ -295,6 +305,8 @@ module.exports = {
                                     interaction.guild,
                                     collected.user.id,
                                     interaction.client,
+                                    false,
+                                    true,
                                 );
                             } catch (error) {
                                 console.error(error); // add error handling for levelUp functio

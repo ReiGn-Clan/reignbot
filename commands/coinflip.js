@@ -75,7 +75,7 @@ module.exports = {
         });
 
         // Remove the tokens from the users account
-        await Levels.subtractXp(
+        const initHasLeveledDown = await Levels.subtractXp(
             interaction.user.id,
             interaction.guild.id,
             tokens,
@@ -186,7 +186,7 @@ module.exports = {
                                     });
 
                                 //  Subtract tokens
-                                await Levels.subtractXp(
+                                const hasLeveledDown = await Levels.subtractXp(
                                     collected.user.id,
                                     interaction.guild.id,
                                     tokens,
@@ -262,24 +262,7 @@ module.exports = {
 
                                 // Let the loser know they deranked if they did
                                 if (loser == interaction.user.id) {
-                                    let init_userXP_after = await Levels.fetch(
-                                        interaction.user.id,
-                                        interaction.guild.id,
-                                    );
-
-                                    while (
-                                        init_userXP_after.xp == init_userXP.xp
-                                    ) {
-                                        init_userXP_after = await Levels.fetch(
-                                            interaction.user.id,
-                                            interaction.guild.id,
-                                        );
-                                    }
-
-                                    if (
-                                        init_userXP_after.level <
-                                        init_userXP.level
-                                    ) {
+                                    if (initHasLeveledDown) {
                                         console.log('Deranked');
                                         xp_roles.improvedLevelUp(
                                             interaction.guild,
@@ -290,19 +273,7 @@ module.exports = {
                                         );
                                     }
                                 } else {
-                                    let userXP_after = await Levels.fetch(
-                                        collected.user.id,
-                                        interaction.guild.id,
-                                    );
-
-                                    while (userXP_after.xp == userXP.xp) {
-                                        userXP_after = await Levels.fetch(
-                                            collected.user.id,
-                                            interaction.guild.id,
-                                        );
-                                    }
-
-                                    if (userXP_after.level < userXP.level) {
+                                    if (hasLeveledDown) {
                                         console.log('Deranked');
                                         xp_roles.improvedLevelUp(
                                             interaction.guild,

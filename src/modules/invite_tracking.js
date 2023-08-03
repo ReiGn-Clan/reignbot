@@ -131,7 +131,7 @@ async function UpdateLeaderboard(
                 let hasLeveledUp = await Levels.appendXp(
                     userIDv2,
                     guild.id,
-                    2000,
+                    6000,
                 ).catch(console.error); // add error handling for appendXp function
 
                 if (hasLeveledUp) {
@@ -164,20 +164,24 @@ async function UpdateLeaderboard(
 
                 const init_userXP = await Levels.fetch(userIDv2, guild.id);
 
-                if (init_userXP.xp > 2000) {
+                let hasRankedDown;
+
+                if (init_userXP.xp > 6000) {
                     //  Subtract tokens
-                    await Levels.subtractXp(userIDv2, guild.id, 2000);
+                    hasRankedDown = await Levels.subtractXp(
+                        userIDv2,
+                        guild.id,
+                        6000,
+                    );
                 } else {
-                    await Levels.subtractXp(userIDv2, guild.id, init_userXP.xp);
+                    hasRankedDown = await Levels.subtractXp(
+                        userIDv2,
+                        guild.id,
+                        init_userXP.xp,
+                    );
                 }
 
-                let init_userXP_after = await Levels.fetch(userIDv2, guild.id);
-
-                while (init_userXP_after.xp == init_userXP.xp) {
-                    init_userXP_after = await Levels.fetch(userIDv2, guild.id);
-                }
-
-                if (init_userXP_after.level < init_userXP.level) {
+                if (hasRankedDown) {
                     console.log('Deranked');
                     xp_roles.improvedLevelUp(
                         guild,
@@ -202,7 +206,7 @@ async function UpdateLeaderboard(
             let hasLeveledUp = await Levels.appendXp(
                 userIDv2,
                 guild.id,
-                2000,
+                6000,
             ).catch(console.error); // add error handling for appendXp function
 
             if (hasLeveledUp) {

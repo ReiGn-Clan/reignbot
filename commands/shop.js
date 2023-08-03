@@ -12,7 +12,7 @@ const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { variousIDs, shopDbEnvironment } = require('../dev_config.json');
 const db = mongo_bongo.getDbInstance(shopDbEnvironment);
 const Levels = require('../src/utils/syb_xp.js');
-
+const xp_roles = require('../src/modules/xp_roles.js');
 const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 const levelOrder = JSON.parse(levelNamesData).names;
 
@@ -187,11 +187,22 @@ module.exports = {
                                             return;
                                         }
 
-                                        await Levels.subtractXp(
-                                            interaction.user.id,
-                                            interaction.guild.id,
-                                            rank_listing.price,
-                                        );
+                                        const hasLeveledDown =
+                                            await Levels.subtractXp(
+                                                interaction.user.id,
+                                                interaction.guild.id,
+                                                rank_listing.price,
+                                            );
+
+                                        if (hasLeveledDown) {
+                                            await xp_roles.improvedLevelUp(
+                                                interaction.guild,
+                                                interaction.user.id,
+                                                interaction.client,
+                                                true,
+                                                true,
+                                            );
+                                        }
 
                                         button_collected.reply({
                                             content:

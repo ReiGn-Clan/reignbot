@@ -29,7 +29,21 @@ async function giveXP(interaction) {
     }
 
     // Remove the tokens from the user donating
-    await Levels.subtractXp(interaction.user.id, interaction.guild.id, tokens);
+    const hasLeveledDown = await Levels.subtractXp(
+        interaction.user.id,
+        interaction.guild.id,
+        tokens,
+    );
+
+    if (hasLeveledDown) {
+        await xp_roles.improvedLevelUp(
+            interaction.guild,
+            interaction.user.id,
+            interaction.client,
+            true,
+            true,
+        );
+    }
 
     let hasLeveledUp = await Levels.appendXp(
         user.id,
