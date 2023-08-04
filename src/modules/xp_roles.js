@@ -8,6 +8,7 @@ const {
 } = require('../../dev_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
+const boostersCollection = db.collection('boosters');
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
@@ -350,18 +351,34 @@ async function rewardDaily(reaction, user, disClient) {
 }
 
 async function rewardBoost(guildID, user, disClient) {
-    await Levels.appendXp(user.id, guildID, 10000);
-
     const channel = await disClient.channels.fetch(
         variousIDs[1].generalChannel,
     );
 
-    channel.message.send({
-        content: `${user} boosted the server and has been awarded 10.000 ReiGn Tokens!`,
-    });
-
     const guild = await disClient.guilds.fetch(guildID);
-    await improvedLevelUp(guild, user.id, disClient);
+    const alreadyBoosted = await boostersCollection.findOne({ user });
+
+    if (alreadyBoosted) {
+        return;
+    }
+
+    if (!alreadyBoosted) {
+        let hasLeveledUp = await Levels.appendXp(user.id, guildID, 10000).catch(
+            console.error,
+        ); // add error handling for appendXp function
+
+        channel.send({
+            content: `${user} boosted the server and has been awarded 10,000 ReiGn Tokens!`,
+        });
+        await boostersCollection.insertOne({ user });
+        if (hasLeveledUp) {
+            try {
+                await improvedLevelUp(guild, user.id, disClient);
+            } catch (error) {
+                console.error(error); // add error handling for levelUp functio
+            }
+        }
+    }
 }
 
 async function rewardBump(message, disClient) {

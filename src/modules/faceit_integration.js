@@ -15,7 +15,6 @@ const mongo_bongo = require('../utils/mongo_bongo.js');
 const Levels = require('../utils/syb_xp.js');
 const xp_roles = require('../modules/xp_roles.js');
 
-mongo_bongo.connectToDatabase();
 Levels.set_collection(xpDbEnvironment, 'levels');
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
 const usernamesCollection = db.collection('usernames');
