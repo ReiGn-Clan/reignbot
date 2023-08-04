@@ -142,11 +142,20 @@ module.exports = {
                                 button_option_2,
                             );
 
-                        const buy_reply = await collected.reply({
-                            content: `You can buy the next rank: ${rank_listing.name} for ${rank_listing.price} ReiGn Tokens.\nWould you like to?`,
-                            ephemeral: true,
-                            components: [row_buttons],
-                        });
+                        let buy_reply;
+                        if ('description' in rank_listing) {
+                            buy_reply = await collected.reply({
+                                content: `You can buy the next rank: **${rank_listing.name}** for a**${rank_listing.price}** ReiGn Tokens.\nWould you like to?\n\n**Rank description:** ${rank_listing.description}`,
+                                ephemeral: true,
+                                components: [row_buttons],
+                            });
+                        } else {
+                            buy_reply = await collected.reply({
+                                content: `You can buy the next rank: **${rank_listing.name}** for a**${rank_listing.price}** ReiGn Tokens.\nWould you like to?`,
+                                ephemeral: true,
+                                components: [row_buttons],
+                            });
+                        }
 
                         // Make button collector
                         const collector_btn =
