@@ -3,7 +3,6 @@ const {
     faceitAuth,
     faceitDbEnvironment,
     discordAPIBotStuff,
-    xpDbEnvironment,
     variousIDs,
 } = require('../../dev_config.json');
 const headers = {
@@ -15,10 +14,7 @@ const mongo_bongo = require('../utils/mongo_bongo.js');
 const Levels = require('../utils/syb_xp.js');
 const xp_roles = require('../modules/xp_roles.js');
 
-Levels.set_collection(xpDbEnvironment, 'levels');
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
-const usernamesCollection = db.collection('usernames');
-const awardedMatchesCollection = db.collection('awardedMatches');
 
 let discordClient;
 
@@ -42,6 +38,9 @@ async function parseNicknames() {
 }
 
 async function rewardParticipants(matchData) {
+    const usernamesCollection = db.collection('usernames');
+    const awardedMatchesCollection = db.collection('awardedMatches');
+
     let { nicknames, matchID } = await parseMatches(matchData);
     const alreadyAwarded = await awardedMatchesCollection.findOne({ matchID });
     if (alreadyAwarded) {

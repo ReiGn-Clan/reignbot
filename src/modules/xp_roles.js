@@ -8,7 +8,6 @@ const {
 } = require('../../dev_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
-const boostersCollection = db.collection('boosters');
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
@@ -351,6 +350,7 @@ async function rewardDaily(reaction, user, disClient) {
 }
 
 async function rewardBoost(guildID, user, disClient) {
+    const boostersCollection = db.collection('boosters');
     const channel = await disClient.channels.fetch(
         variousIDs[1].generalChannel,
     );

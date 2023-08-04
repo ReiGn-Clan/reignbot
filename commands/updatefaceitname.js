@@ -3,7 +3,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { faceitDbEnvironment } = require('../dev_config.json');
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
-const collection = db.collection('usernames');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,6 +16,7 @@ module.exports = {
         ),
 
     async execute(interaction) {
+        const collection = db.collection('usernames');
         let faceitUsername = interaction.options.getString('faceitusername');
         let discordUsername = interaction.user.username;
 
