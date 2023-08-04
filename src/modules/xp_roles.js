@@ -363,6 +363,33 @@ async function rewardBoost(guildID, user, disClient) {
     const guild = await disClient.guilds.fetch(guildID);
     await improvedLevelUp(guild, user.id, disClient);
 }
+
+async function rewardBump(message, disClient) {
+    const tokens = 1500;
+    const channel = await disClient.channels.fetch(
+        variousIDs[0].userUpdatesChannel,
+    );
+    const user = message.interaction.user;
+    const guild = await disClient.guilds.fetch(discordAPIBotStuff[1].guildID);
+
+    channel.send({
+        content: `${user} has earned **${tokens}** ReiGn Tokens by bumping the server`,
+    });
+
+    let hasLeveledUp = await Levels.appendXp(
+        user.id,
+        message.guildId,
+        tokens,
+    ).catch(console.error); // add error handling for appendXp function
+
+    if (hasLeveledUp) {
+        try {
+            await improvedLevelUp(guild, user.id, disClient);
+        } catch (error) {
+            console.error(error); // add error handling for levelUp functio
+        }
+    }
+}
 module.exports = {
     updateXpLeaderboard,
     improvedLevelUp,
@@ -371,4 +398,5 @@ module.exports = {
     makeDaily,
     rewardDaily,
     rewardBoost,
+    rewardBump,
 };

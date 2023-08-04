@@ -11,13 +11,7 @@ const faceit_integration = require('./src/modules/faceit_integration.js');
 const async = require('async');
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
-const {
-    Client,
-    Collection,
-    Events,
-    GatewayIntentBits,
-    EmbedBuilder,
-} = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 const { discordAPIBotStuff, xpDbEnvironment } = require('./dev_config.json');
 
@@ -213,7 +207,7 @@ client.once(Events.ClientReady, async () => {
         fetchinv: true,
     });
 
-    //client.user.setAvatar('./assets/logo_v1.jpg');
+    //client.user.setAvatar('./assets/logo_v1_dev.png');
     //client.user.setUsername('ReignBotDEV');
 });
 
@@ -343,14 +337,13 @@ client.on('messageCreate', async (message) => {
         message.embeds[0].description.indexOf('Bump done') > -1
     ) {
         setTimeout(() => {
-            const embed = new EmbedBuilder()
-                .setTitle("Bump timer's out!")
-                .setDescription(
-                    `It's time to bump again! <@&${1124800405189185536}>`,
-                )
-                .setTimestamp();
-            message.channel.send(embed);
+            const roleID = '1124800405189185536';
+            message.channel.send({
+                content: `### <@&${roleID}> It's time to bump again squad! ❤️`,
+            });
         }, 7200000);
+
+        await xp_roles.rewardBump(message, client);
     }
 
     //if the message starts with the command prefix or if the author is the bot, skip this method

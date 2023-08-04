@@ -126,7 +126,7 @@ module.exports = {
                     }*, the option: **${
                         found_bet.options[convertor[button_collected.customId]]
                             .description
-                    }** has won. ReiGn Tokens will be handed out shortly to the winners!}`,
+                    }** has won. ReiGn Tokens will be handed out shortly to the winners!`,
                 });
 
                 // Calculate the odds:
@@ -163,6 +163,8 @@ module.exports = {
                                     interaction.guild,
                                     obj.user,
                                     interaction.client,
+                                    false,
+                                    true,
                                 );
                             } catch (error) {
                                 console.error(error); // add error handling for levelUp functio
