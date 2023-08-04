@@ -356,23 +356,21 @@ async function rewardBoost(guildID, user, disClient) {
     );
 
     const guild = await disClient.guilds.fetch(guildID);
-    const alreadyBoosted = await boostersCollection.findOne({user});
-    
-    if (alreadyBoosted){
+    const alreadyBoosted = await boostersCollection.findOne({ user });
+
+    if (alreadyBoosted) {
         return;
     }
 
-    if (!alreadyBoosted){
-        let hasLeveledUp = await Levels.appendXp(
-            user.id,
-            guildID,
-            10000,
-        ).catch(console.error); // add error handling for appendXp function
-    
+    if (!alreadyBoosted) {
+        let hasLeveledUp = await Levels.appendXp(user.id, guildID, 10000).catch(
+            console.error,
+        ); // add error handling for appendXp function
+
         channel.send({
             content: `${user} boosted the server and has been awarded 10,000 ReiGn Tokens!`,
         });
-        await boostersCollection.insertOne({user});
+        await boostersCollection.insertOne({ user });
         if (hasLeveledUp) {
             try {
                 await improvedLevelUp(guild, user.id, disClient);
