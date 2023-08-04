@@ -375,17 +375,15 @@ client.on('messageCreate', async (message) => {
     }
 });
 
-client.on(Events.guildMemberUpdate, async (oldMember, newMember) => {
+client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
     const {guild} = newMember;
     if (!guild) return;
 
-    console.log('in event listener');
-    let boosterRoleID = '1137081458599665665';
+    let boosterRoleID = '1089665914129105066';
     const wasBoosting = oldMember.roles.cache.has(boosterRoleID);
     const isBoosting = newMember.roles.cache.has(boosterRoleID);
 
     if (!wasBoosting && isBoosting) {
-        console.log('in event listener if statement')
         const user = newMember.user;
         await xp_roles.rewardBoost(discordAPIBotStuff[1].guildID, user, client);
     }
