@@ -26,6 +26,7 @@ module.exports = {
             interaction.user.id,
         );
         const shop_items = await db.collection('shop_items');
+        const receipts = await db.collection('receipts');
 
         // List the different shop categories
         let category_array = await shop_items
@@ -233,6 +234,15 @@ module.exports = {
                                         await channel.send(
                                             `${member.user}, has bought the rank **${next_rank}**!`,
                                         );
+
+                                        const user_receipt = {
+                                            userId: interaction.user.id,
+                                            itemId: rank_listing._id,
+                                            item: rank_listing.name,
+                                            price: rank_listing.price,
+                                        };
+
+                                        await receipts.insertOne(user_receipt);
 
                                         collector_btn.stop();
                                         collector.stop();

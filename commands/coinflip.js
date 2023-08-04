@@ -4,7 +4,9 @@ const {
     ButtonBuilder,
     ButtonStyle,
 } = require('discord.js');
-
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const { gamblingDbEnvironment } = require('../dev_config.json');
+const db = mongo_bongo.getDbInstance(gamblingDbEnvironment);
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 
@@ -31,8 +33,7 @@ module.exports = {
     async execute(interaction) {
         const tokens = interaction.options.getInteger('tokens');
         const user_challenge = interaction.options.getUser('user');
-
-        console.log(user_challenge);
+        const gambles = db.collection('gambles');
 
         const init_userXP = await Levels.fetch(
             interaction.user.id,
@@ -284,6 +285,18 @@ module.exports = {
                                         );
                                     }
                                 }
+
+                                const doc = {
+                                    game: 'coinflip',
+                                    starter: interaction.user.id,
+                                    result: winning_side,
+                                    winner: winner,
+                                    loser: loser,
+                                    stake: tokens,
+                                    payout: tokens * 2 * 0.9,
+                                };
+
+                                await gambles.insertOne(doc);
 
                                 coinflip_ended = true;
                                 collector.stop();
