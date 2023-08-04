@@ -377,7 +377,6 @@ client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
     const isBoosting = newMember.roles.cache.has(boosterRoleID);
 
     if (!wasBoosting && isBoosting) {
-        console.log('in event listener if statement');
         const user = newMember.user;
         await xp_roles.rewardBoost(discordAPIBotStuff[1].guildID, user, client);
     }
