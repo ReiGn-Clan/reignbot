@@ -24,14 +24,17 @@ module.exports = {
         if (existingEntry) {
             const updatedEntry = { $set: { faceitUsername } };
             await collection.updateOne({ discordUsername }, updatedEntry);
-            await interaction.reply(
-                `Updated ${discordUsername}'s FaceIt username to ${faceitUsername}`,
-            );
+            await interaction.reply({
+                content: `Updated ${discordUsername}'s FaceIt username to ${faceitUsername}`,
+                ephemeral: true,
+            });
             return;
         } else {
-            await interaction.reply(
-                'Unable to find your FaceIt username in the database, maybe try /setfaceitname?',
-            );
+            await interaction.reply({
+                content:
+                    'Unable to find your FaceIt username in the database, maybe try /setfaceitname?',
+                ephemeral: true,
+            });
         }
     },
 };

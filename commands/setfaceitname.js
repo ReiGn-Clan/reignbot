@@ -29,9 +29,22 @@ module.exports = {
 
         //user not found in hub member array
         if (!allHubMembers.includes(faceitUsername)) {
-            await interaction.reply(
-                `${faceitUsername} not found in the FaceIt hub!`,
-            );
+            await interaction.reply({
+                content: `${faceitUsername} not found in the FaceIt hub!`,
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const already_set = collection.findOne({
+            discordUserID: interaction.user.id,
+        });
+
+        if (already_set !== null) {
+            await interaction.reply({
+                content: `You already set your username previously! Use /updatefaceitname instead!`,
+                ephemeral: true,
+            });
             return;
         }
 
