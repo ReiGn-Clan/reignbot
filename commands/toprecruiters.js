@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const { recruiterDbEnvironment } = require('../prod_config.json');
+const { recruiterDbEnvironment } = require('../dev_config.json');
 const db = mongo_bongo.getDbInstance(recruiterDbEnvironment);
 
 module.exports = {
