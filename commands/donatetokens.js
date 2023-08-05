@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Levels = require('discord-xp');
+const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 
 async function giveXP(interaction) {
@@ -29,7 +29,21 @@ async function giveXP(interaction) {
     }
 
     // Remove the tokens from the user donating
-    await Levels.subtractXp(interaction.user.id, interaction.guild.id, tokens);
+    const hasLeveledDown = await Levels.subtractXp(
+        interaction.user.id,
+        interaction.guild.id,
+        tokens,
+    );
+
+    if (hasLeveledDown) {
+        await xp_roles.improvedLevelUp(
+            interaction.guild,
+            interaction.user.id,
+            interaction.client,
+            true,
+            true,
+        );
+    }
 
     let hasLeveledUp = await Levels.appendXp(
         user.id,

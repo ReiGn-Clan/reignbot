@@ -1,4 +1,3 @@
-const { MongoClient } = require('mongodb');
 const {
     SlashCommandBuilder,
     ActionRowBuilder,
@@ -9,10 +8,10 @@ const {
     ComponentType,
 } = require('discord.js');
 
-const { mongoUris } = require('../prod_config.json');
-const client = new MongoClient(mongoUris[2].gamblingDatabase);
-const db = client.db('gambling');
-const Levels = require('discord-xp');
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const { gamblingDbEnvironment } = require('../dev_config.json');
+const db = mongo_bongo.getDbInstance(gamblingDbEnvironment);
+const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 
 module.exports = {
@@ -127,7 +126,7 @@ module.exports = {
                     }*, the option: **${
                         found_bet.options[convertor[button_collected.customId]]
                             .description
-                    }** has won. ReiGn Tokens will be handed out shortly to the winners!}`,
+                    }** has won. ReiGn Tokens will be handed out shortly to the winners!`,
                 });
 
                 // Calculate the odds:
@@ -164,6 +163,8 @@ module.exports = {
                                     interaction.guild,
                                     obj.user,
                                     interaction.client,
+                                    false,
+                                    true,
                                 );
                             } catch (error) {
                                 console.error(error); // add error handling for levelUp functio

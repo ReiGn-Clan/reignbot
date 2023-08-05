@@ -4,8 +4,10 @@ const {
     ButtonBuilder,
     ButtonStyle,
 } = require('discord.js');
-
-const Levels = require('discord-xp');
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const { gamblingDbEnvironment } = require('../dev_config.json');
+const db = mongo_bongo.getDbInstance(gamblingDbEnvironment);
+const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 
 module.exports = {
@@ -31,8 +33,7 @@ module.exports = {
     async execute(interaction) {
         const tokens = interaction.options.getInteger('tokens');
         const user_challenge = interaction.options.getUser('user');
-
-        console.log(user_challenge);
+        const gambles = db.collection('gambles');
 
         const init_userXP = await Levels.fetch(
             interaction.user.id,
@@ -75,7 +76,7 @@ module.exports = {
         });
 
         // Remove the tokens from the users account
-        await Levels.subtractXp(
+        const initHasLeveledDown = await Levels.subtractXp(
             interaction.user.id,
             interaction.guild.id,
             tokens,
@@ -186,7 +187,7 @@ module.exports = {
                                     });
 
                                 //  Subtract tokens
-                                await Levels.subtractXp(
+                                const hasLeveledDown = await Levels.subtractXp(
                                     collected.user.id,
                                     interaction.guild.id,
                                     tokens,
@@ -262,24 +263,7 @@ module.exports = {
 
                                 // Let the loser know they deranked if they did
                                 if (loser == interaction.user.id) {
-                                    let init_userXP_after = await Levels.fetch(
-                                        interaction.user.id,
-                                        interaction.guild.id,
-                                    );
-
-                                    while (
-                                        init_userXP_after.xp == init_userXP.xp
-                                    ) {
-                                        init_userXP_after = await Levels.fetch(
-                                            interaction.user.id,
-                                            interaction.guild.id,
-                                        );
-                                    }
-
-                                    if (
-                                        init_userXP_after.level <
-                                        init_userXP.level
-                                    ) {
+                                    if (initHasLeveledDown) {
                                         console.log('Deranked');
                                         xp_roles.improvedLevelUp(
                                             interaction.guild,
@@ -290,19 +274,7 @@ module.exports = {
                                         );
                                     }
                                 } else {
-                                    let userXP_after = await Levels.fetch(
-                                        collected.user.id,
-                                        interaction.guild.id,
-                                    );
-
-                                    while (userXP_after.xp == userXP.xp) {
-                                        userXP_after = await Levels.fetch(
-                                            collected.user.id,
-                                            interaction.guild.id,
-                                        );
-                                    }
-
-                                    if (userXP_after.level < userXP.level) {
+                                    if (hasLeveledDown) {
                                         console.log('Deranked');
                                         xp_roles.improvedLevelUp(
                                             interaction.guild,
@@ -313,6 +285,18 @@ module.exports = {
                                         );
                                     }
                                 }
+
+                                const doc = {
+                                    game: 'coinflip',
+                                    starter: interaction.user.id,
+                                    result: winning_side,
+                                    winner: winner,
+                                    loser: loser,
+                                    stake: tokens,
+                                    payout: tokens * 2 * 0.9,
+                                };
+
+                                await gambles.insertOne(doc);
 
                                 coinflip_ended = true;
                                 collector.stop();

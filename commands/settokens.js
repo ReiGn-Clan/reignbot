@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Levels = require('discord-xp');
+const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 
 async function setxp(interaction) {

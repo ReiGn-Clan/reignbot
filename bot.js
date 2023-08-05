@@ -1,20 +1,19 @@
+const mongo_bongo = require('./src/utils/mongo_bongo.js');
+mongo_bongo.connectToDatabase();
+
 const fs = require('node:fs');
 const path = require('node:path');
-const Levels = require('discord-xp');
+const Levels = require('./src/utils/syb_xp.js');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
+const faceit_integration = require('./src/modules/faceit_integration.js');
+
 const async = require('async');
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
-const {
-    Client,
-    Collection,
-    Events,
-    GatewayIntentBits,
-    EmbedBuilder,
-} = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
-const { discordAPIBotStuff, mongoUris } = require('./prod_config.json');
+const { discordAPIBotStuff, xpDbEnvironment } = require('./dev_config.json');
 
 // For voice channel tracking
 let afk_channel = null;
@@ -33,6 +32,25 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
     ],
 });
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+app.post('/faceit_match_ended/', (req, res) => {
+    const matchData = req.body;
+    console.log('Received webhook notification');
+    faceit_integration.rewardParticipants(matchData);
+    res.sendStatus(200);
+});
+
+app.listen(port, () => {
+    console.log(`Web server listening on port ${port}`);
+});
+
+faceit_integration.setClient(client);
 
 // Create a new Collection to store the commands
 client.commands = new Collection();
@@ -93,7 +111,7 @@ const invLeaderboardQueue = async.queue((task, callback) => {
                 inv_l
                     .UpdateLeaderboard(
                         invites,
-                        task.id,
+                        task.member,
                         guild,
                         client,
                         task.increase,
@@ -159,7 +177,8 @@ client.once(Events.ClientReady, async () => {
     console.log('Ready!');
     const guild = client.guilds.cache.get(discordAPIBotStuff[1].guildID);
     afk_channel = guild.afkChannelId;
-    Levels.setURL(mongoUris[0].xpDatabase); //this connects to the database, then sets the URL for the database for the discord-xp library
+
+    Levels.set_collection(xpDbEnvironment, 'levels'); //this connects to the database, then sets the URL for the database for the discord-xp library
 
     xp_roles.makeDaily(client);
 
@@ -183,8 +202,13 @@ client.once(Events.ClientReady, async () => {
         KickKids();
     }, 500);
 
-    //client.user.setAvatar('./assets/logo_v1.jpg');
-    //client.user.setUsername('ReignBot');
+    console.log('Invite event triggered');
+    invLeaderboardQueue.push({
+        fetchinv: true,
+    });
+
+    //client.user.setAvatar('./assets/logo_v1_dev.png');
+    //client.user.setUsername('ReignBotDEV');
 });
 
 client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
@@ -313,14 +337,13 @@ client.on('messageCreate', async (message) => {
         message.embeds[0].description.indexOf('Bump done') > -1
     ) {
         setTimeout(() => {
-            const embed = new EmbedBuilder()
-                .setTitle("Bump timer's out!")
-                .setDescription(
-                    `It's time to bump again! <@&${1124800405189185536}>`,
-                )
-                .setTimestamp();
-            message.channel.send(embed);
+            const roleID = '1124800405189185536';
+            message.channel.send({
+                content: `### <@&${roleID}> It's time to bump again squad! ❤️`,
+            });
         }, 7200000);
+
+        await xp_roles.rewardBump(message, client);
     }
 
     //if the message starts with the command prefix or if the author is the bot, skip this method
@@ -345,26 +368,15 @@ client.on('messageCreate', async (message) => {
     }
 });
 
-// Run once to make sure all invites are stored
-client.once(Events.ClientReady, () => {
-    client.guilds.fetch(discordAPIBotStuff[1].guildID).then((guild) => {
-        guild.invites.fetch().then((inv) => inv_l.UpdateLinks(inv));
-    });
-});
+client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
+    const { guild } = newMember;
+    if (!guild) return;
 
-// Event for when invite is created
-client.on(Events.InviteCreate, async () => {
-    console.log('Invite event triggered');
-    invLeaderboardQueue.push({
-        fetchinv: true,
-    });
-});
+    let boosterRoleID = '1089665914129105066';
+    const wasBoosting = oldMember.roles.cache.has(boosterRoleID);
+    const isBoosting = newMember.roles.cache.has(boosterRoleID);
 
-client.on(Events.guildMemberUpdate, async (oldMember, newMember) => {
-    const oldBoostStatus = oldMember.premiumSince;
-    const newBoostStatus = newMember.premiumSince;
-
-    if (!oldBoostStatus && newBoostStatus) {
+    if (!wasBoosting && isBoosting) {
         const user = newMember.user;
         await xp_roles.rewardBoost(discordAPIBotStuff[1].guildID, user, client);
     }
@@ -390,6 +402,7 @@ client.on(Events.GuildMemberRemove, async (member) => {
 
     invLeaderboardQueue.push({
         id: member.id,
+        member: member,
         increase: false,
         fetchinv: false,
     });
@@ -400,6 +413,14 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     reactionQueue.push({
         reaction: reaction,
         user: user,
+    });
+});
+
+// Event for when invite is created
+client.on(Events.InviteCreate, async () => {
+    console.log('Invite event triggered');
+    invLeaderboardQueue.push({
+        fetchinv: true,
     });
 });
 
