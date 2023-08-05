@@ -35,25 +35,6 @@ const client = new Client({
     ],
 });
 
-/*
-const express = require('express');
-const app = express();
-const port = 3000;
-
-app.use(express.json());
-
-app.post('/faceit_match_ended/', (req, res) => {
-    const matchData = req.body;
-    console.log('Received webhook notification');
-    faceit_integration.rewardParticipants(matchData);
-    res.sendStatus(200);
-});
-
-app.listen(port, () => {
-    console.log(`Web server listening on port ${port}`);
-});
-*/
-
 faceit_integration.setClient(client);
 webhookserver.startWebHookServer();
 // Create a new Collection to store the commands
