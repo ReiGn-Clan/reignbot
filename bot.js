@@ -39,9 +39,9 @@ const port = 3000;
 
 app.use(express.json());
 
-app.post('/webhook/', (req, res) => {
+app.post('/faceit_match_ended/', (req, res) => {
     const matchData = req.body;
-    console.log('Received webhook notification: ', matchData);
+    console.log('Received webhook notification');
     faceit_integration.rewardParticipants(matchData);
     res.sendStatus(200);
 });
