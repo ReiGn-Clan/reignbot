@@ -73,7 +73,7 @@ async function rewardParticipants(matchData) {
                         player.discordUserID,
                     );
                     await channel.send({
-                        content: `${member.user} has earned 1500 ReiGn Tokens for participating in a 10 man!`,
+                        content: `${member.user} has earned **1500 ReiGn Tokens** for participating in a custom game!`,
                     });
 
                     if (hasLeveledUp) {
