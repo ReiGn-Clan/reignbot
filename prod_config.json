@@ -20,6 +20,6 @@
     "faceitJsonAccept": "application/json",
     "faceitAuth": "Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44",
     "faceitDbEnvironment": "faceitIntegration",
-    "shopDbEnvironment": "dev_shop",
-    "gamblingDbEnvironment": "dev_gambling"
+    "shopDbEnvironment": "shop",
+    "gamblingDbEnvironment": "gambling"
 }
