@@ -49,11 +49,10 @@ async function giveXP(interaction) {
                             (role) => role.name === current_rank,
                         );
 
-                    /* Need Nuke codes if u wanna enable this::
+                    // Need Nuke codes if u wanna enable this::
 
                     await item.roles.remove(previousRole);
                     await item.roles.add(role);
-                    */
                 }
             }
         });
