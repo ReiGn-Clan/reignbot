@@ -9,7 +9,7 @@ const {
 } = require('discord.js');
 const fs = require('node:fs');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const { variousIDs, shopDbEnvironment } = require('../dev_config.json');
+const { variousIDs, shopDbEnvironment } = require('../prod_config.json');
 const db = mongo_bongo.getDbInstance(shopDbEnvironment);
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');

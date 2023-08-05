@@ -4,7 +4,7 @@ const {
     faceitDbEnvironment,
     discordAPIBotStuff,
     variousIDs,
-} = require('../../dev_config.json');
+} = require('../../prod_config.json');
 const headers = {
     accept: faceitJsonAccept,
     Authorization: faceitAuth,

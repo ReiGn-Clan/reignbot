@@ -5,7 +5,7 @@ const {
     variousIDs,
     discordAPIBotStuff,
     xpDbEnvironment,
-} = require('../../dev_config.json');
+} = require('../../prod_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 
