@@ -41,7 +41,6 @@ module.exports = {
             discordUserID: interaction.user.id,
         });
 
-
         if (already_set !== null) {
             await interaction.reply({
                 content: `You already set your username previously! Use /updatefaceitname instead!`,
