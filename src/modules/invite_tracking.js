@@ -1,5 +1,6 @@
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const { recruiterDbEnvironment } = require('../../dev_config.json');
+const { config_to_use } = require('../../general_config.json');
+const { recruiterDbEnvironment } = require(`../../${config_to_use}`);
 
 const db = mongo_bongo.getDbInstance(recruiterDbEnvironment);
 

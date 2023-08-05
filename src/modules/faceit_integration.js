@@ -1,10 +1,11 @@
+const { config_to_use } = require('../../general_config.json');
 const {
     faceitJsonAccept,
     faceitAuth,
     faceitDbEnvironment,
     discordAPIBotStuff,
     variousIDs,
-} = require('../../dev_config.json');
+} = require(`../../${config_to_use}`);
 const headers = {
     accept: faceitJsonAccept,
     Authorization: faceitAuth,
@@ -73,7 +74,7 @@ async function rewardParticipants(matchData) {
                         player.discordUserID,
                     );
                     await channel.send({
-                        content: `${member.user} has earned **1500 ReiGn Tokens** for participating in a custom game!`,
+                        content: `${member.user} has earned **1500** ReiGn Tokens for participating in a custom game!`,
                     });
 
                     if (hasLeveledUp) {

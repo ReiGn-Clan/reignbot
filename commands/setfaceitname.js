@@ -3,7 +3,8 @@ const faceitIntegration = require('../src/modules/faceit_integration');
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const { faceitDbEnvironment } = require('../dev_config.json');
+const { config_to_use } = require('../general_config.json');
+const { faceitDbEnvironment } = require(`../${config_to_use}`);
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
 
 module.exports = {

@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
-
-const { mongoUri } = require('../../dev_config.json');
+const { config_to_use } = require('../../general_config.json');
+const { mongoUri } = require(`../../${config_to_use}`);
 
 let client = null;
 
