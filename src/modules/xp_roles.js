@@ -1,11 +1,11 @@
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
-
+const { config_to_use } = require('../../general_config.json');
 const {
     variousIDs,
     discordAPIBotStuff,
     xpDbEnvironment,
-} = require('../../dev_config.json');
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 

@@ -8,7 +8,8 @@ const {
     TextInputStyle,
 } = require('discord.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const { gamblingDbEnvironment } = require('../dev_config.json');
+const { config_to_use } = require('../general_config.json');
+const { gamblingDbEnvironment } = require(`../${config_to_use}`);
 const db = mongo_bongo.getDbInstance(gamblingDbEnvironment);
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
@@ -151,6 +152,12 @@ module.exports = {
                                 .catch(() => {
                                     // Catch any Errors that are thrown (e.g. if the awaitModalSubmit times out after 60000 ms)
                                     console.log('Time Expired');
+
+                                    // Allow the user to open modals again
+                                    const index2 = opened_modals.indexOf(
+                                        collected.user.id,
+                                    );
+                                    opened_modals.splice(index2, 1);
                                 });
 
                             if (
@@ -253,7 +260,7 @@ module.exports = {
                                 opened_modals.splice(index2, 1);
 
                                 collected.followUp({
-                                    content: `You did not respond within 60 seconds, try again`,
+                                    content: `You can now try again!`,
                                     ephemeral: true,
                                 });
                             }

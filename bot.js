@@ -7,13 +7,15 @@ const Levels = require('./src/utils/syb_xp.js');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
 const faceit_integration = require('./src/modules/faceit_integration.js');
+const webhookserver = require('./src/utils/webhookserver.js');
 
 const async = require('async');
 
 // Require the 'Client', 'Collection', 'Events', and 'GatewayIntentBits' objects from the 'discord.js' module
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
-const { discordAPIBotStuff, xpDbEnvironment } = require('./dev_config.json');
+const { config_to_use } = require('./general_config.json');
+const { discordAPIBotStuff, xpDbEnvironment } = require(`./${config_to_use}`);
 
 // For voice channel tracking
 let afk_channel = null;
@@ -33,6 +35,7 @@ const client = new Client({
     ],
 });
 
+/*
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -49,9 +52,10 @@ app.post('/faceit_match_ended/', (req, res) => {
 app.listen(port, () => {
     console.log(`Web server listening on port ${port}`);
 });
+*/
 
 faceit_integration.setClient(client);
-
+webhookserver.startWebHookServer();
 // Create a new Collection to store the commands
 client.commands = new Collection();
 

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const { xpDbEnvironment } = require('../dev_config.json');
+const { config_to_use } = require('../general_config.json');
+const { xpDbEnvironment } = require(`../${config_to_use}`);
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 
 async function checkLeaderboard(interaction) {
