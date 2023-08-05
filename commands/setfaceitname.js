@@ -41,7 +41,6 @@ module.exports = {
             discordUserID: interaction.user.id,
         });
 
-        console.log(already_set);
 
         if (already_set !== null) {
             await interaction.reply({
