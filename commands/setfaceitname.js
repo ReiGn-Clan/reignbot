@@ -37,9 +37,11 @@ module.exports = {
             return;
         }
 
-        const already_set = collection.findOne({
+        const already_set = await collection.findOne({
             discordUserID: interaction.user.id,
         });
+
+        console.log(already_set);
 
         if (already_set !== null) {
             await interaction.reply({
