@@ -356,7 +356,7 @@ async function rewardBoost(guildID, user, disClient) {
     );
 
     const guild = await disClient.guilds.fetch(guildID);
-    const alreadyBoosted = await boostersCollection.findOne({ user });
+    const alreadyBoosted = await boostersCollection.findOne({ user: user.id });
 
     if (alreadyBoosted) {
         return;
@@ -370,7 +370,7 @@ async function rewardBoost(guildID, user, disClient) {
         channel.send({
             content: `${user} boosted the server and has been awarded 10,000 ReiGn Tokens!`,
         });
-        await boostersCollection.insertOne({ user });
+        await boostersCollection.insertOne({ user: user.id });
         if (hasLeveledUp) {
             try {
                 await improvedLevelUp(guild, user.id, disClient);
