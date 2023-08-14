@@ -1,5 +1,7 @@
 // Better version of dicord XP shit
 const mongo_bongo = require('./mongo_bongo.js');
+const fs = require('node:fs');
+const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
 
 let collection;
 
@@ -56,7 +58,7 @@ async function appendXp(userId, guildId, xp) {
     return prev_level < user.level;
 }
 
-async function subtractXp(userId, guildId, xp) {
+async function subtractXp(userId, guildId, xp, rankName) {
     /*
     Subtracts XP from a user (tokens in reign)
 
@@ -80,6 +82,10 @@ async function subtractXp(userId, guildId, xp) {
     }
     user.level = Math.floor(0.1 * Math.sqrt(user.xp));
     user.lastUpdated = new Date();
+    if(rankName) {
+        user.rank = rankName;
+        user.rankValue = levelNamesData.names.indexOf(rankName);
+    }
 
     await collection
         .updateOne({ _id: user._id }, { $set: user })
