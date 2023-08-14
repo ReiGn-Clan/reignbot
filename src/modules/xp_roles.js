@@ -136,8 +136,8 @@ async function updateXpLeaderboard(guildID, disClient) {
 
     const memberPromises = updatedLeaderboard.map(async (user, index) => {
         const member = await guild.members.fetch(user.userID);
-        if(typeof user.rank == 'undefined') {
-            user.rank = "Neophyte";
+        if (typeof user.rank == 'undefined') {
+            user.rank = 'Neophyte';
         }
         return [
             `${index + 1}:  ${member.nickname ?? member.user.username}`,

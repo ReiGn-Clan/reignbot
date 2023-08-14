@@ -203,7 +203,7 @@ module.exports = {
                                                 interaction.user.id,
                                                 interaction.guild.id,
                                                 rank_listing.price,
-                                                rank_listing.name
+                                                rank_listing.name,
                                             );
 
                                         if (hasLeveledDown) {
