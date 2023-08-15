@@ -5,7 +5,9 @@ const levelOrder = JSON.parse(levelNamesData).names;
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { config_to_use } = require('../general_config.json');
 const { xpDbEnvironment } = require(`../${config_to_use}`);
-const collection = mongo_bongo.getDbInstance(xpDbEnvironment).collection('levels');
+const collection = mongo_bongo
+    .getDbInstance(xpDbEnvironment)
+    .collection('levels');
 
 async function saveRoles(interaction) {
     //get all users
@@ -18,21 +20,15 @@ async function saveRoles(interaction) {
     });
 
     //for each user
-    all_members.forEach(async member => {
+    all_members.forEach(async (member) => {
         //get rank role
         let current_roles = member._roles;
 
-        const current_role_promises = current_roles.map(
-            async (item) => {
-                return await interaction.guild.roles.fetch(
-                    item,
-                );
-            },
-        );
+        const current_role_promises = current_roles.map(async (item) => {
+            return await interaction.guild.roles.fetch(item);
+        });
 
-        const current_role_objects = await Promise.all(
-            current_role_promises,
-        );
+        const current_role_objects = await Promise.all(current_role_promises);
 
         const current_role_names = current_role_objects.map(
             (role) => role.name,
@@ -43,8 +39,11 @@ async function saveRoles(interaction) {
         )[0];
 
         //get db user
-        const user = await collection.findOne({ userID: member.user.id, guildID: interaction.guild.id });
-        if(user == null) {
+        const user = await collection.findOne({
+            userID: member.user.id,
+            guildID: interaction.guild.id,
+        });
+        if (user == null) {
             console.log('Could not find user with id ', member.user.id);
         } else {
             user.rank = current_rank;
@@ -57,14 +56,14 @@ async function saveRoles(interaction) {
                 .updateOne({ _id: user._id }, { $set: user })
                 .catch((e) => console.log(`Failed to set rank, error`, e));
         }
-  
     });
-
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('storeroles')
-        .setDescription('Go through all users and put their current rank in the DB'),
+        .setDescription(
+            'Go through all users and put their current rank in the DB',
+        ),
     execute: saveRoles,
 };

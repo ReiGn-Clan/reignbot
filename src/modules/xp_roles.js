@@ -139,11 +139,11 @@ async function updateXpLeaderboard(guildID, disClient) {
         if (typeof user.rank == 'undefined') {
             user.rank = 'Neophyte';
         }
-        let tokens = user.xp
-        if(tokens > 100000000000) {
+        let tokens = user.xp;
+        if (tokens > 100000000000) {
             tokens = '' + tokens;
             tokens = tokens.substring(0, tokens.length - 9) + 'B';
-        } else if(tokens > 100000000) {
+        } else if (tokens > 100000000) {
             tokens = '' + tokens;
             tokens = tokens.substring(0, tokens.length - 6) + 'M';
         }
