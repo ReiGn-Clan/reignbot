@@ -82,7 +82,7 @@ async function subtractXp(userId, guildId, xp, rankName) {
     }
     user.level = Math.floor(0.1 * Math.sqrt(user.xp));
     user.lastUpdated = new Date();
-    if(rankName) {
+    if (rankName) {
         user.rank = rankName;
         user.rankValue = levelNamesData.names.indexOf(rankName);
     }
