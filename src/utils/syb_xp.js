@@ -1,7 +1,9 @@
 // Better version of dicord XP shit
 const mongo_bongo = require('./mongo_bongo.js');
 const fs = require('node:fs');
-const levelNamesData = fs.readFileSync('./json/levelNames.json', 'utf-8');
+const levelNamesData = JSON.parse(
+    fs.readFileSync('./json/levelNames.json', 'utf-8'),
+);
 
 let collection;
 
