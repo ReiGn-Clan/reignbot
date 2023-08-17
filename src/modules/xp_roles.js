@@ -105,7 +105,7 @@ async function updateXpLeaderboard(guildID, disClient) {
                 },
             },
             {
-                $sort: { xp: -1 },
+                $sort: { rankValue: -1, xp: -1 },
             },
             {
                 $limit: limit,
@@ -121,7 +121,7 @@ async function updateXpLeaderboard(guildID, disClient) {
                 },
             },
             {
-                $sort: { xp: -1 },
+                $sort: { rankValue: -1, xp: -1 },
             },
             {
                 $limit: limit,
@@ -136,10 +136,21 @@ async function updateXpLeaderboard(guildID, disClient) {
 
     const memberPromises = updatedLeaderboard.map(async (user, index) => {
         const member = await guild.members.fetch(user.userID);
+        if (typeof user.rank == 'undefined') {
+            user.rank = 'Neophyte';
+        }
+        let tokens = user.xp;
+        if (tokens > 100000000000) {
+            tokens = '' + tokens;
+            tokens = tokens.substring(0, tokens.length - 9) + 'B';
+        } else if (tokens > 100000000) {
+            tokens = '' + tokens;
+            tokens = tokens.substring(0, tokens.length - 6) + 'M';
+        }
         return [
             `${index + 1}:  ${member.nickname ?? member.user.username}`,
-            `Level ${user.level} (${user.xp} RT)`,
-            `${emote_dict[user.change]}`,
+            `${user.rank}`,
+            `${tokens} RT ${emote_dict[user.change]}`,
         ];
     });
 
@@ -154,12 +165,12 @@ async function updateXpLeaderboard(guildID, disClient) {
             inline: true,
         },
         {
-            name: 'RT',
+            name: 'Rank',
             value: leaderboardData.map((entry) => entry[1]).join('\n'),
             inline: true,
         },
         {
-            name: 'Change',
+            name: 'RT Change',
             value: leaderboardData.map((entry) => entry[2]).join('\n'),
             inline: true,
         },
@@ -356,7 +367,7 @@ async function rewardBoost(guildID, user, disClient) {
     );
 
     const guild = await disClient.guilds.fetch(guildID);
-    const alreadyBoosted = await boostersCollection.findOne({ user });
+    const alreadyBoosted = await boostersCollection.findOne({ user: user.id });
 
     if (alreadyBoosted) {
         return;
@@ -370,7 +381,7 @@ async function rewardBoost(guildID, user, disClient) {
         channel.send({
             content: `${user} boosted the server and has been awarded 10,000 ReiGn Tokens!`,
         });
-        await boostersCollection.insertOne({ user });
+        await boostersCollection.insertOne({ user: user.id });
         if (hasLeveledUp) {
             try {
                 await improvedLevelUp(guild, user.id, disClient);

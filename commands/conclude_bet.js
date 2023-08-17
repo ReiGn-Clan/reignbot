@@ -34,7 +34,10 @@ module.exports = {
             .toArray();
 
         if (bet_array.length === 0) {
-            await interaction.reply('There is no existing bets');
+            await interaction.reply({
+                content: 'There is no existing bets',
+                ephemeral: true,
+            });
             return;
         }
 
