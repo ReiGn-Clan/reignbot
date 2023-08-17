@@ -5,11 +5,10 @@ const levelOrder = JSON.parse(levelNamesData).names;
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { config_to_use } = require('../general_config.json');
 const { xpDbEnvironment } = require(`../${config_to_use}`);
-const collection = mongo_bongo
-    .getDbInstance(xpDbEnvironment)
-    .collection('levels');
+const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 
 async function saveRoles(interaction) {
+    const collection = db.collection('levels');
     //get all users
     let all_members = await interaction.guild.members.fetch();
 
