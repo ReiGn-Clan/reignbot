@@ -10,7 +10,7 @@ const {
 
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { config_to_use } = require('../general_config.json');
-const { gamblingDbEnvironment } = require(`../${config_to_use}`);
+const { gamblingDbEnvironment, variousIDs } = require(`../${config_to_use}`);
 const db = mongo_bongo.getDbInstance(gamblingDbEnvironment);
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
@@ -153,8 +153,21 @@ module.exports = {
 
                 console.log(odds);
 
-                found_bet.bets.forEach(async (obj) => {
+                await found_bet.bets.forEach(async (obj) => {
                     if (obj.option === button_collected.customId) {
+                        // Let user know they earned xp
+                        const channel = await interaction.client.channels.fetch(
+                            variousIDs[0].userUpdatesChannel,
+                        );
+
+                        channel.send({
+                            content: `${obj.user} has won **${
+                                obj.amount * odds
+                            }** ReiGn Tokens with the bet *"${
+                                found_bet.description
+                            }"*!`,
+                        });
+
                         let hasLeveledUp = await Levels.appendXp(
                             obj.user,
                             interaction.guild.id,
