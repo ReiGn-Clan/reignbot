@@ -160,10 +160,14 @@ module.exports = {
                             variousIDs[0].userUpdatesChannel,
                         );
 
+                        const member = await interaction.guild.members.fetch(
+                            obj.user,
+                        );
+
                         channel.send({
-                            content: `${obj.user} has won **${
+                            content: `${member.user} has won **${(
                                 obj.amount * odds
-                            }** ReiGn Tokens with the bet *"${
+                            ).toFixed(0)}** ReiGn Tokens with the bet *"${
                                 found_bet.description
                             }"*!`,
                         });
@@ -171,7 +175,7 @@ module.exports = {
                         let hasLeveledUp = await Levels.appendXp(
                             obj.user,
                             interaction.guild.id,
-                            obj.amount * odds,
+                            (obj.amount * odds).toFixed(0),
                         );
 
                         if (hasLeveledUp) {

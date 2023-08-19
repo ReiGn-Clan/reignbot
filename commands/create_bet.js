@@ -175,7 +175,10 @@ module.exports = {
 
                                 // Process the entered number
                                 const enteredNumber = parseInt(modal_xp);
-                                if (Number.isInteger(enteredNumber)) {
+                                if (
+                                    Number.isInteger(enteredNumber) &&
+                                    enteredNumber > 0
+                                ) {
                                     const userXP = await Levels.fetch(
                                         collected.user.id,
                                         interaction.guild.id,
