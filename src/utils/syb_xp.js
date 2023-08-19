@@ -113,7 +113,7 @@ async function setXp(userId, guildId, xp) {
 
     const prev_level = user.level;
 
-    user.xp += parseInt(xp, 10);
+    user.xp = parseInt(xp, 10);
     user.level = Math.floor(0.1 * Math.sqrt(user.xp));
     user.lastUpdated = new Date();
 
