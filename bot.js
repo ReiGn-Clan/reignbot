@@ -411,10 +411,14 @@ client.on(Events.InviteCreate, async () => {
 
 //stop bot from joining other servers
 client.on(Events.GuildCreate, async (guild) => {
-    if(guild.id != discordAPIBotStuff[1].guildID) {
-        guild.leave().then(guild => console.log(`Left guild ${guild.name} after being invited`));
+    if (guild.id != discordAPIBotStuff[1].guildID) {
+        guild
+            .leave()
+            .then((guild) =>
+                console.log(`Left guild ${guild.name} after being invited`),
+            );
     } else {
-        console.log("Join guild event fired with reign guild id");
+        console.log('Join guild event fired with reign guild id');
         return;
     }
 });
