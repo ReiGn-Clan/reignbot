@@ -114,7 +114,7 @@ async function parseMatches(matchData) {
 
 async function getAllHubMembers() {
     let url =
-        'https://open.faceit.com/data/v4/hubs/80ee5fb1-0b2b-4c2c-9828-ecf8fc925b12/members?offset=0&limit=50';
+        'https://open.faceit.com/data/v4/hubs/80ee5fb1-0b2b-4c2c-9828-ecf8fc925b12/members?offset=0&limit=100000';
 
     try {
         const response = await fetch(url, {
@@ -136,7 +136,7 @@ async function getAllHubMembers() {
 
 async function getAllHubMatches() {
     let url =
-        'https://open.faceit.com/data/v4/hubs/80ee5fb1-0b2b-4c2c-9828-ecf8fc925b12/matches?offset=0&limit=50';
+        'https://open.faceit.com/data/v4/hubs/80ee5fb1-0b2b-4c2c-9828-ecf8fc925b12/matches?offset=0&limit=100000';
 
     try {
         const response = await fetch(url, {
