@@ -25,10 +25,16 @@ async function improvedLevelUpMessage(message, disClient) {
 
     // Nothing has to be done
     console.log('No Action needed');
-    channel.send(
-        `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
-    );
-    return;
+    if (user.level % 10 === 0){
+        channel.send(
+            `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
+        );
+        return;
+    } else {
+        console.log('User level not divisible by 10, skipping message');
+        return;
+    }
+    
 }
 
 async function improvedLevelUp(
@@ -55,11 +61,13 @@ async function improvedLevelUp(
     if (!gambling) {
         if (!deranking) {
             // Nothing has to be done
-            await channel.send(
-                `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
-            );
-            console.log('No Action needed');
-            return;
+            if (user.level % 10 === 0){
+                await channel.send(
+                    `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
+                );
+                console.log('No Action needed');
+                return;
+            } 
         } else {
             // Nothing has to be done
             await channel.send(
