@@ -22,26 +22,39 @@ async function giveXP(interaction) {
         date: today,
     });
 
-    if (userRateLimit && userRateLimit.count >= maxUses) {
-        interaction.reply({
-            content: 'You have reached the daily usage limit for this command.',
-            ephemeral: true,
-        });
-        return;
-    }
+    try{
+        if (userRateLimit && userRateLimit.count >= maxUses) {
+            const currentTime = new Date();
+            const endOfDay = new Date(today);
+            endOfDay.setDate(endOfDay.getDate() + 1);
+            const timeDifferenceMillis = endOfDay - currentTime;
 
-    if (userRateLimit){
-        await tokensUsesCollection.updateOne( //If the doc already exist for today, increment it
-            {userId: interaction.user.id, date: today},
-            {$inc: {count: 1}}
-            );
-    } else {
-        await tokensUsesCollection.insertOne({ //if doc doesn't exist for today, create it
-            userId: interaction.user.id,
-            date: today,
-            count: 1,
-        });
-    }
+            const remainingHours = Math.floor((timeDifferenceMillis / 1000 / 60 / 60) % 24);
+            const remainingMinutes = Math.floor((timeDifferenceMillis / 1000 / 60) % 60);
+                
+            interaction.reply({
+                content: `You have reached the daily usage limit for this command. Try again in ${remainingHours} hours ${remainingMinutes} minutes.`,
+                ephemeral: true,
+            });
+            return;
+        }
+
+        if (userRateLimit){
+            await tokensUsesCollection.updateOne( //If the doc already exist for today, increment it
+                {userId: interaction.user.id, date: today},
+                {$inc: {count: 1}, $set: {lastUsageTimestamp: new Date()}}
+                );
+        } else {
+            await tokensUsesCollection.insertOne({ //if doc doesn't exist for today, create it
+                userId: interaction.user.id,
+                date: today,
+                count: 1,
+                lastUsageTimestamp: new Date(),
+            });
+        }
+    }catch (error){
+        console.error(error);
+    }   
 
     if (interaction.user == user) {
         interaction.reply({
@@ -105,7 +118,7 @@ async function giveXP(interaction) {
     }
 
     await interaction.reply({
-        content: `${interaction.user} donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
+        content: `${interaction.user} (${(maxUses - userRateLimit.count) - 1} uses left) donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
         ephemeral: false,
     });
 
