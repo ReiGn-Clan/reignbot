@@ -1,10 +1,47 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
+const { config_to_use } = require('../general_config.json');
+const { donateRateLimitDBEnv } = require(
+    `../${config_to_use}`,
+);
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const db = mongo_bongo.getDbInstance(donateRateLimitDBEnv);
 
 async function giveXP(interaction) {
-    const user = interaction.options.getUser('user');
-    const tokens = interaction.options.getInteger('amount');
+    const maxUses = 5;
+    let user = interaction.options.getUser('user');
+    let tokens = interaction.options.getInteger('amount');
+    const tokensUsesCollection = db.collection('tokens_uses');
+
+    const today = new Date();
+    today.setHours(0,0,0,0); // Set  the time to the beginning of the day
+
+    const userRateLimit = await tokensUsesCollection.findOne({
+        userId: interaction.user.id,
+        date: today,
+    });
+
+    if (userRateLimit && userRateLimit.count >= maxUses) {
+        interaction.reply({
+            content: 'You have reached the daily usage limit for this command.',
+            ephemeral: true,
+        });
+        return;
+    }
+
+    if (userRateLimit){
+        await tokensUsesCollection.updateOne( //If the doc already exist for today, increment it
+            {userId: interaction.user.id, date: today},
+            {$inc: {count: 1}}
+            );
+    } else {
+        await tokensUsesCollection.insertOne({ //if doc doesn't exist for today, create it
+            userId: interaction.user.id,
+            date: today,
+            count: 1,
+        });
+    }
 
     if (interaction.user == user) {
         interaction.reply({

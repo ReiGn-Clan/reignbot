@@ -21,5 +21,6 @@
     "faceitAuth": "Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44",
     "faceitDbEnvironment": "faceitIntegration",
     "shopDbEnvironment": "shop",
-    "gamblingDbEnvironment": "gambling"
+    "gamblingDbEnvironment": "gambling",
+    "donateRateLimitDBEnv": "donate_tokens_uses"
 }
