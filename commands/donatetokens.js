@@ -2,9 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Levels = require('../src/utils/syb_xp.js');
 const xp_roles = require('../src/modules/xp_roles.js');
 const { config_to_use } = require('../general_config.json');
-const { donateRateLimitDBEnv } = require(
-    `../${config_to_use}`,
-);
+const { donateRateLimitDBEnv } = require(`../${config_to_use}`);
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(donateRateLimitDBEnv);
 
@@ -15,23 +13,27 @@ async function giveXP(interaction) {
     const tokensUsesCollection = db.collection('tokens_uses');
 
     const today = new Date();
-    today.setHours(0,0,0,0); // Set  the time to the beginning of the day
+    today.setHours(0, 0, 0, 0); // Set  the time to the beginning of the day
 
     const userRateLimit = await tokensUsesCollection.findOne({
         userId: interaction.user.id,
         date: today,
     });
 
-    try{
+    try {
         if (userRateLimit && userRateLimit.count >= maxUses) {
             const currentTime = new Date();
             const endOfDay = new Date(today);
             endOfDay.setDate(endOfDay.getDate() + 1);
             const timeDifferenceMillis = endOfDay - currentTime;
 
-            const remainingHours = Math.floor((timeDifferenceMillis / 1000 / 60 / 60) % 24);
-            const remainingMinutes = Math.floor((timeDifferenceMillis / 1000 / 60) % 60);
-                
+            const remainingHours = Math.floor(
+                (timeDifferenceMillis / 1000 / 60 / 60) % 24,
+            );
+            const remainingMinutes = Math.floor(
+                (timeDifferenceMillis / 1000 / 60) % 60,
+            );
+
             interaction.reply({
                 content: `You have reached the daily usage limit for this command. Try again in ${remainingHours} hours ${remainingMinutes} minutes.`,
                 ephemeral: true,
@@ -39,22 +41,27 @@ async function giveXP(interaction) {
             return;
         }
 
-        if (userRateLimit){
-            await tokensUsesCollection.updateOne( //If the doc already exist for today, increment it
-                {userId: interaction.user.id, date: today},
-                {$inc: {count: 1}, $set: {lastUsageTimestamp: new Date()}}
-                );
+        if (userRateLimit) {
+            await tokensUsesCollection.updateOne(
+                //If the doc already exist for today, increment it
+                { userId: interaction.user.id, date: today },
+                {
+                    $inc: { count: 1 },
+                    $set: { lastUsageTimestamp: new Date() },
+                },
+            );
         } else {
-            await tokensUsesCollection.insertOne({ //if doc doesn't exist for today, create it
+            await tokensUsesCollection.insertOne({
+                //if doc doesn't exist for today, create it
                 userId: interaction.user.id,
                 date: today,
                 count: 1,
                 lastUsageTimestamp: new Date(),
             });
         }
-    }catch (error){
+    } catch (error) {
         console.error(error);
-    }   
+    }
 
     if (interaction.user == user) {
         interaction.reply({
@@ -118,7 +125,11 @@ async function giveXP(interaction) {
     }
 
     await interaction.reply({
-        content: `${interaction.user} (${(maxUses - userRateLimit.count) - 1} uses left) donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
+        content: `${interaction.user} (${
+            maxUses - userRateLimit.count - 1
+        } uses left) donated ${tokens} ReiGn Tokens to ${user}. They now have ${
+            userTotalXP.xp
+        } ReiGn Tokens!`,
         ephemeral: false,
     });
 
