@@ -125,18 +125,14 @@ async function giveXP(interaction) {
     }
 
     let usesLeft;
-    if(userRateLimit) {
+    if (userRateLimit) {
         usesLeft = maxUses - userRateLimit.count - 1;
     } else {
         usesLeft = maxUses - 1;
     }
 
     await interaction.reply({
-        content: `${interaction.user} (${
-            usesLeft
-        } uses left) donated ${tokens} ReiGn Tokens to ${user}. They now have ${
-            userTotalXP.xp
-        } ReiGn Tokens!`,
+        content: `${interaction.user} (${usesLeft} uses left) donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
         ephemeral: false,
     });
 

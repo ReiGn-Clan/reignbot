@@ -7,7 +7,6 @@ const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(donateRateLimitDBEnv);
 
 async function createDonatePopup(interaction) {
-
     const uses = interaction.options.getInteger('uses');
     const xp = interaction.options.getInteger('tokens');
 
@@ -81,7 +80,7 @@ async function createDonatePopup(interaction) {
         interaction.guild.id,
     );
 
-    if (init_userXP.xp <= (xp * uses)) {
+    if (init_userXP.xp <= xp * uses) {
         interaction.reply({
             content: 'You do not have enough tokens for this!',
             ephemeral: true,
@@ -93,7 +92,7 @@ async function createDonatePopup(interaction) {
     const hasLeveledDown = await Levels.subtractXp(
         interaction.user.id,
         interaction.guild.id,
-        (xp * uses),
+        xp * uses,
     );
 
     if (hasLeveledDown) {
@@ -107,16 +106,14 @@ async function createDonatePopup(interaction) {
     }
 
     let usesLeft;
-    if(userRateLimit) {
+    if (userRateLimit) {
         usesLeft = maxUses - userRateLimit.count - 1;
     } else {
         usesLeft = maxUses - 1;
     }
 
     await interaction.reply({
-        content: `Posting pop-up token message. (${
-            usesLeft
-        } uses left)`,
+        content: `Posting pop-up token message. (${usesLeft} uses left)`,
         ephemeral: true,
     });
 
@@ -124,13 +121,14 @@ async function createDonatePopup(interaction) {
     console.log('xp: ', xp, ' after tax: ', afterTaxReward);
 
     await xp_roles.makeDaily(interaction.client, true, xp, uses, taxPercent);
-
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('donatepopup')
-        .setDescription('Create a popup message manually from your own tokens. Popup will be 5% lower than entered value.')
+        .setDescription(
+            'Create a popup message manually from your own tokens. Popup will be 5% lower than entered value.',
+        )
         .addIntegerOption((option) =>
             option
                 .setName('tokens')
@@ -147,5 +145,5 @@ module.exports = {
                 .setMinValue(1)
                 .setMaxValue(30),
         ),
-    execute: createDonatePopup
+    execute: createDonatePopup,
 };
