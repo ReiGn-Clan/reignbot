@@ -20,19 +20,14 @@ async function convertUnits(interaction) {
         value += sourceVals[1] / 39.3700787;
         value = value.toFixed(2);
         value += ' meters';
-
     } else if (source.includes('F')) {
-
         let trimmed = source.replace(/\D/g, '');
-        let celsius = Math.floor((trimmed - 32) * 5 / 9);
+        let celsius = Math.floor(((trimmed - 32) * 5) / 9);
         value = `${celsius}°C`;
-
     } else if (source.includes('C')) {
-
         let trimmed = source.replace(/\D/g, '');
-        let fahrenwhatever = Math.floor((trimmed * 9 / 5) + 32);
+        let fahrenwhatever = Math.floor((trimmed * 9) / 5 + 32);
         value = `${fahrenwhatever}°F`;
-
     } else {
         //if cm just remove units
         if (source.includes('cm')) {
