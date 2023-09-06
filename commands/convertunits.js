@@ -1,24 +1,25 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 async function convertUnits(interaction) {
-    
-
     let source = interaction.options.getString('value');
     let value;
 
-    if(source.includes("'") || source.includes('ft') || source.includes('feet')) {
-
+    if (
+        source.includes("'") ||
+        source.includes('ft') ||
+        source.includes('feet')
+    ) {
         //turn to x'y
         source = source.replace(/ft/g, "'");
         source = source.replace(/feet/g, "'");
-        
+
         let trimmed = source.replace(/[^0-9']/g, '');
         let sourceVals = trimmed.split("'");
 
         value = sourceVals[0] / 3.2808399;
         value += sourceVals[1] / 39.3700787;
         value = value.toFixed(2);
-        value += " meters";
+        value += ' meters';
 
     } else if (source.includes('F')) {
 
@@ -37,7 +38,7 @@ async function convertUnits(interaction) {
         if (source.includes('cm')) {
             source = source.replace(/\D/g, '');
 
-        //if m turn to cm and remove units
+            //if m turn to cm and remove units
         } else if (source.includes('m') || source.includes('meters')) {
             let trimmed = source.replace(/[^0-9.]/g, '');
             source = trimmed * 100;
@@ -52,16 +53,17 @@ async function convertUnits(interaction) {
         value = `${feet}'${inches}`;
     }
 
-    interaction.reply({ content: `Converted value: ${value}`, ephemeral: true })
-
+    interaction.reply({
+        content: `Converted value: ${value}`,
+        ephemeral: true,
+    });
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('convert')
-        .setDescription(
-            'Convert between metric and imperial',
-        ).addStringOption((option) =>
+        .setDescription('Convert between metric and imperial')
+        .addStringOption((option) =>
             option
                 .setName('value')
                 .setDescription('Value to be converted')
