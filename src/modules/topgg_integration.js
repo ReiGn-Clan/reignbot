@@ -39,4 +39,4 @@ async function rewardVote(user) {
     // Start reminder for in 12 hours
 }
 
-module.exports(setClient, rewardVote);
+module.exports = { setClient, rewardVote };
