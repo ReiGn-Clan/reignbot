@@ -1,6 +1,6 @@
 const { config_to_use } = require('../../general_config.json');
 const Levels = require('../utils/syb_xp.js');
-const xp_roles = require('../modules/xp_roles.js');
+const xp_roles = require('./xp_roles.js');
 const { discordAPIBotStuff, variousIDs } = require(`../../${config_to_use}`);
 
 let discordClient;

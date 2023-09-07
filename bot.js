@@ -7,6 +7,7 @@ const Levels = require('./src/utils/syb_xp.js');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
 const faceit_integration = require('./src/modules/faceit_integration.js');
+const topgg_integration = require('./src/modules/topgg_integration.js');
 const webhookserver = require('./src/utils/webhookserver.js');
 
 const async = require('async');
@@ -36,6 +37,7 @@ const client = new Client({
 });
 
 faceit_integration.setClient(client);
+topgg_integration.setClient(client);
 webhookserver.startWebHookServer();
 // Create a new Collection to store the commands
 client.commands = new Collection();
