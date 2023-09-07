@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = 3001;
 const faceit_integration = require('../modules/faceit_integration.js');
+const topgg_integration = require('../modules/topgg_intergration.js');
 const Topgg = require('@top-gg/sdk');
 const webhook = new Topgg.Webhook('r31gn0nt0p');
 
@@ -19,7 +20,8 @@ function startWebHookServer() {
         '/topgg/',
         webhook.listener((vote) => {
             // vote is your vote object
-            console.log(vote); // 221221226561929217
+            console.log(vote.user); // 221221226561929217
+            topgg_integration.rewardVote(vote.user);
         }),
     );
 
