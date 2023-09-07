@@ -25,7 +25,7 @@ async function rewardVote(user) {
     );
     const member = await guild.members.fetch(user);
     await channel.send({
-        content: `${member.user} has earned **1500** ReiGn Tokens for voting on topgg!`,
+        content: `${member.user} has earned **1500** ReiGn Tokens for voting on https://top.gg/servers/1089665371923026053 !`,
     });
 
     if (hasLeveledUp) {
