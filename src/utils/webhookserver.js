@@ -19,14 +19,9 @@ function startWebHookServer() {
         '/topgg/',
         webhook.listener((vote) => {
             // vote is your vote object
-            console.log(vote.user); // 221221226561929217
+            console.log(vote); // 221221226561929217
         }),
     );
-
-    app.post('/topgg/', (req, res) => {
-        console.log(req.body);
-        res.sendStatus(200);
-    });
 
     app.listen(port, () => {
         console.log(`Web server listening on port ${port}`);
