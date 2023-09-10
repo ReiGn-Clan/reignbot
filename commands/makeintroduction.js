@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 
-async function makeIntroduction (interaction){
+async function makeIntroduction(interaction) {
     const modal = new ModalBuilder()
         .setCustomId('myModal')
         .setTitle('ReiGn XP betting');
@@ -48,15 +48,23 @@ async function makeIntroduction (interaction){
         .setLabel('Do you have any fun facts?')
         .setStyle(TextInputStyle.Paragraph);
 
-    const {nameActionRow, 
-            ageActionRow, 
-            countryActionRow, 
-            gamesActionRow, 
-            hobbiesActionRow, 
-            careerActionRow, 
-            funFactActionRow} = new ActionRowBuilder().addComponents(nameTextInput,
-                ageInput, countryInput, gamesInput, hobbiesInput, careerInput, funFactInput);
-
+    const {
+        nameActionRow,
+        ageActionRow,
+        countryActionRow,
+        gamesActionRow,
+        hobbiesActionRow,
+        careerActionRow,
+        funFactActionRow,
+    } = new ActionRowBuilder().addComponents(
+        nameTextInput,
+        ageInput,
+        countryInput,
+        gamesInput,
+        hobbiesInput,
+        careerInput,
+        funFactInput,
+    );
 
     modal.addComponents(
         nameActionRow,
@@ -68,7 +76,6 @@ async function makeIntroduction (interaction){
         funFactActionRow*/
     );
     await interaction.showModal(modal);
-    
 }
 
 module.exports = {
@@ -76,4 +83,4 @@ module.exports = {
         .setName('makeintroduction')
         .setDescription('Make an introduction'),
     execute: makeIntroduction,
-}
+};
