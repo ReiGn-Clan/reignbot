@@ -1,7 +1,6 @@
 const { config_to_use } = require('../../general_config.json');
 const Levels = require('../utils/syb_xp.js');
 const {
-    xpDbEnvironment,
     variousIDs,
     introductionsDBEnv,
     discordAPIBotStuff,
