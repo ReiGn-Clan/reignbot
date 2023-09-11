@@ -13,7 +13,8 @@
         { "userUpdatesChannel": "1103780086810955846" },
         { "generalChannel": "1091539145127641098" },
         { "topMembersChannel": "1095411283882426488" },
-        { "topMembersMessage": "1098278074254110740" }
+        { "topMembersMessage": "1098278074254110740" },
+        {"introductionsChannel": "1105944524162859171" }
     ],
     "xpDbEnvironment": "xpDatabase",
     "recruiterDbEnvironment": "recruiter",

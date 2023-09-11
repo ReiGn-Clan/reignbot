@@ -3,7 +3,6 @@ const {
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle,
-    ActionRow,
     ActionRowBuilder,
 } = require('discord.js');
 const introductions = require('../src/modules/introductions.js');
@@ -16,27 +15,32 @@ async function makeIntroduction(interaction) {
     const nameInput = new TextInputBuilder()
         .setCustomId('nameTextInput')
         .setLabel(`What's your name?`)
-        .setStyle(TextInputStyle.Short);
+        .setStyle(TextInputStyle.Short)
+        .setPlaceholder('Your name.');
 
     const ageInput = new TextInputBuilder()
         .setCustomId('ageTextInput')
         .setLabel('How old are you?')
-        .setStyle(TextInputStyle.Short);
+        .setStyle(TextInputStyle.Short)
+        .setPlaceholder('Your age. It must be a number.');
 
     const countryInput = new TextInputBuilder()
         .setCustomId('countryTextInput')
         .setLabel('Where are you from?')
-        .setStyle(TextInputStyle.Short);
+        .setStyle(TextInputStyle.Short)
+        .setPlaceholder(`Where you're from.`);
 
     const hobbiesWorkInput = new TextInputBuilder()
         .setCustomId('hobbiesWorkTextInput')
-        .setLabel('What do you do for work/hobbies?')
-        .setStyle(TextInputStyle.Paragraph);
+        .setLabel('What do you do for work/study/hobbies?')
+        .setStyle(TextInputStyle.Paragraph)
+        .setPlaceholder('What you do for work/study/hobbies.');
 
     const funFactInput = new TextInputBuilder()
         .setCustomId('funFactTextInput')
         .setLabel('Do you have any fun facts?')
-        .setStyle(TextInputStyle.Paragraph);
+        .setStyle(TextInputStyle.Paragraph)
+        .setPlaceholder('Do you have any fun facts? About yourself or in general.');
 
     const nameActionRow = new ActionRowBuilder().addComponents(nameInput);
     const ageActionRow = new ActionRowBuilder().addComponents(ageInput);
@@ -71,11 +75,19 @@ async function makeIntroduction(interaction) {
                 funFact:
                     interaction.fields.getTextInputValue('funFactTextInput'),
             };
-            await introductions.getForm(interaction, form);
-            await interaction.reply({
-                content: 'Introduction submitted successfully.',
-                ephemeral: true,
-            });
+            if (!isNaN(form.age)){
+                await introductions.getForm(interaction, form);
+                await interaction.reply({
+                    content: 'Introduction submitted successfully.',
+                    ephemeral: true,
+                });
+            }else {
+                await interaction.reply({
+                    content: 'Please only use numbers in the age category! Type /makeintroduction to try again.',
+                    ephemeral: true
+                });
+            }
+            
         })
         .catch(console.error);
 }
