@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const introductions = require('../src/modules/introductions.js');
 
-async function makeIntroduction (interaction){
+async function makeIntroduction(interaction) {
     const modal = new ModalBuilder()
         .setCustomId('introductionModal')
         .setTitle('Introduction');
@@ -74,4 +74,4 @@ module.exports = {
         .setName('makeintroduction')
         .setDescription('Make an introduction'),
     execute: makeIntroduction,
-}
+};
