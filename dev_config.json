@@ -23,5 +23,6 @@
     "faceitDbEnvironment": "dev_faceitIntegration",
     "shopDbEnvironment": "dev_shop",
     "gamblingDbEnvironment": "dev_gambling",
-    "donateRateLimitDBEnv": "dev_donate_tokens_uses"
+    "donateRateLimitDBEnv": "dev_donate_tokens_uses",
+    "introductionsDBEnv": "dev_introductions"
 }

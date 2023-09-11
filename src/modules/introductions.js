@@ -1,8 +1,9 @@
 const { config_to_use } = require('../../general_config.json');
 const Levels = require('../utils/syb_xp.js');
-const { xpDbEnvironment, variousIDs } = require(`../../${config_to_use}`);
+const { xpDbEnvironment, variousIDs, introductionsDBEnv, discordAPIBotStuff } = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance(xpDbEnvironment);
+const db = mongo_bongo.getDbInstance(introductionsDBEnv);
+const xp_roles = require('./xp_roles');
 const {EmbedBuilder} = require('discord.js');
 
 let interactionObj = null;
@@ -35,10 +36,45 @@ async function handleIntroduction (){
             {name: '**Work/Studies/Hobbies: **', value: `${introduction.hobbiesWork}`},
             {name: '**Fun Fact: **', value: `${introduction.funFact}`},
         )
-        .setTimestamp()
-        .setFooter({text: 'If you want an introduction use /makeintroduction'});
+        .setFooter({text: 'If you want an introduction use /makeintroduction', iconURL: 'https://i.imgur.com/4H0ZiTv.png'});
     
-    channel.send({embeds: [introEmbed]});
+    await channel.send({embeds: [introEmbed]});
+    await rewardIntroduction();
+}
+
+async function rewardIntroduction (){
+    const awardedIntroductionsCollection = db.collection('users');
+    let userid = interactionObj.user.id;
+    const alreadyAwarded = await awardedIntroductionsCollection.findOne({userid});
+    if (alreadyAwarded){
+        console.log(`${interactionObj.user.username} has already been awarded for an introduction.`);
+        return;
+    } else {
+        let hasLeveledUp = await Levels.appendXp(
+            userid,
+            discordAPIBotStuff[1].guildID,
+            3000,
+            console.log('Awarded Tokens for making an Introduction!')
+        );
+        const userUpdateschannel = await disClient.channels.fetch(variousIDs[0].userUpdatesChannel);
+        const guild = await disClient.guilds.fetch(discordAPIBotStuff[1].guildID);
+        await  userUpdateschannel.send({
+            content: `${interactionObj.user} has earned **3000** ReiGn Tokens for posting an introduction!`
+        });
+
+        if (hasLeveledUp){
+            try{
+                await xp_roles.improvedLevelUp(
+                    guild,
+                    userid,
+                    disClient
+                );
+            } catch (error){
+                console.error(error);
+            }
+        }
+        await awardedIntroductionsCollection.insertOne({userid});
+    }
 }
 module.exports = {
     getForm,
