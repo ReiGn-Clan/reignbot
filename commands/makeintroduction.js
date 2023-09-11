@@ -6,14 +6,14 @@ const {
     ActionRow,
     ActionRowBuilder,
 } = require('discord.js');
-const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const introductions = require('../src/modules/introductions.js');
 
 async function makeIntroduction (interaction){
     const modal = new ModalBuilder()
-        .setCustomId('myModal')
-        .setTitle('ReiGn XP betting');
+        .setCustomId('introductionModal')
+        .setTitle('Introduction');
 
-    const nameTextInput = new TextInputBuilder()
+    const nameInput = new TextInputBuilder()
         .setCustomId('nameTextInput')
         .setLabel(`What's your name?`)
         .setStyle(TextInputStyle.Short);
@@ -21,26 +21,16 @@ async function makeIntroduction (interaction){
     const ageInput = new TextInputBuilder()
         .setCustomId('ageTextInput')
         .setLabel('How old are you?')
-        .setStyle(TextInputStyle.Short);
+        .setStyle(TextInputStyle.Short)
 
     const countryInput = new TextInputBuilder()
         .setCustomId('countryTextInput')
         .setLabel('Where are you from?')
         .setStyle(TextInputStyle.Short);
 
-    const gamesInput = new TextInputBuilder()
-        .setCustomId('gamesTextInput')
-        .setLabel('What games do you play?')
-        .setStyle(TextInputStyle.Short);
-
-    const hobbiesInput = new TextInputBuilder()
-        .setCustomId('hobbiesTextInput')
-        .setLabel('What are your hobbies?')
-        .setStyle(TextInputStyle.Paragraph);
-
-    const careerInput = new TextInputBuilder()
-        .setCustomId('careerTextInput')
-        .setLabel('What do you do for work? (And or study)')
+    const hobbiesWorkInput = new TextInputBuilder()
+        .setCustomId('hobbiesWorkTextInput')
+        .setLabel('What do you do for work/hobbies?')
         .setStyle(TextInputStyle.Paragraph);
 
     const funFactInput = new TextInputBuilder()
@@ -48,27 +38,35 @@ async function makeIntroduction (interaction){
         .setLabel('Do you have any fun facts?')
         .setStyle(TextInputStyle.Paragraph);
 
-    const {nameActionRow, 
-            ageActionRow, 
-            countryActionRow, 
-            gamesActionRow, 
-            hobbiesActionRow, 
-            careerActionRow, 
-            funFactActionRow} = new ActionRowBuilder().addComponents(nameTextInput,
-                ageInput, countryInput, gamesInput, hobbiesInput, careerInput, funFactInput);
-
+    const nameActionRow = new ActionRowBuilder().addComponents(nameInput);
+    const ageActionRow = new ActionRowBuilder().addComponents(ageInput);
+    const countryActionRow = new ActionRowBuilder().addComponents(countryInput);
+    const hobbiesWorkActionRow = new ActionRowBuilder().addComponents(hobbiesWorkInput);
+    const funFactActionRow = new ActionRowBuilder().addComponents(funFactInput);
 
     modal.addComponents(
         nameActionRow,
         ageActionRow,
         countryActionRow,
-        gamesActionRow,
-        hobbiesActionRow,
-        /*careerActionRow,
-        funFactActionRow*/
+        hobbiesWorkActionRow,
+        funFactActionRow
     );
+
     await interaction.showModal(modal);
-    
+    const filter = (interaction) => interaction.customId === 'introductionModal';
+    interaction.awaitModalSubmit({filter, time: 300_000})
+        .then(async interaction => {
+            const form = {
+                name : interaction.fields.getTextInputValue('nameTextInput'),
+                age : interaction.fields.getTextInputValue('ageTextInput'),
+                country: interaction.fields.getTextInputValue('countryTextInput'),
+                hobbiesWork: interaction.fields.getTextInputValue('hobbiesWorkTextInput'),
+                funFact: interaction.fields.getTextInputValue('funFactTextInput')
+            };
+            await introductions.getForm(interaction, form);
+            await interaction.reply({content: 'Introduction submitted successfully.', ephemeral: true});
+        }).catch(console.error);
+     
 }
 
 module.exports = {
