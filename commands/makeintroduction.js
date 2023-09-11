@@ -61,11 +61,15 @@ async function makeIntroduction(interaction) {
         .awaitModalSubmit({ filter, time: 300_000 })
         .then(async (interaction) => {
             const form = {
-                name : interaction.fields.getTextInputValue('nameTextInput'),
-                age : interaction.fields.getTextInputValue('ageTextInput'),
-                country : interaction.fields.getTextInputValue('countryTextInput'),
-                hobbiesWork : interaction.fields.getTextInputValue('hobbiesWorkTextInput'),
-                funFact : interaction.fields.getTextInputValue('funFactTextInput'),
+                name: interaction.fields.getTextInputValue('nameTextInput'),
+                age: interaction.fields.getTextInputValue('ageTextInput'),
+                country:
+                    interaction.fields.getTextInputValue('countryTextInput'),
+                hobbiesWork: interaction.fields.getTextInputValue(
+                    'hobbiesWorkTextInput',
+                ),
+                funFact:
+                    interaction.fields.getTextInputValue('funFactTextInput'),
             };
             await introductions.getForm(interaction, form);
             await interaction.reply({
