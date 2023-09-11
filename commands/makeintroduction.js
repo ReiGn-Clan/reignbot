@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const introductions = require('../src/modules/introductions.js');
 
-async function makeIntroduction (interaction){
+async function makeIntroduction(interaction) {
     const modal = new ModalBuilder()
         .setCustomId('introductionModal')
         .setTitle('Introduction');
@@ -21,7 +21,7 @@ async function makeIntroduction (interaction){
     const ageInput = new TextInputBuilder()
         .setCustomId('ageTextInput')
         .setLabel('How old are you?')
-        .setStyle(TextInputStyle.Short)
+        .setStyle(TextInputStyle.Short);
 
     const countryInput = new TextInputBuilder()
         .setCustomId('countryTextInput')
@@ -41,7 +41,9 @@ async function makeIntroduction (interaction){
     const nameActionRow = new ActionRowBuilder().addComponents(nameInput);
     const ageActionRow = new ActionRowBuilder().addComponents(ageInput);
     const countryActionRow = new ActionRowBuilder().addComponents(countryInput);
-    const hobbiesWorkActionRow = new ActionRowBuilder().addComponents(hobbiesWorkInput);
+    const hobbiesWorkActionRow = new ActionRowBuilder().addComponents(
+        hobbiesWorkInput,
+    );
     const funFactActionRow = new ActionRowBuilder().addComponents(funFactInput);
 
     modal.addComponents(
@@ -49,24 +51,33 @@ async function makeIntroduction (interaction){
         ageActionRow,
         countryActionRow,
         hobbiesWorkActionRow,
-        funFactActionRow
+        funFactActionRow,
     );
 
     await interaction.showModal(modal);
-    const filter = (interaction) => interaction.customId === 'introductionModal';
-    interaction.awaitModalSubmit({filter, time: 300_000})
-        .then(async interaction => {
+    const filter = (interaction) =>
+        interaction.customId === 'introductionModal';
+    interaction
+        .awaitModalSubmit({ filter, time: 300_000 })
+        .then(async (interaction) => {
             const form = {
-                name : interaction.fields.getTextInputValue('nameTextInput'),
-                age : interaction.fields.getTextInputValue('ageTextInput'),
-                country: interaction.fields.getTextInputValue('countryTextInput'),
-                hobbiesWork: interaction.fields.getTextInputValue('hobbiesWorkTextInput'),
-                funFact: interaction.fields.getTextInputValue('funFactTextInput')
+                name: interaction.fields.getTextInputValue('nameTextInput'),
+                age: interaction.fields.getTextInputValue('ageTextInput'),
+                country:
+                    interaction.fields.getTextInputValue('countryTextInput'),
+                hobbiesWork: interaction.fields.getTextInputValue(
+                    'hobbiesWorkTextInput',
+                ),
+                funFact:
+                    interaction.fields.getTextInputValue('funFactTextInput'),
             };
             await introductions.getForm(interaction, form);
-            await interaction.reply({content: 'Introduction submitted successfully.', ephemeral: true});
-        }).catch(console.error);
-     
+            await interaction.reply({
+                content: 'Introduction submitted successfully.',
+                ephemeral: true,
+            });
+        })
+        .catch(console.error);
 }
 
 module.exports = {
@@ -74,4 +85,4 @@ module.exports = {
         .setName('makeintroduction')
         .setDescription('Make an introduction'),
     execute: makeIntroduction,
-}
+};
