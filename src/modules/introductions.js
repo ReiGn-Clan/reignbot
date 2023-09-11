@@ -1,10 +1,8 @@
 const { config_to_use } = require('../../general_config.json');
 const Levels = require('../utils/syb_xp.js');
-const {
-    variousIDs,
-    introductionsDBEnv,
-    discordAPIBotStuff,
-} = require(`../../${config_to_use}`);
+const { variousIDs, introductionsDBEnv, discordAPIBotStuff } = require(
+    `../../${config_to_use}`,
+);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 const xp_roles = require('./xp_roles');
