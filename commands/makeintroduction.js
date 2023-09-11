@@ -40,7 +40,9 @@ async function makeIntroduction(interaction) {
         .setCustomId('funFactTextInput')
         .setLabel('Do you have any fun facts?')
         .setStyle(TextInputStyle.Paragraph)
-        .setPlaceholder('Do you have any fun facts? About yourself or in general.');
+        .setPlaceholder(
+            'Do you have any fun facts? About yourself or in general.',
+        );
 
     const nameActionRow = new ActionRowBuilder().addComponents(nameInput);
     const ageActionRow = new ActionRowBuilder().addComponents(ageInput);
@@ -75,19 +77,19 @@ async function makeIntroduction(interaction) {
                 funFact:
                     interaction.fields.getTextInputValue('funFactTextInput'),
             };
-            if (!isNaN(form.age)){
+            if (!isNaN(form.age)) {
                 await introductions.getForm(interaction, form);
                 await interaction.reply({
                     content: 'Introduction submitted successfully.',
                     ephemeral: true,
                 });
-            }else {
+            } else {
                 await interaction.reply({
-                    content: 'Please only use numbers in the age category! Type /makeintroduction to try again.',
-                    ephemeral: true
+                    content:
+                        'Please only use numbers in the age category! Type /makeintroduction to try again.',
+                    ephemeral: true,
                 });
             }
-            
         })
         .catch(console.error);
 }
