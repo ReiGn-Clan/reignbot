@@ -65,7 +65,9 @@ async function rewardIntroduction() {
     const alreadyAwarded = await awardedIntroductionsCollection.findOne({
         userid,
     });
-    const botInfoChannel = await disClient.channels.fetch('1103780043349573663');
+    const botInfoChannel = await disClient.channels.fetch(
+        '1103780043349573663',
+    );
     if (alreadyAwarded) {
         console.log(
             `${interactionObj.user.username} has already been awarded for an introduction.`,
