@@ -1,6 +1,8 @@
 const express = require('express');
+const { config_to_use } = require('../../general_config.json');
+const { webserverPort } = require(`../../${config_to_use}`);
 const app = express();
-const port = 3000;
+const port = webserverPort;
 const faceit_integration = require('../modules/faceit_integration.js');
 const topgg_integration = require('../modules/topgg_integration.js');
 const Topgg = require('@top-gg/sdk');
