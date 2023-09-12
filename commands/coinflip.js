@@ -94,7 +94,7 @@ module.exports = {
                     } created a coinflip! You are betting for ${tokens} ReiGn Tokens! \nThe winner will take home **${(
                         tokens *
                         2 *
-                        0.9
+                        0.95
                     ).toFixed(
                         0,
                     )}** ReiGn Tokens \nYou have 60 seconds to respond!`,
@@ -111,7 +111,7 @@ module.exports = {
                     } created a coinflip! You are betting for ${tokens} ReiGn Tokens! \nThe winner will take home **${(
                         tokens *
                         2 *
-                        0.9
+                        0.95
                     ).toFixed(
                         0,
                     )}** ReiGn Tokens \n${user_challenge} has 60 seconds to respond!`,
@@ -177,7 +177,7 @@ module.exports = {
                                         } created a coinflip! You are betting for ${tokens} ReiGn Tokens! \nThe winner will take home **${(
                                             tokens *
                                             2 *
-                                            0.9
+                                            0.95
                                         ).toFixed(0)}** ReiGn Tokens \n\n${
                                             collected.user
                                         } has chosen ${collected.customId}`,
@@ -233,7 +233,7 @@ module.exports = {
                                 await interaction.channel.send({
                                     content: `The coin landed on ${winning_side}! ${
                                         member.user
-                                    } has won ${(tokens * 2 * 0.9).toFixed(
+                                    } has won ${(tokens * 2 * 0.95).toFixed(
                                         0,
                                     )} ReiGn Tokens`,
                                     files: [
@@ -245,7 +245,7 @@ module.exports = {
                                 let hasLeveledUp = await Levels.appendXp(
                                     winner,
                                     interaction.guild.id,
-                                    tokens * 2 * 0.9,
+                                    tokens * 2 * 0.95,
                                 );
 
                                 if (hasLeveledUp) {
@@ -294,7 +294,7 @@ module.exports = {
                                     winner: winner,
                                     loser: loser,
                                     stake: tokens,
-                                    payout: tokens * 2 * 0.9,
+                                    payout: tokens * 2 * 0.95,
                                 };
 
                                 await gambles.insertOne(doc);

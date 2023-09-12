@@ -13,7 +13,8 @@
         { "userUpdatesChannel": "1129188968685117520" },
         { "generalChannel": "1129188968685117520" },
         { "topMembersChannel": "1129188968685117520" },
-        { "topMembersMessage": "1131743295471616061" }
+        { "topMembersMessage": "1131743295471616061" },
+        { "introductionsChannel": "1129188968685117520" }
     ],
     "xpDbEnvironment": "dev_xpDatabase",
     "recruiterDbEnvironment": "dev_recruiter",
@@ -21,5 +22,8 @@
     "faceitAuth": "Bearer 79dc9a0d-0eba-4d1c-8bdc-da36b4ff1b44",
     "faceitDbEnvironment": "dev_faceitIntegration",
     "shopDbEnvironment": "dev_shop",
-    "gamblingDbEnvironment": "dev_gambling"
+    "gamblingDbEnvironment": "dev_gambling",
+    "donateRateLimitDBEnv": "dev_donate_tokens_uses",
+    "introductionsDBEnv": "dev_introductions",
+    "webserverPort": 3001
 }

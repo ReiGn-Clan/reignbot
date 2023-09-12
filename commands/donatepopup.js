@@ -6,10 +6,13 @@ const { donateRateLimitDBEnv } = require(`../${config_to_use}`);
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(donateRateLimitDBEnv);
 
-async function giveXP(interaction) {
+async function createDonatePopup(interaction) {
+    const uses = interaction.options.getInteger('uses');
+    const xp = interaction.options.getInteger('tokens');
+
+    const taxPercent = 5;
     const maxUses = 5;
     let user = interaction.options.getUser('user');
-    let tokens = interaction.options.getInteger('amount');
     const tokensUsesCollection = db.collection('tokens_uses');
 
     const today = new Date();
@@ -77,7 +80,7 @@ async function giveXP(interaction) {
         interaction.guild.id,
     );
 
-    if (init_userXP.xp <= tokens) {
+    if (init_userXP.xp <= xp * uses) {
         interaction.reply({
             content: 'You do not have enough tokens for this!',
             ephemeral: true,
@@ -89,7 +92,7 @@ async function giveXP(interaction) {
     const hasLeveledDown = await Levels.subtractXp(
         interaction.user.id,
         interaction.guild.id,
-        tokens,
+        xp * uses,
     );
 
     if (hasLeveledDown) {
@@ -102,28 +105,6 @@ async function giveXP(interaction) {
         );
     }
 
-    let hasLeveledUp = await Levels.appendXp(
-        user.id,
-        interaction.guild.id,
-        tokens,
-    );
-
-    let userTotalXP = await Levels.fetch(user.id, interaction.guild.id, true);
-
-    if (hasLeveledUp) {
-        try {
-            await xp_roles.improvedLevelUp(
-                interaction.guild,
-                user.id,
-                interaction.client,
-                false,
-                true,
-            );
-        } catch (error) {
-            console.error(error); // add error handling for levelUp functio
-        }
-    }
-
     let usesLeft;
     if (userRateLimit) {
         usesLeft = maxUses - userRateLimit.count - 1;
@@ -132,50 +113,37 @@ async function giveXP(interaction) {
     }
 
     await interaction.reply({
-        content: `${interaction.user} (${usesLeft} uses left) donated ${tokens} ReiGn Tokens to ${user}. They now have ${userTotalXP.xp} ReiGn Tokens!`,
-        ephemeral: false,
+        content: `Posting pop-up token message. (${usesLeft} uses left)`,
+        ephemeral: true,
     });
 
-    let init_userXP_after = await Levels.fetch(
-        interaction.user.id,
-        interaction.guild.id,
-    );
+    let afterTaxReward = Math.floor(xp * ((100 - taxPercent) / 100));
+    console.log('xp: ', xp, ' after tax: ', afterTaxReward);
 
-    while (init_userXP_after.xp == init_userXP.xp) {
-        init_userXP_after = await Levels.fetch(
-            interaction.user.id,
-            interaction.guild.id,
-        );
-    }
-
-    if (init_userXP_after.level < init_userXP.level) {
-        console.log('Deranked');
-        xp_roles.improvedLevelUp(
-            interaction.guild,
-            interaction.user.id,
-            interaction.client,
-            true,
-            true,
-        );
-    }
+    await xp_roles.makeDaily(interaction.client, true, xp, uses, taxPercent);
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('donatetokens')
-        .setDescription('Give a user a specified amount of ReiGn Tokens.')
-        .addUserOption((option) =>
-            option
-                .setName('user')
-                .setDescription('The user to give ReiGn Tokens to.')
-                .setRequired(true),
+        .setName('donatepopup')
+        .setDescription(
+            'Create a popup message manually from your own tokens. Popup will be 5% lower than entered value.',
         )
         .addIntegerOption((option) =>
             option
-                .setName('amount')
-                .setDescription('Amount of ReiGn Tokens to give to the user')
+                .setName('tokens')
+                .setDescription('How much xp the user gets')
+                .setRequired(true)
                 .setMinValue(1)
-                .setRequired(true),
+                .setMaxValue(100000),
+        )
+        .addIntegerOption((option) =>
+            option
+                .setName('uses')
+                .setDescription('The amount of uses the pop up has')
+                .setRequired(true)
+                .setMinValue(1)
+                .setMaxValue(30),
         ),
-    execute: giveXP,
+    execute: createDonatePopup,
 };

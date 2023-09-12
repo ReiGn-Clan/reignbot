@@ -165,7 +165,7 @@ module.exports = {
                                 betting_time_ended == false
                             ) {
                                 await submitted.reply({
-                                    content: 'Bet submitted, veryfying..',
+                                    content: 'Bet submitted, verifying..',
                                     ephemeral: true,
                                 });
                                 const modal_xp =
