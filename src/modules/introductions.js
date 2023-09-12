@@ -65,6 +65,7 @@ async function rewardIntroduction() {
     const alreadyAwarded = await awardedIntroductionsCollection.findOne({
         userid,
     });
+    const botInfoChannel = await disClient.channels.fetch('1103780043349573663');
     if (alreadyAwarded) {
         console.log(
             `${interactionObj.user.username} has already been awarded for an introduction.`,
@@ -84,7 +85,7 @@ async function rewardIntroduction() {
             discordAPIBotStuff[1].guildID,
         );
         await userUpdateschannel.send({
-            content: `${interactionObj.user} has earned **3000** ReiGn Tokens for posting an introduction!`,
+            content: `${interactionObj.user} You've just earned **3,000** ReiGn Tokens for posting an introduction! Check out ${botInfoChannel} to see what you can spend them on.`,
         });
 
         if (hasLeveledUp) {
