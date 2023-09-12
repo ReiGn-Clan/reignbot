@@ -14,7 +14,7 @@ async function rewardVote(user) {
         console.log('User is not in the server!');
         return;
     } else {
-            let hasLeveledUp = await Levels.appendXp(
+        let hasLeveledUp = await Levels.appendXp(
             user,
             discordAPIBotStuff[1].guildID,
             1500,
@@ -39,7 +39,7 @@ async function rewardVote(user) {
             }
         }
     }
- // Start reminder for in 12 hours
+    // Start reminder for in 12 hours
 }
 
 module.exports = { setClient, rewardVote };
