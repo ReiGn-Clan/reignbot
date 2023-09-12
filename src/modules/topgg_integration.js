@@ -52,7 +52,7 @@ async function rewardVote(user) {
             channel.send({
                 content: `${member.user} It's time to vote again on https://top.gg/servers/1089665371923026053 !`,
             });
-        }, 10);
+        }, 43200000);
     }
 }
 
