@@ -13,8 +13,22 @@ const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 const awardedIntroductionsCollection = db.collection('users');
 
 async function makeIntroduction(interaction) {
+    const userID = interaction.user.id;
+    const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
+        userID,
+    });
+
+    if (alreadyMadeIntro !== undefined && alreadyMadeIntro !== null) {
+        console.log('Alreade made one noob');
+        await interaction.reply({
+            content: `You're only allowed to make one introduction!`,
+            ephemeral: true,
+        });
+        return;
+    }
+
     const modal = new ModalBuilder()
-        .setCustomId('introductionModal')
+        .setCustomId(interaction.id)
         .setTitle('Introduction');
 
     const nameInput = new TextInputBuilder()
@@ -66,15 +80,15 @@ async function makeIntroduction(interaction) {
     );
 
     await interaction.showModal(modal);
-    const filter = (modalInteraction) =>
-        modalInteraction.customId === 'introductionModal' &&
-        modalInteraction.user.id === interaction.user.id;
+
     interaction
-        .awaitModalSubmit({ filter, time: 1500000 })
+        .awaitModalSubmit({
+            filter: (i) =>
+                i.customId === interaction.id &&
+                i.user.id === interaction.user.id,
+            time: 1500000,
+        })
         .then(async (modalInteraction) => {
-            const submitterID = modalInteraction.user.id;
-            const alreadyMadeIntro =
-                await awardedIntroductionsCollection.findOne({ submitterID });
             const form = {
                 name: modalInteraction.fields.getTextInputValue(
                     'nameTextInput',
@@ -92,24 +106,23 @@ async function makeIntroduction(interaction) {
                         'funFactTextInput',
                     ),
             };
-            if (!isNaN(form.age) && alreadyMadeIntro === 'undefined') {
-                await introductions.getForm(interaction, form);
-                await modalInteraction.reply({
-                    content: 'Introduction submitted successfully.',
-                    ephemeral: true,
-                });
-            }
+
             if (isNaN(form.age)) {
+                console.log('Age dumb');
                 await modalInteraction.reply({
                     content:
                         'Please only use numbers in the age category! Type /makeintroduction to try again.',
                     ephemeral: true,
                 });
+                return;
             } else {
+                console.log('Succesful submit');
+                await introductions.getForm(interaction, form);
                 await modalInteraction.reply({
-                    content: `You're only allowed to make one introduction!`,
+                    content: 'Introduction submitted successfully.',
                     ephemeral: true,
                 });
+                return;
             }
         })
         .catch(console.error);

@@ -1,8 +1,10 @@
 const { config_to_use } = require('../../general_config.json');
 const Levels = require('../utils/syb_xp.js');
-const { variousIDs, introductionsDBEnv, discordAPIBotStuff } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    introductionsDBEnv,
+    discordAPIBotStuff,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 const awardedIntroductionsCollection = db.collection('users');
@@ -57,17 +59,10 @@ async function handleIntroduction() {
         });
 
     let userID = interactionObj.user.id;
-    const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
-        userID,
-    });
 
-    if (!alreadyMadeIntro) {
-        const sentIntroduction = await channel.send({ embeds: [introEmbed] });
-        const introductionID = sentIntroduction.id;
-        await rewardIntroduction(introductionID, userID);
-    } else {
-        console.log('User has already made an introduction!');
-    }
+    const sentIntroduction = await channel.send({ embeds: [introEmbed] });
+    const introductionID = sentIntroduction.id;
+    await rewardIntroduction(introductionID, userID);
 }
 
 async function rewardIntroduction(introductionID, userID) {
