@@ -5,7 +5,12 @@ const {
     TextInputStyle,
     ActionRowBuilder,
 } = require('discord.js');
+const {config_to_use} = require('../general_config.json');
+const {introductionsDBEnv} = require(`../${config_to_use}`);
 const introductions = require('../src/modules/introductions.js');
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const db = mongo_bongo.getDbInstance(introductionsDBEnv);
+const awardedIntroductionsCollection = db.collection('users');
 
 async function makeIntroduction(interaction) {
     const modal = new ModalBuilder()
@@ -59,34 +64,42 @@ async function makeIntroduction(interaction) {
         hobbiesWorkActionRow,
         funFactActionRow,
     );
-
+    
     await interaction.showModal(modal);
-    const filter = (interaction) =>
-        interaction.customId === 'introductionModal';
+    const filter = (modalInteraction) =>
+    modalInteraction.customId === 'introductionModal' && modalInteraction.user.id === interaction.user.id;
     interaction
-        .awaitModalSubmit({ filter, time: 300_000 })
-        .then(async (interaction) => {
+        .awaitModalSubmit({ filter, time: 1500000 })
+        .then(async (modalInteraction) => {
+            const submitterID = modalInteraction.user.id;
+            const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({submitterID});
             const form = {
-                name: interaction.fields.getTextInputValue('nameTextInput'),
-                age: interaction.fields.getTextInputValue('ageTextInput'),
+                name: modalInteraction.fields.getTextInputValue('nameTextInput'),
+                age: modalInteraction.fields.getTextInputValue('ageTextInput'),
                 country:
-                    interaction.fields.getTextInputValue('countryTextInput'),
-                hobbiesWork: interaction.fields.getTextInputValue(
+                modalInteraction.fields.getTextInputValue('countryTextInput'),
+                hobbiesWork: modalInteraction.fields.getTextInputValue(
                     'hobbiesWorkTextInput',
                 ),
                 funFact:
-                    interaction.fields.getTextInputValue('funFactTextInput'),
+                modalInteraction.fields.getTextInputValue('funFactTextInput'),
             };
-            if (!isNaN(form.age)) {
+            if (!isNaN(form.age) && alreadyMadeIntro === 'undefined') {
                 await introductions.getForm(interaction, form);
-                await interaction.reply({
+                await modalInteraction.reply({
                     content: 'Introduction submitted successfully.',
                     ephemeral: true,
                 });
-            } else {
-                await interaction.reply({
+            } 
+            if (isNaN(form.age)) {
+                await modalInteraction.reply({
                     content:
                         'Please only use numbers in the age category! Type /makeintroduction to try again.',
+                    ephemeral: true,
+                });
+            } else {
+                await modalInteraction.reply({
+                    content: `You're only allowed to make one introduction!`,
                     ephemeral: true,
                 });
             }

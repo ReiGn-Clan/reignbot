@@ -5,6 +5,7 @@ const { variousIDs, introductionsDBEnv, discordAPIBotStuff } = require(
 );
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
+const awardedIntroductionsCollection = db.collection('users');
 const xp_roles = require('./xp_roles');
 const { EmbedBuilder } = require('discord.js');
 
@@ -54,51 +55,50 @@ async function handleIntroduction() {
             text: 'If you want an introduction use /makeintroduction',
             iconURL: 'https://i.imgur.com/4H0ZiTv.png',
         });
+    
+    let userID = interactionObj.user.id;
+    const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
+        userID,
+    });
 
-    await channel.send({ embeds: [introEmbed] });
-    await rewardIntroduction();
+    if (!alreadyMadeIntro) {
+        const sentIntroduction = await channel.send({ embeds: [introEmbed] });
+        const introductionID = sentIntroduction.id;
+        await rewardIntroduction(introductionID, userID);
+    } else {
+        console.log('User has already made an introduction!');
+    }
 }
 
-async function rewardIntroduction() {
-    const awardedIntroductionsCollection = db.collection('users');
-    let userid = interactionObj.user.id;
-    const alreadyAwarded = await awardedIntroductionsCollection.findOne({
-        userid,
-    });
+async function rewardIntroduction(introductionID, userID) {
     const botInfoChannel = await disClient.channels.fetch(
         '1103780043349573663',
     );
-    if (alreadyAwarded) {
-        console.log(
-            `${interactionObj.user.username} has already been awarded for an introduction.`,
-        );
-        return;
-    } else {
-        let hasLeveledUp = await Levels.appendXp(
-            userid,
-            discordAPIBotStuff[1].guildID,
-            3000,
-            console.log('Awarded Tokens for making an Introduction!'),
-        );
-        const userUpdateschannel = await disClient.channels.fetch(
-            variousIDs[0].userUpdatesChannel,
-        );
-        const guild = await disClient.guilds.fetch(
-            discordAPIBotStuff[1].guildID,
-        );
-        await userUpdateschannel.send({
-            content: `${interactionObj.user} You've just earned **3,000** ReiGn Tokens for posting an introduction! Check out ${botInfoChannel} to see what you can spend them on.`,
-        });
+    
+    let hasLeveledUp = await Levels.appendXp(
+        userID,
+        discordAPIBotStuff[1].guildID,
+        3000,
+        console.log('Awarded Tokens for making an Introduction!'),
+    );
+    const userUpdateschannel = await disClient.channels.fetch(
+        variousIDs[0].userUpdatesChannel,
+    );
+    const guild = await disClient.guilds.fetch(
+        discordAPIBotStuff[1].guildID,
+    );
+    await userUpdateschannel.send({
+        content: `${interactionObj.user} You've just earned **3,000** ReiGn Tokens for posting an introduction! Check out ${botInfoChannel} to see what you can spend them on.`,
+    });
 
-        if (hasLeveledUp) {
-            try {
-                await xp_roles.improvedLevelUp(guild, userid, disClient);
-            } catch (error) {
-                console.error(error);
-            }
+    if (hasLeveledUp) {
+        try {
+            await xp_roles.improvedLevelUp(guild, userID, disClient);
+        } catch (error) {
+            console.error(error);
         }
-        await awardedIntroductionsCollection.insertOne({ userid });
     }
+    await awardedIntroductionsCollection.insertOne({ userID, introductionID });
 }
 module.exports = {
     getForm,
