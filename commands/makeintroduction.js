@@ -5,8 +5,8 @@ const {
     TextInputStyle,
     ActionRowBuilder,
 } = require('discord.js');
-const {config_to_use} = require('../general_config.json');
-const {introductionsDBEnv} = require(`../${config_to_use}`);
+const { config_to_use } = require('../general_config.json');
+const { introductionsDBEnv } = require(`../${config_to_use}`);
 const introductions = require('../src/modules/introductions.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
@@ -64,25 +64,33 @@ async function makeIntroduction(interaction) {
         hobbiesWorkActionRow,
         funFactActionRow,
     );
-    
+
     await interaction.showModal(modal);
     const filter = (modalInteraction) =>
-    modalInteraction.customId === 'introductionModal' && modalInteraction.user.id === interaction.user.id;
+        modalInteraction.customId === 'introductionModal' &&
+        modalInteraction.user.id === interaction.user.id;
     interaction
         .awaitModalSubmit({ filter, time: 1500000 })
         .then(async (modalInteraction) => {
             const submitterID = modalInteraction.user.id;
-            const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({submitterID});
+            const alreadyMadeIntro =
+                await awardedIntroductionsCollection.findOne({ submitterID });
             const form = {
-                name: modalInteraction.fields.getTextInputValue('nameTextInput'),
+                name: modalInteraction.fields.getTextInputValue(
+                    'nameTextInput',
+                ),
                 age: modalInteraction.fields.getTextInputValue('ageTextInput'),
                 country:
-                modalInteraction.fields.getTextInputValue('countryTextInput'),
+                    modalInteraction.fields.getTextInputValue(
+                        'countryTextInput',
+                    ),
                 hobbiesWork: modalInteraction.fields.getTextInputValue(
                     'hobbiesWorkTextInput',
                 ),
                 funFact:
-                modalInteraction.fields.getTextInputValue('funFactTextInput'),
+                    modalInteraction.fields.getTextInputValue(
+                        'funFactTextInput',
+                    ),
             };
             if (!isNaN(form.age) && alreadyMadeIntro === 'undefined') {
                 await introductions.getForm(interaction, form);
@@ -90,7 +98,7 @@ async function makeIntroduction(interaction) {
                     content: 'Introduction submitted successfully.',
                     ephemeral: true,
                 });
-            } 
+            }
             if (isNaN(form.age)) {
                 await modalInteraction.reply({
                     content:

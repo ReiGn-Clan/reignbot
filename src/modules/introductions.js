@@ -55,7 +55,7 @@ async function handleIntroduction() {
             text: 'If you want an introduction use /makeintroduction',
             iconURL: 'https://i.imgur.com/4H0ZiTv.png',
         });
-    
+
     let userID = interactionObj.user.id;
     const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
         userID,
@@ -74,7 +74,7 @@ async function rewardIntroduction(introductionID, userID) {
     const botInfoChannel = await disClient.channels.fetch(
         '1103780043349573663',
     );
-    
+
     let hasLeveledUp = await Levels.appendXp(
         userID,
         discordAPIBotStuff[1].guildID,
@@ -84,9 +84,7 @@ async function rewardIntroduction(introductionID, userID) {
     const userUpdateschannel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
     );
-    const guild = await disClient.guilds.fetch(
-        discordAPIBotStuff[1].guildID,
-    );
+    const guild = await disClient.guilds.fetch(discordAPIBotStuff[1].guildID);
     await userUpdateschannel.send({
         content: `${interactionObj.user} You've just earned **3,000** ReiGn Tokens for posting an introduction! Check out ${botInfoChannel} to see what you can spend them on.`,
     });
