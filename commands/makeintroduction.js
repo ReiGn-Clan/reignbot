@@ -10,9 +10,9 @@ const { introductionsDBEnv } = require(`../${config_to_use}`);
 const introductions = require('../src/modules/introductions.js');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
-const awardedIntroductionsCollection = db.collection('users');
 
 async function makeIntroduction(interaction) {
+    const awardedIntroductionsCollection = db.collection('users');
     const userID = interaction.user.id;
     const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
         userID,

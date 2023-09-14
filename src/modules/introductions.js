@@ -5,7 +5,7 @@ const { variousIDs, introductionsDBEnv, discordAPIBotStuff } = require(
 );
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
-const awardedIntroductionsCollection = db.collection('users');
+
 const xp_roles = require('./xp_roles');
 const { EmbedBuilder } = require('discord.js');
 
@@ -24,6 +24,7 @@ async function setClient(client) {
 }
 
 async function handleIntroduction() {
+    
     const channel = await disClient.channels.fetch(
         variousIDs[4].introductionsChannel,
     );
@@ -64,6 +65,7 @@ async function handleIntroduction() {
 }
 
 async function rewardIntroduction(introductionID, userID) {
+    const awardedIntroductionsCollection = await db.collection('users');
     const botInfoChannel = await disClient.channels.fetch(
         '1103780043349573663',
     );
