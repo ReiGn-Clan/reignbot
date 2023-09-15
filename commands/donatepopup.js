@@ -116,7 +116,7 @@ async function createDonatePopup(interaction) {
     console.log('xp: ', xp, ' after tax: ', afterTaxReward);
 
     await interaction.reply({
-        content: `${interaction.user} has donated a popup! (${usesLeft} uses left)`,
+        content: `${interaction.user} (${usesLeft} donates left) has donated a popup for ${xp} tokens (${afterTaxReward} post-tax) and ${uses} uses!`,
         ephemeral: false,
     });
 
