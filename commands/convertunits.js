@@ -28,6 +28,14 @@ async function convertUnits(interaction) {
         let trimmed = source.replace(/\D/g, '');
         let fahrenwhatever = Math.floor((trimmed * 9) / 5 + 32);
         value = `${fahrenwhatever}°F`;
+    } else if (source.includes('mi')) {
+        let trimmed = source.replace(/\D/g, '');
+        let kilo = trimmed * 1.609344;
+        value = `${kilo}km`
+    } else if (source.includes('km')) {
+        let trimmed = source.replace(/\D/g, '');
+        let miles = trimmed / 1.609344;
+        value = `${miles}mi`
     } else {
         //if cm just remove units
         if (source.includes('cm')) {
@@ -56,7 +64,7 @@ async function convertUnits(interaction) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('convert')
+        .setName('convertunits')
         .setDescription('Convert between metric and imperial')
         .addStringOption((option) =>
             option
