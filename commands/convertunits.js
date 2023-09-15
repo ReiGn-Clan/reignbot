@@ -31,11 +31,11 @@ async function convertUnits(interaction) {
     } else if (source.includes('mi')) {
         let trimmed = source.replace(/\D/g, '');
         let kilo = trimmed * 1.609344;
-        value = `${kilo}km`
+        value = `${kilo}km`;
     } else if (source.includes('km')) {
         let trimmed = source.replace(/\D/g, '');
         let miles = trimmed / 1.609344;
-        value = `${miles}mi`
+        value = `${miles}mi`;
     } else {
         //if cm just remove units
         if (source.includes('cm')) {
