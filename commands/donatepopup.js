@@ -118,9 +118,15 @@ async function createDonatePopup(interaction) {
     await interaction.reply({
         content: `${interaction.user} has donated a popup! (${usesLeft} uses left)`,
         ephemeral: false,
-    })
+    });
 
-    await xp_roles.makeDaily(interaction.client, true, afterTaxReward, uses, taxPercent);
+    await xp_roles.makeDaily(
+        interaction.client,
+        true,
+        afterTaxReward,
+        uses,
+        taxPercent,
+    );
 }
 
 module.exports = {
