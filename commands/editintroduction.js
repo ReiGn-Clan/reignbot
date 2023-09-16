@@ -6,18 +6,21 @@ const {
     ActionRowBuilder,
 } = require('discord.js');
 const {config_to_use} = require('../general_config.json');
-const {introductionDBEnv} = require(`../${config_to_use}`);
+const {introductionsDBEnv, variousIDs} = require(`../${config_to_use}`);
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance(introductionDBEnv);
+const db = mongo_bongo.getDbInstance(introductionsDBEnv);
+const introductions = require('../src/modules/introductions.js');
 
 
 async function editintroduction(interaction){
     const awardedIntroductionsCollection = await db.collection('users');
-    const userID = interaction.user.id;
-    const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
-        userID,
+    
+    const introMetaData = await awardedIntroductionsCollection.findOne({
+        userID: interaction.user.id,
     });
-    console.log(alreadyMadeIntro);
+    const introChannel = await interaction.guild.channels.fetch(variousIDs[4].introductionsChannel);
+    const introToEdit = await introChannel.messages.fetch(introMetaData.introductionID);
+    console.log(introToEdit);
 }
 
 module.exports = {
