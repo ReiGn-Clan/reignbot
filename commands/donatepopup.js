@@ -112,15 +112,21 @@ async function createDonatePopup(interaction) {
         usesLeft = maxUses - 1;
     }
 
-    await interaction.reply({
-        content: `Posting pop-up token message. (${usesLeft} uses left)`,
-        ephemeral: true,
-    });
-
     let afterTaxReward = Math.floor(xp * ((100 - taxPercent) / 100));
     console.log('xp: ', xp, ' after tax: ', afterTaxReward);
 
-    await xp_roles.makeDaily(interaction.client, true, xp, uses, taxPercent);
+    await interaction.reply({
+        content: `${interaction.user} (${usesLeft} donates left) has donated a popup for ${xp} tokens (${afterTaxReward} post-tax) and ${uses} uses!`,
+        ephemeral: false,
+    });
+
+    await xp_roles.makeDaily(
+        interaction.client,
+        true,
+        afterTaxReward,
+        uses,
+        taxPercent,
+    );
 }
 
 module.exports = {
