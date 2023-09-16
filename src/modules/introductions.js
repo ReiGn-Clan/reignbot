@@ -24,7 +24,6 @@ async function setClient(client) {
 }
 
 async function handleIntroduction() {
-    
     const channel = await disClient.channels.fetch(
         variousIDs[4].introductionsChannel,
     );
