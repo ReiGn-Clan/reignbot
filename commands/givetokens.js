@@ -35,7 +35,7 @@ async function giveXP(interaction) {
         );
 
         await channel.send({
-            content: `${member.user} has gotten **${amount}** ReiGn Tokens from staff!`,
+            content: `${member.user} has received **${amount}** ReiGn Tokens from staff!`,
         });
     }
     await interaction.reply({
