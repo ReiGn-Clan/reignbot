@@ -87,27 +87,11 @@ module.exports = {
                 switch (shop_type) {
                     case 'ranks': {
                         // Retrieve what the current rank is:
-                        let current_roles = member._roles;
 
-                        const current_role_promises = current_roles.map(
-                            async (item) => {
-                                return await interaction.guild.roles.fetch(
-                                    item,
-                                );
-                            },
+                        let current_rank = await Levels.getRank(
+                            interaction.user.id,
+                            interaction.guild.id,
                         );
-
-                        const current_role_objects = await Promise.all(
-                            current_role_promises,
-                        );
-
-                        const current_role_names = current_role_objects.map(
-                            (role) => role.name,
-                        );
-
-                        let current_rank = current_role_names.filter((x) =>
-                            levelOrder.includes(x),
-                        )[0];
 
                         const next_rank =
                             levelOrder[levelOrder.indexOf(current_rank) + 1];
