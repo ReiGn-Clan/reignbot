@@ -1,7 +1,7 @@
 const { config_to_use } = require('../../general_config.json');
-const { timersDbEnv } = require(`../../${config_to_use}`);
+const { timersDBEnv } = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const db = mongo_bongo.getDbInstance(timersDbEnv);
+const db = mongo_bongo.getDbInstance(timersDBEnv);
 
 async function bumpTimer(goal, channel, restart = false) {
     /*
