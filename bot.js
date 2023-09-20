@@ -8,6 +8,7 @@ const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
 const faceit_integration = require('./src/modules/faceit_integration.js');
 const topgg_integration = require('./src/modules/topgg_integration.js');
+const timers = require('./src/utils/timers.js');
 const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
 
@@ -196,6 +197,8 @@ client.once(Events.ClientReady, async () => {
         fetchinv: true,
     });
 
+    await timers.restartTimers(guild, client);
+
     //client.user.setAvatar('./assets/logo_v1_dev.png');
     //client.user.setUsername('ReignBotDEV');
 });
@@ -325,12 +328,7 @@ client.on('messageCreate', async (message) => {
         message.author.username == 'DISBOARD' &&
         message.embeds[0].description.indexOf('Bump done') > -1
     ) {
-        setTimeout(() => {
-            const roleID = '1124800405189185536';
-            message.channel.send({
-                content: `### <@&${roleID}> It's time to bump again squad! ❤️`,
-            });
-        }, 7200000);
+        timers.bumpTimer(Date.now() + 7200000, message.channel);
 
         await xp_roles.rewardBump(message, client);
     }
