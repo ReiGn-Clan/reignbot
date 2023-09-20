@@ -149,4 +149,21 @@ function xpFor(targetLevel) {
     return targetLevel * targetLevel * 100;
 }
 
-module.exports = { set_collection, appendXp, subtractXp, fetch, setXp, xpFor };
+async function getRank(userId, guildId) {
+    if (!userId) throw new TypeError('An user id was not provided.');
+    if (!guildId) throw new TypeError('A guild id was not provided.');
+
+    const user = await collection.findOne({ userID: userId, guildID: guildId });
+
+    return user.rank;
+}
+
+module.exports = {
+    set_collection,
+    appendXp,
+    subtractXp,
+    fetch,
+    setXp,
+    xpFor,
+    getRank,
+};

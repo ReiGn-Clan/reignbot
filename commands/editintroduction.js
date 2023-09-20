@@ -5,15 +5,15 @@ const {
     TextInputStyle,
     ActionRowBuilder,
 } = require('discord.js');
-const {config_to_use} = require('../general_config.json');
-const {introductionsDBEnv, variousIDs} = require(`../${config_to_use}`);
+const { config_to_use } = require('../general_config.json');
+const { introductionsDBEnv, variousIDs } = require(`../${config_to_use}`);
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { handleEditIntroduction } = require('../src/modules/introductions');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 
 async function editintroduction(interaction){
     const awardedIntroductionsCollection = await db.collection('users');
-    
+
     const introMetaData = await awardedIntroductionsCollection.findOne({
         userid: interaction.user.id,
     });
