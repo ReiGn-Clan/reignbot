@@ -355,7 +355,7 @@ client.on('messageCreate', async (message) => {
             console.error(error); // add error handling for levelUp functio
         }
     }
-    let introductionsChannelID = 1105944524162859171;
+    let introductionsChannelID = '1105944524162859171';
 
     if (message.channel.id === introductionsChannelID && !message.author.bot) {
         await message.delete();

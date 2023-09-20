@@ -63,14 +63,14 @@ async function handleMakeIntroduction() {
     await rewardIntroduction(introductionID, userID);
 }
 
-async function rewardIntroduction(introductionID, userID) {
+async function rewardIntroduction(introductionid, userid) {
     const awardedIntroductionsCollection = await db.collection('users');
     const botInfoChannel = await disClient.channels.fetch(
         '1103780043349573663',
     );
 
     let hasLeveledUp = await Levels.appendXp(
-        userID,
+        userid,
         discordAPIBotStuff[1].guildID,
         3000,
         console.log('Awarded Tokens for making an Introduction!'),
@@ -85,7 +85,7 @@ async function rewardIntroduction(introductionID, userID) {
 
     if (hasLeveledUp) {
         try {
-            await xp_roles.improvedLevelUp(guild, userID, disClient);
+            await xp_roles.improvedLevelUp(guild, userid, disClient);
         } catch (error) {
             console.error(error);
         }
