@@ -16,14 +16,14 @@ let disClient = null;
 async function getForm(interaction, form) {
     interactionObj = interaction;
     introduction = form;
-    await handleIntroduction();
+    await handleMakeIntroduction();
 }
 
 async function setClient(client) {
     disClient = client;
 }
 
-async function handleIntroduction() {
+async function handleMakeIntroduction() {
     
     const channel = await disClient.channels.fetch(
         variousIDs[4].introductionsChannel,
@@ -91,9 +91,43 @@ async function rewardIntroduction(introductionID, userID) {
             console.error(error);
         }
     }
-    await awardedIntroductionsCollection.insertOne({ userID, introductionID });
+    await awardedIntroductionsCollection.insertOne({ userid, introductionid });
+}
+
+async function handleEditIntroduction(modalInteraction, interaction, form, introToEdit){
+    const avatarURL = interaction.user.displayAvatarURL({
+        format: 'png',
+        dynamic: true,
+        size: 256,
+    });
+
+    const editIntroEmbed = new EmbedBuilder()
+        .setColor(0x0099ff)
+        .setTitle(`${interaction.user.username}'s Introduction`)
+        .setAuthor({
+            name: `${interaction.user.username}`,
+            iconURL: avatarURL,
+        })
+        .setThumbnail('https://i.imgur.com/4H0ZiTv.png')
+        .addFields(
+            { name: '**Name: **', value: `${form.name}` },
+            { name: '**Age: **', value: `${form.age}` },
+            { name: '**Country: **', value: `${form.country}` },
+            {
+                name: '**Work/Studies/Hobbies: **',
+                value: `${form.hobbiesWork}`,
+            },
+            { name: '**Fun Fact: **', value: `${form.funFact}` },
+        )
+        .setFooter({
+            text: 'If you want an introduction use /makeintroduction',
+            iconURL: 'https://i.imgur.com/4H0ZiTv.png',
+        });
+    await introToEdit.edit({ embeds: [editIntroEmbed] });
+    console.log(`Edited ${modalInteraction.user.username}'s intro`);
 }
 module.exports = {
     getForm,
     setClient,
-};
+    handleEditIntroduction
+}
