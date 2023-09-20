@@ -3,7 +3,6 @@ const { timersDbEnv } = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(timersDbEnv);
 
-
 async function bumpTimer(goal, channel, restart = false) {
     /*
     goal: time in ms when the timer should end
@@ -66,14 +65,14 @@ async function restartTimers(guild, client) {
         switch (doc.type) {
             case 'bump': {
                 //Get the channel
-                console.log('Found bump timer')
+                console.log('Found bump timer');
                 const channel = await client.channels.fetch(doc.channelId);
                 await bumpTimer(doc.goal, channel, true);
                 break;
             }
 
             case 'vote': {
-                console.log('Found vote timer')
+                console.log('Found vote timer');
                 const channel = await client.channels.fetch(doc.channelId);
                 const member = await guild.members.fetch(doc.userId);
                 await voteTimer(doc.goal, channel, member, true);

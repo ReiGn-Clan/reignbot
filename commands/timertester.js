@@ -12,8 +12,9 @@ module.exports = {
         .setDescription('DEV command to test timer'),
 
     async execute(interaction) {
-        const member = await interaction.guild.members.fetch(interaction.user.id);
-
+        const member = await interaction.guild.members.fetch(
+            interaction.user.id,
+        );
 
         if (member === undefined) {
             console.log('User is not in the server!');
@@ -36,7 +37,11 @@ module.exports = {
 
         if (hasLeveledUp) {
             try {
-                await xp_roles.improvedLevelUp(interaction.guild, interaction.user.id, interaction.client);
+                await xp_roles.improvedLevelUp(
+                    interaction.guild,
+                    interaction.user.id,
+                    interaction.client,
+                );
             } catch (error) {
                 console.error(error);
             }
@@ -51,7 +56,5 @@ module.exports = {
         if (hasRole) {
             timers.voteTimer(Date.now() + 60000, channel, member);
         }
-    }   
+    },
 };
-
-
