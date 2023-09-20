@@ -6,26 +6,24 @@ const {
     ActionRowBuilder,
 } = require('discord.js');
 const { config_to_use } = require('../general_config.json');
-const { introductionsDBEnv } = require(`../${config_to_use}`);
-const introductions = require('../src/modules/introductions.js');
+const { introductionsDBEnv, variousIDs } = require(`../${config_to_use}`);
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const { handleEditIntroduction } = require('../src/modules/introductions');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 
-async function makeIntroduction(interaction) {
-    const awardedIntroductionsCollection = db.collection('users');
-    const userID = interaction.user.id;
-    const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
-        userID,
-    });
+async function editintroduction(interaction) {
+    const awardedIntroductionsCollection = await db.collection('users');
 
-    if (alreadyMadeIntro !== undefined && alreadyMadeIntro !== null) {
-        console.log('Alreade made one noob');
-        await interaction.reply({
-            content: `You're only allowed to make one introduction!`,
-            ephemeral: true,
-        });
-        return;
-    }
+    const introMetaData = await awardedIntroductionsCollection.findOne({
+        userid: interaction.user.id,
+    });
+    const introChannel = await interaction.guild.channels.fetch(
+        variousIDs[4].introductionsChannel,
+    );
+    const introToEdit = await introChannel.messages.fetch(
+        introMetaData.introductionid,
+    );
+    const embedFields = introToEdit.embeds[0].data.fields;
 
     const modal = new ModalBuilder()
         .setCustomId(interaction.id)
@@ -35,33 +33,31 @@ async function makeIntroduction(interaction) {
         .setCustomId('nameTextInput')
         .setLabel(`What's your name?`)
         .setStyle(TextInputStyle.Short)
-        .setPlaceholder('Your name.');
+        .setValue(embedFields[0].value);
 
     const ageInput = new TextInputBuilder()
         .setCustomId('ageTextInput')
         .setLabel('How old are you?')
         .setStyle(TextInputStyle.Short)
-        .setPlaceholder('Your age. It must be a number.');
+        .setValue(embedFields[1].value);
 
     const countryInput = new TextInputBuilder()
         .setCustomId('countryTextInput')
         .setLabel('Where are you from?')
         .setStyle(TextInputStyle.Short)
-        .setPlaceholder(`Where you're from.`);
+        .setValue(embedFields[2].value);
 
     const hobbiesWorkInput = new TextInputBuilder()
         .setCustomId('hobbiesWorkTextInput')
         .setLabel('What do you do for work/study/hobbies?')
         .setStyle(TextInputStyle.Paragraph)
-        .setPlaceholder('What you do for work/study/hobbies.');
+        .setValue(embedFields[3].value);
 
     const funFactInput = new TextInputBuilder()
         .setCustomId('funFactTextInput')
         .setLabel('Do you have any fun facts?')
         .setStyle(TextInputStyle.Paragraph)
-        .setPlaceholder(
-            'Do you have any fun facts? About yourself or in general.',
-        );
+        .setValue(embedFields[4].value);
 
     const nameActionRow = new ActionRowBuilder().addComponents(nameInput);
     const ageActionRow = new ActionRowBuilder().addComponents(ageInput);
@@ -116,12 +112,16 @@ async function makeIntroduction(interaction) {
                 });
                 return;
             } else {
-                console.log('Succesful submit');
-                await introductions.getForm(interaction, form);
                 await modalInteraction.reply({
-                    content: 'Introduction submitted successfully.',
+                    content: 'Introduction edited sucessfully.',
                     ephemeral: true,
                 });
+                await handleEditIntroduction(
+                    modalInteraction,
+                    interaction,
+                    form,
+                    introToEdit,
+                );
                 return;
             }
         })
@@ -130,7 +130,7 @@ async function makeIntroduction(interaction) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('makeintroduction')
-        .setDescription('Make an introduction'),
-    execute: makeIntroduction,
+        .setName('editintroduction')
+        .setDescription('Edit your introduction'),
+    execute: editintroduction,
 };

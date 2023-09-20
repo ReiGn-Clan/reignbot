@@ -26,7 +26,7 @@ async function checkLeaderboard(interaction) {
                 },
             },
             {
-                $sort: { xp: -1 },
+                $sort: { rankValue: -1, xp: -1 },
             },
             {
                 $limit: limit,
@@ -36,9 +36,21 @@ async function checkLeaderboard(interaction) {
 
     const memberPromises = sorted_leaderboard.map(async (user, index) => {
         const member = await interaction.guild.members.fetch(user.userID);
+        if (typeof user.rank == 'undefined') {
+            user.rank = 'Neophyte';
+        }
+        let tokens = user.xp;
+        if (tokens > 100000000000) {
+            tokens = '' + tokens;
+            tokens = tokens.substring(0, tokens.length - 9) + 'B';
+        } else if (tokens > 100000000) {
+            tokens = '' + tokens;
+            tokens = tokens.substring(0, tokens.length - 6) + 'M';
+        }
         return [
             `${index + 1}:  ${member.nickname ?? member.user.username}`,
-            `Level ${user.level} (${user.xp} ReiGn Tokens)`,
+            `${user.rank}`,
+            `${tokens} RT `,
         ];
     });
 
@@ -53,8 +65,13 @@ async function checkLeaderboard(interaction) {
             inline: true,
         },
         {
-            name: 'ReiGn Tokens',
+            name: 'Rank',
             value: leaderboardData.map((entry) => entry[1]).join('\n'),
+            inline: true,
+        },
+        {
+            name: 'RT',
+            value: leaderboardData.map((entry) => entry[2]).join('\n'),
             inline: true,
         },
     ];
@@ -63,14 +80,15 @@ async function checkLeaderboard(interaction) {
         .setColor('#0099ff')
         .setTitle('Top Members')
         .setDescription(
-            'Here are the top 10 users in this server by ReiGn Tokens:',
+            `Here are the top ${limit} users in this server by ReiGn Tokens:`,
         )
         .addFields(fields);
 
     await interaction.channel.send({ embeds: [embed], ephemeral: true });
-    await interaction.reply(
-        'The top ' + String(limit) + ' users by ReiGn Tokens',
-    );
+    await interaction.reply({
+        content: 'The top ' + String(limit) + ' users by ReiGn Tokens',
+        ephemeral: true,
+    });
 }
 
 module.exports = {
