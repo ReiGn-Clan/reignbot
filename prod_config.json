@@ -25,5 +25,6 @@
     "gamblingDbEnvironment": "gambling",
     "donateRateLimitDBEnv": "donate_tokens_uses",
     "introductionsDBEnv": "introductions",
+    "timersDBEnv": "timers",
     "webserverPort": 3000
 }
