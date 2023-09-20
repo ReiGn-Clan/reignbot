@@ -11,14 +11,18 @@ const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { handleEditIntroduction } = require('../src/modules/introductions');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 
-async function editintroduction(interaction){
+async function editintroduction(interaction) {
     const awardedIntroductionsCollection = await db.collection('users');
 
     const introMetaData = await awardedIntroductionsCollection.findOne({
         userid: interaction.user.id,
     });
-    const introChannel = await interaction.guild.channels.fetch(variousIDs[4].introductionsChannel);
-    const introToEdit = await introChannel.messages.fetch(introMetaData.introductionid);
+    const introChannel = await interaction.guild.channels.fetch(
+        variousIDs[4].introductionsChannel,
+    );
+    const introToEdit = await introChannel.messages.fetch(
+        introMetaData.introductionid,
+    );
     const embedFields = introToEdit.embeds[0].data.fields;
 
     const modal = new ModalBuilder()
@@ -62,7 +66,7 @@ async function editintroduction(interaction){
         hobbiesWorkInput,
     );
     const funFactActionRow = new ActionRowBuilder().addComponents(funFactInput);
-    
+
     modal.addComponents(
         nameActionRow,
         ageActionRow,
@@ -70,7 +74,7 @@ async function editintroduction(interaction){
         hobbiesWorkActionRow,
         funFactActionRow,
     );
-    
+
     await interaction.showModal(modal);
 
     interaction
@@ -109,10 +113,15 @@ async function editintroduction(interaction){
                 return;
             } else {
                 await modalInteraction.reply({
-                    content:'Introduction edited sucessfully.',
+                    content: 'Introduction edited sucessfully.',
                     ephemeral: true,
                 });
-                await handleEditIntroduction(modalInteraction,interaction, form, introToEdit);
+                await handleEditIntroduction(
+                    modalInteraction,
+                    interaction,
+                    form,
+                    introToEdit,
+                );
                 return;
             }
         })

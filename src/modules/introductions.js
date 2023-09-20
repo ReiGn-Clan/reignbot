@@ -24,7 +24,6 @@ async function setClient(client) {
 }
 
 async function handleMakeIntroduction() {
-    
     const channel = await disClient.channels.fetch(
         variousIDs[4].introductionsChannel,
     );
@@ -94,7 +93,12 @@ async function rewardIntroduction(introductionID, userID) {
     await awardedIntroductionsCollection.insertOne({ userid, introductionid });
 }
 
-async function handleEditIntroduction(modalInteraction, interaction, form, introToEdit){
+async function handleEditIntroduction(
+    modalInteraction,
+    interaction,
+    form,
+    introToEdit,
+) {
     const avatarURL = interaction.user.displayAvatarURL({
         format: 'png',
         dynamic: true,
@@ -129,5 +133,5 @@ async function handleEditIntroduction(modalInteraction, interaction, form, intro
 module.exports = {
     getForm,
     setClient,
-    handleEditIntroduction
-}
+    handleEditIntroduction,
+};
