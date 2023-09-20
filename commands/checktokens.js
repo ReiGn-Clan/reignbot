@@ -28,10 +28,7 @@ module.exports = {
 
         const userXP = await Levels.fetch(user.id, interaction.guild.id);
 
-        let current_rank = await Levels.getRank(
-            interaction.user.id,
-            interaction.guild.id,
-        );
+        let current_rank = await Levels.getRank(user.id, interaction.guild.id);
 
         const next_rank = levelOrder[levelOrder.indexOf(current_rank) + 1];
 
