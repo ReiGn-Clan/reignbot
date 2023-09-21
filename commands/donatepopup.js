@@ -70,7 +70,7 @@ async function createDonatePopup(interaction) {
     if (xp < miniumumValue) {
         interaction.reply({
             content: `You cannot create a popup with fewer than ${miniumumValue} tokens`,
-            ephemeral: true
+            ephemeral: true,
         });
         return;
     }
