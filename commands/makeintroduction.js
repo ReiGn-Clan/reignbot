@@ -13,12 +13,12 @@ const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 
 async function makeIntroduction(interaction) {
     const awardedIntroductionsCollection = db.collection('users');
-    const userID = interaction.user.id;
+    const userid = interaction.user.id;
     const alreadyMadeIntro = await awardedIntroductionsCollection.findOne({
-        userID,
+        userid,
     });
 
-    if (alreadyMadeIntro !== undefined && alreadyMadeIntro !== null) {
+    if (alreadyMadeIntro !== undefined || alreadyMadeIntro !== null) {
         console.log('Alreade made one noob');
         await interaction.reply({
             content: `You're only allowed to make one introduction!`,
