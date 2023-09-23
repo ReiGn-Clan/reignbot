@@ -12,6 +12,7 @@ async function createDonatePopup(interaction) {
 
     const taxPercent = 5;
     const maxUses = 5;
+    const miniumumValue = 100;
     let user = interaction.options.getUser('user');
     const tokensUsesCollection = db.collection('tokens_uses');
 
@@ -66,9 +67,9 @@ async function createDonatePopup(interaction) {
         console.error(error);
     }
 
-    if (interaction.user == user) {
+    if (xp < miniumumValue) {
         interaction.reply({
-            content: 'You cannot donate to yourself!',
+            content: `You cannot create a popup with fewer than ${miniumumValue} tokens`,
             ephemeral: true,
         });
         return;
