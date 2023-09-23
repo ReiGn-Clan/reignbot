@@ -13,7 +13,6 @@ async function createDonatePopup(interaction) {
     const taxPercent = 5;
     const maxUses = 5;
     const miniumumValue = 100;
-    let user = interaction.options.getUser('user');
     const tokensUsesCollection = db.collection('tokens_uses');
 
     const today = new Date();
