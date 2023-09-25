@@ -385,6 +385,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
         increase: true,
         fetchinv: false,
     });
+    await Levels.set_initial_rank(member.id, discordAPIBotStuff[1].guildID);
 });
 
 // Event for when user leaves

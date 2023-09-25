@@ -39,7 +39,7 @@ module.exports = {
 
         if (rank_listing == null) {
             await interaction.reply({
-                content: `No new rank found in the store!`,
+                content: `Person has **${userXP.xp}** ReiGn Tokens, no new rank found in the store!`,
                 ephemeral: true,
             });
             return;

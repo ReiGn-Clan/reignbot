@@ -18,6 +18,35 @@ function set_collection(database_name, collection_name) {
     collection = db.collection(collection_name);
 }
 
+async function set_initial_rank(userId, guildId) {
+    if (!userId) throw new TypeError('An user id was not provided.');
+    if (!guildId) throw new TypeError('A guild id was not provided.');
+
+    const user = await collection.findOne({ userID: userId, guildID: guildId });
+
+    if (!user) {
+        const doc = {
+            userID: userId,
+            guildID: guildId,
+            xp: 0,
+            level: 0,
+            rank: 'Neophyte',
+            rankValue: 0,
+            lastUpdated: new Date(),
+        };
+
+        await collection
+            .insertOne(doc)
+            .catch((e) => console.log(`Failed to save new user, error`, e));
+    } else {
+        user.rank = 'Neophyte';
+        user.rank = 0;
+        await collection
+            .updateOne({ _id: user._id }, { $set: user })
+            .catch((e) => console.log(`Failed to append xp, error`, e));
+    }
+}
+
 async function appendXp(userId, guildId, xp) {
     /*
     Appends XP to a user (tokens in reign)
@@ -166,4 +195,5 @@ module.exports = {
     setXp,
     xpFor,
     getRank,
+    set_initial_rank,
 };
