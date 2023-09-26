@@ -18,7 +18,7 @@ async function makeIntroduction(interaction) {
         userid,
     });
 
-    if (alreadyMadeIntro !== undefined || alreadyMadeIntro !== null) {
+    if (alreadyMadeIntro !== (undefined || null)) {
         console.log('Alreade made one noob');
         await interaction.reply({
             content: `You're only allowed to make one introduction!`,
