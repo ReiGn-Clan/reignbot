@@ -23,19 +23,27 @@ function setClient(client) {
     discordClient = client;
 }
 
-async function parseNicknames() {
-    const faceitData = await getAllHubMembers();
-    let nicknameArray = [];
-    if (faceitData && faceitData.items) {
-        nicknameArray = faceitData.items.map((item) =>
-            item.nickname.toLowerCase(),
-        );
-    } else {
-        console.error(
-            'Failed to get Faceit data or data structure is incorrect.',
-        );
-    }
-    return nicknameArray;
+async function findUser(faceitUsername) {
+    const ReiGnOrganizerID = '83f0e869-2058-4cb6-bed0-3372a910c30d';
+
+    const faceit_user = await FaceitGet(
+        `https://open.faceit.com/data/v4/players?nickname=${faceitUsername}`,
+    );
+
+    if (faceit_user == null) return;
+
+    const user_hubs = await FaceitGet(
+        `https://open.faceit.com/data/v4/players/${faceit_user.player_id}/hubs?offset=0&limit=50`,
+    );
+
+    let inOurHub = false;
+    user_hubs.items.map((item) => {
+        if (item.organizer_id == ReiGnOrganizerID) {
+            inOurHub = true;
+        }
+    });
+
+    return inOurHub;
 }
 
 async function rewardParticipants(matchData) {
@@ -112,10 +120,7 @@ async function parseMatches(matchData) {
     return { nicknames, matchID };
 }
 
-async function getAllHubMembers() {
-    let url =
-        'https://open.faceit.com/data/v4/hubs/80ee5fb1-0b2b-4c2c-9828-ecf8fc925b12/members?offset=0&limit=100000';
-
+async function FaceitGet(url) {
     try {
         const response = await fetch(url, {
             method: 'GET',
@@ -182,7 +187,7 @@ async function getHub() {
 
 module.exports = {
     parseMatches,
-    parseNicknames,
+    findUser,
     rewardParticipants,
     setClient,
     getHub,
