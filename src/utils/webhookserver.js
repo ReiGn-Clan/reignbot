@@ -2,7 +2,6 @@ const express = require('express');
 const { config_to_use } = require('../../general_config.json');
 const { webserverPort } = require(`../../${config_to_use}`);
 const app = express();
-const port = webserverPort;
 const faceit_integration = require('../modules/faceit_integration.js');
 const topgg_integration = require('../modules/topgg_integration.js');
 const Topgg = require('@top-gg/sdk');
@@ -27,9 +26,8 @@ function startWebHookServer() {
         }),
     );
 
-    app.listen(port, () => {
-        console.log(`Web server listening on port ${port}`);
+    app.listen(webserverPort, () => {
+        console.log(`Web server listening on port ${webserverPort}`);
     });
 }
-
 module.exports = { startWebHookServer };
