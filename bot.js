@@ -11,6 +11,7 @@ const topgg_integration = require('./src/modules/topgg_integration.js');
 const timers = require('./src/utils/timers.js');
 const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
+const twitchIntegration = require('./src/modules/twitch_integration.js');
 
 const async = require('async');
 
@@ -183,6 +184,10 @@ client.once(Events.ClientReady, async () => {
             client,
         );
     }, 60000);
+
+    setInterval(() => {
+        twitchIntegration.isLive(client);
+    },30000);
 
     setInterval(() => {
         xp_roles.makeDaily(client);

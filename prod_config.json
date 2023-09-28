@@ -14,7 +14,8 @@
         { "generalChannel": "1091539145127641098" },
         { "topMembersChannel": "1095411283882426488" },
         { "topMembersMessage": "1098278074254110740" },
-        { "introductionsChannel": "1105944524162859171" }
+        { "introductionsChannel": "1105944524162859171" },
+        {"socialUpdatesChannel": "1140659894043820055"}
     ],
     "xpDbEnvironment": "xpDatabase",
     "recruiterDbEnvironment": "recruiter",
@@ -26,5 +27,6 @@
     "donateRateLimitDBEnv": "donate_tokens_uses",
     "introductionsDBEnv": "introductions",
     "timersDBEnv": "timers",
-    "webserverPort": 3000
+    "webserverPort": 3000,
+    "twitchWebServerPort": 443
 }
