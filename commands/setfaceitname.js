@@ -22,26 +22,16 @@ module.exports = {
 
     async execute(interaction) {
         const collection = db.collection('usernames');
-        let faceitUsername = interaction.options
-            .getString('faceitusername')
-            .toLowerCase();
-        let allHubMembers = await faceitIntegration.parseNicknames();
-        let discordUsername = interaction.user.username;
-
-        //user not found in hub member array
-        if (!allHubMembers.includes(faceitUsername)) {
-            await interaction.reply({
-                content: `${faceitUsername} not found in the FaceIt hub!`,
-                ephemeral: true,
-            });
-            return;
-        }
+        let faceitUsername = interaction.options.getString('faceitusername');
 
         const already_set = await collection.findOne({
             discordUserID: interaction.user.id,
         });
 
-        console.log(already_set);
+        const lower_case_username = faceitUsername.toLowerCase();
+        const name_exists_already = await collection.findOne({
+            faceitUsername: lower_case_username,
+        });
 
         if (already_set !== null) {
             await interaction.reply({
@@ -51,7 +41,25 @@ module.exports = {
             return;
         }
 
-        if (allHubMembers.includes(faceitUsername)) {
+        if (name_exists_already !== null) {
+            await interaction.reply({
+                content: `This name has already been used!`,
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const joinedFaceit = await faceitIntegration.findUser(faceitUsername);
+        let discordUsername = interaction.user.username;
+
+        //user not found in hub member array
+        if (!joinedFaceit) {
+            await interaction.reply({
+                content: `${faceitUsername} not found in the FaceIt hub!`,
+                ephemeral: true,
+            });
+            return;
+        } else {
             let hasLeveledUp = await Levels.appendXp(
                 interaction.user.id,
                 interaction.guild.id,
@@ -70,6 +78,11 @@ module.exports = {
                 }
             }
             let discordUserID = interaction.user.id;
+            await interaction.reply({
+                content: `Successfully linked ${discordUsername} (Discord) to ${faceitUsername} (FaceIt). You were awarded 5000 tokens!`,
+                ephemeral: true,
+            });
+            faceitUsername = faceitUsername.toLowerCase();
             //no entry exists and the user is in the hub, bongo into mongo
             const dataEntry = {
                 discordUsername,
@@ -77,10 +90,6 @@ module.exports = {
                 faceitUsername,
             };
             await collection.insertOne(dataEntry);
-            await interaction.reply({
-                content: `Successfully linked ${discordUsername} (Discord) to ${faceitUsername} (FaceIt). You were awarded 5000 tokens!`,
-                ephemeral: true,
-            });
         }
     },
 };
