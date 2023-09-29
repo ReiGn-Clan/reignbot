@@ -27,8 +27,6 @@ module.exports = {
             faceitUsername: lower_case_username,
         });
 
-        console.log(name_exists_already);
-
         if (name_exists_already !== null) {
             await interaction.reply({
                 content: `This name has already been used!`,
