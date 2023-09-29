@@ -27,8 +27,6 @@ module.exports = {
             faceitUsername: lower_case_username,
         });
 
-        console.log(name_exists_already);
-
         if (name_exists_already !== null) {
             await interaction.reply({
                 content: `This name has already been used!`,
@@ -39,8 +37,9 @@ module.exports = {
 
         if (existingEntry) {
             // Check if the new username exists
-            const joinedFaceit =
-                await faceitIntegration.findUser(faceitUsername);
+            const joinedFaceit = await faceitIntegration.findUser(
+                faceitUsername,
+            );
 
             if (!joinedFaceit) {
                 await interaction.reply({

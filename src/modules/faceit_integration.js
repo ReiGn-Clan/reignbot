@@ -24,7 +24,11 @@ function setClient(client) {
 }
 
 async function findUser(faceitUsername) {
-    const ReiGnOrganizerID = '83f0e869-2058-4cb6-bed0-3372a910c30d';
+    const HubIDs = [
+        '0516511f-763f-48ff-9d01-20236fa0b7e7',
+        '80ee5fb1-0b2b-4c2c-9828-ecf8fc925b12',
+        '7c2d5f1c-879d-4fe8-8b96-8043228030bc',
+    ];
 
     const faceit_user = await FaceitGet(
         `https://open.faceit.com/data/v4/players?nickname=${faceitUsername}`,
@@ -38,7 +42,7 @@ async function findUser(faceitUsername) {
 
     let inOurHub = false;
     user_hubs.items.map((item) => {
-        if (item.organizer_id == ReiGnOrganizerID) {
+        if (HubIDs.includes(item.hub_id)) {
             inOurHub = true;
         }
     });
