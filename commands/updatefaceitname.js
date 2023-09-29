@@ -37,9 +37,8 @@ module.exports = {
 
         if (existingEntry) {
             // Check if the new username exists
-            const joinedFaceit = await faceitIntegration.findUser(
-                faceitUsername,
-            );
+            const joinedFaceit =
+                await faceitIntegration.findUser(faceitUsername);
 
             if (!joinedFaceit) {
                 await interaction.reply({
