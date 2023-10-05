@@ -344,7 +344,7 @@ client.on('messageCreate', async (message) => {
     }
 
     // Here we establish an xpPerMsg variable, then a hasLeveledUp variable
-    const xpPerMsg = 15;
+    const xpPerMsg = 25;
     let hasLeveledUp = await Levels.appendXp(
         message.author.id,
         message.guild.id,

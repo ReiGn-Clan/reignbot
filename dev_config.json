@@ -10,12 +10,12 @@
     "mongoUri": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/",
 
     "variousIDs": [
-        { "userUpdatesChannel": "1129188968685117520" },
-        { "generalChannel": "1129188968685117520" },
-        { "topMembersChannel": "1129188968685117520" },
+        { "userUpdatesChannel": "1159140468601409536" },
+        { "generalChannel": "1159140468601409536" },
+        { "topMembersChannel": "1159140468601409536" },
         { "topMembersMessage": "1131743295471616061" },
-        { "introductionsChannel": "1129188968685117520" },
-        {"socialUpdatesChannel": "1129188968685117520"}
+        { "introductionsChannel": "1159140468601409536" },
+        {"socialUpdatesChannel": "1159140468601409536"}
     ],
     "xpDbEnvironment": "dev_xpDatabase",
     "recruiterDbEnvironment": "dev_recruiter",
