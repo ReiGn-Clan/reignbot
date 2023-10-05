@@ -187,7 +187,7 @@ client.once(Events.ClientReady, async () => {
 
     setInterval(() => {
         twitchIntegration.isLive(client);
-    },30000);
+    }, 30000);
 
     setInterval(() => {
         xp_roles.makeDaily(client);
