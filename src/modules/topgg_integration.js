@@ -23,7 +23,7 @@ async function rewardVote(user) {
     let hasLeveledUp = await Levels.appendXp(
         user,
         discordAPIBotStuff[1].guildID,
-        1500,
+        2000,
         console.log('Awarded tokens for voting!'),
     );
     const channel = await discordClient.channels.fetch(
@@ -31,7 +31,7 @@ async function rewardVote(user) {
     );
 
     await channel.send({
-        content: `${member.user} has earned **1500** ReiGn Tokens for voting on https://top.gg/servers/1089665371923026053 !`,
+        content: `${member.user} has earned **2000** ReiGn Tokens for voting on https://top.gg/servers/1089665371923026053 !`,
     });
 
     if (hasLeveledUp) {

@@ -206,7 +206,7 @@ async function updateXpLeaderboard(guildID, disClient) {
 async function rewardVoiceUsers(guildID, voiceChannelUsers, disClient) {
     const guild = await disClient.guilds.fetch(guildID);
 
-    const xpPerMinute = 10;
+    const xpPerMinute = 15;
     console.log('Updating RT for users', voiceChannelUsers);
     voiceChannelUsers.forEach(async function (item) {
         let hasLeveledUp = await Levels.appendXp(
@@ -398,7 +398,7 @@ async function rewardBoost(guildID, user, disClient) {
 }
 
 async function rewardBump(message, disClient) {
-    const tokens = 1500;
+    const tokens = 2500;
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
     );
