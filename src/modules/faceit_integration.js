@@ -60,7 +60,7 @@ async function rewardParticipants(matchData) {
                     let hasLeveledUp = await Levels.appendXp(
                         player.discordUserID,
                         discordAPIBotStuff[1].guildID,
-                        1500,
+                        2500,
                         console.log('Awarded xp for match!'),
                     );
                     const channel = await discordClient.channels.fetch(
@@ -74,7 +74,7 @@ async function rewardParticipants(matchData) {
                         player.discordUserID,
                     );
                     await channel.send({
-                        content: `${member.user} has earned **1500** ReiGn Tokens for participating in a custom game!`,
+                        content: `${member.user} has earned **2500** ReiGn Tokens for participating in a custom game!`,
                     });
 
                     if (hasLeveledUp) {
