@@ -12,6 +12,7 @@ const timers = require('./src/utils/timers.js');
 const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
 const twitchIntegration = require('./src/modules/twitch_integration.js');
+const voiceReward = require('./src/modules/voice_reward.js');
 
 const async = require('async');
 
@@ -23,7 +24,6 @@ const { discordAPIBotStuff, xpDbEnvironment } = require(`./${config_to_use}`);
 
 // For voice channel tracking
 let afk_channel = null;
-let voiceChannelUsers = [];
 
 // Create a new instance of the 'Client' object with the necessary intents enabled
 const client = new Client({
@@ -178,11 +178,7 @@ client.once(Events.ClientReady, async () => {
     }, 60000);
 
     setInterval(() => {
-        xp_roles.rewardVoiceUsers(
-            discordAPIBotStuff[1].guildID,
-            voiceChannelUsers,
-            client,
-        );
+        voiceReward.reward_users(guild, client);
     }, 60000);
 
     setInterval(() => {
@@ -224,28 +220,14 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
         // User Joins a voice channel
 
         // Check if channel is not afk
-        if (newUserChannel.id !== afk_channel) {
-            console.log('User joined: ', newUserChannel.id);
-            voiceChannelUsers.push(newMember.id);
-        } else {
-            console.log('User joined afk');
-            let index = voiceChannelUsers.indexOf(newMember.id);
+        if (newUserChannel.id == afk_channel) return;
 
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
+        voiceReward.user_join(newMember, newUserChannel);
     } else if (newUserChannel === null) {
         // User leaves a voice channel
+        if (oldUserChannel.id == afk_channel) return;
 
-        if (oldUserChannel.id !== afk_channel) {
-            console.log('User left: ', oldUserChannel.id);
-            let index = voiceChannelUsers.indexOf(newMember.id);
-
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
+        voiceReward.user_leave(newMember, oldUserChannel);
     } else if (
         oldUserChannel != newUserChannel &&
         newUserChannel !== null &&
@@ -253,41 +235,20 @@ client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
     ) {
         // User switches to a different channel
         // Check if channel is not afk
-        if (newUserChannel.id !== afk_channel) {
-            console.log('User switched to: ', newUserChannel.id);
-            if (oldUserChannel.id === afk_channel) {
-                voiceChannelUsers.push(newMember.id);
-            }
-        } else {
-            console.log('User switched to afk');
-            let index = voiceChannelUsers.indexOf(newMember.id);
-
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
+        if (newUserChannel.id == afk_channel) return;
+        voiceReward.user_switch(newMember, oldUserChannel, newUserChannel);
     }
     if (newDeafened || newMuted) {
-        if (voiceChannelUsers.includes(newMember.id)) {
-            console.log('User deafened or muted');
-            let index = voiceChannelUsers.indexOf(newMember.id);
-
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
+        // Basically remove from channel
+        voiceReward.user_leave(newMember, newUserChannel);
     } else {
-        if (!voiceChannelUsers.includes(newMember.id)) {
-            if (newUserChannel !== null) {
-                if (newUserChannel.id !== afk_channel) {
-                    console.log('User undeafened or unmuted');
-                    voiceChannelUsers.push(newMember.id);
-                }
-            }
+        // Basically add back to channel
+
+        if (newUserChannel !== null) {
+            if (newUserChannel.id == afk_channel) return;
+            voiceReward.user_join(newMember, newUserChannel);
         }
     }
-
-    console.log(voiceChannelUsers);
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
