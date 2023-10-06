@@ -174,14 +174,14 @@ client.once(Events.ClientReady, async () => {
 
     xp_roles.makeDaily(client);
 
-    voiceReward.bot_boot(guild);
+    //voiceReward.bot_boot(guild);
 
     setInterval(() => {
         xp_roles.updateXpLeaderboard(discordAPIBotStuff[1].guildID, client);
     }, 60000);
 
     setInterval(() => {
-        voiceReward.reward_users(guild, client);
+        voiceReward.faster_reward(guild, client, afk_channel);
     }, 60000);
 
     setInterval(() => {
@@ -205,10 +205,6 @@ client.once(Events.ClientReady, async () => {
 
     //client.user.setAvatar('./assets/logo_v1_dev.png');
     //client.user.setUsername('ReignBotDEV');
-});
-
-client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
-    await voiceReward.voiceStateHandler(oldMember, newMember, afk_channel);
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command

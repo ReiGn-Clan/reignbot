@@ -27,7 +27,6 @@
     "donateRateLimitDBEnv": "donate_tokens_uses",
     "introductionsDBEnv": "introductions",
     "timersDBEnv": "timers",
-    "voiceRewardsEnv": "voice_reward",
     "webserverPort": 3000,
     "twitchWebServerPort": 443
 }
