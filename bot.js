@@ -12,6 +12,7 @@ const timers = require('./src/utils/timers.js');
 const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
 const twitchIntegration = require('./src/modules/twitch_integration.js');
+const voiceReward = require('./src/modules/voice_reward.js');
 
 const async = require('async');
 
@@ -19,11 +20,11 @@ const async = require('async');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 const { config_to_use } = require('./general_config.json');
+const token_rates = require('./token_rates.json');
 const { discordAPIBotStuff, xpDbEnvironment } = require(`./${config_to_use}`);
 
 // For voice channel tracking
 let afk_channel = null;
-let voiceChannelUsers = [];
 
 // Create a new instance of the 'Client' object with the necessary intents enabled
 const client = new Client({
@@ -173,16 +174,14 @@ client.once(Events.ClientReady, async () => {
 
     xp_roles.makeDaily(client);
 
+    //voiceReward.bot_boot(guild);
+
     setInterval(() => {
         xp_roles.updateXpLeaderboard(discordAPIBotStuff[1].guildID, client);
     }, 60000);
 
     setInterval(() => {
-        xp_roles.rewardVoiceUsers(
-            discordAPIBotStuff[1].guildID,
-            voiceChannelUsers,
-            client,
-        );
+        voiceReward.faster_reward(guild, client, afk_channel);
     }, 60000);
 
     setInterval(() => {
@@ -206,88 +205,6 @@ client.once(Events.ClientReady, async () => {
 
     //client.user.setAvatar('./assets/logo_v1_dev.png');
     //client.user.setUsername('ReignBotDEV');
-});
-
-client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
-    if (newMember.member.user.bot) {
-        console.log('Bot Detected');
-        return;
-    }
-
-    const newUserChannel = newMember.channel;
-    const oldUserChannel = oldMember.channel;
-
-    const newDeafened = newMember.deaf;
-    const newMuted = newMember.mute;
-
-    if (oldUserChannel === null && newUserChannel !== null) {
-        // User Joins a voice channel
-
-        // Check if channel is not afk
-        if (newUserChannel.id !== afk_channel) {
-            console.log('User joined: ', newUserChannel.id);
-            voiceChannelUsers.push(newMember.id);
-        } else {
-            console.log('User joined afk');
-            let index = voiceChannelUsers.indexOf(newMember.id);
-
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
-    } else if (newUserChannel === null) {
-        // User leaves a voice channel
-
-        if (oldUserChannel.id !== afk_channel) {
-            console.log('User left: ', oldUserChannel.id);
-            let index = voiceChannelUsers.indexOf(newMember.id);
-
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
-    } else if (
-        oldUserChannel != newUserChannel &&
-        newUserChannel !== null &&
-        oldUserChannel !== null
-    ) {
-        // User switches to a different channel
-        // Check if channel is not afk
-        if (newUserChannel.id !== afk_channel) {
-            console.log('User switched to: ', newUserChannel.id);
-            if (oldUserChannel.id === afk_channel) {
-                voiceChannelUsers.push(newMember.id);
-            }
-        } else {
-            console.log('User switched to afk');
-            let index = voiceChannelUsers.indexOf(newMember.id);
-
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
-    }
-    if (newDeafened || newMuted) {
-        if (voiceChannelUsers.includes(newMember.id)) {
-            console.log('User deafened or muted');
-            let index = voiceChannelUsers.indexOf(newMember.id);
-
-            if (index > -1) {
-                voiceChannelUsers.splice(index, 1);
-            }
-        }
-    } else {
-        if (!voiceChannelUsers.includes(newMember.id)) {
-            if (newUserChannel !== null) {
-                if (newUserChannel.id !== afk_channel) {
-                    console.log('User undeafened or unmuted');
-                    voiceChannelUsers.push(newMember.id);
-                }
-            }
-        }
-    }
-
-    console.log(voiceChannelUsers);
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
@@ -344,11 +261,10 @@ client.on('messageCreate', async (message) => {
     }
 
     // Here we establish an xpPerMsg variable, then a hasLeveledUp variable
-    const xpPerMsg = 25;
     let hasLeveledUp = await Levels.appendXp(
         message.author.id,
         message.guild.id,
-        xpPerMsg,
+        token_rates.perMessage,
     ).catch(console.error); // add error handling for appendXp function
 
     if (hasLeveledUp) {

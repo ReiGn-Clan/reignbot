@@ -3,6 +3,7 @@ const Levels = require('../utils/syb_xp.js');
 const xp_roles = require('./xp_roles.js');
 const { discordAPIBotStuff, variousIDs } = require(`../../${config_to_use}`);
 const timers = require('../utils/timers.js');
+const token_rates = require('../../token_rates.json');
 
 let discordClient;
 function setClient(client) {
@@ -23,7 +24,7 @@ async function rewardVote(user) {
     let hasLeveledUp = await Levels.appendXp(
         user,
         discordAPIBotStuff[1].guildID,
-        2000,
+        token_rates.topGGReward,
         console.log('Awarded tokens for voting!'),
     );
     const channel = await discordClient.channels.fetch(

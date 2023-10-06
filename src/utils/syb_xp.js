@@ -65,7 +65,7 @@ async function appendXp(userId, guildId, xp) {
         const doc = {
             userID: userId,
             guildID: guildId,
-            xp: xp,
+            xp: parseInt(xp, 10),
             level: Math.floor(0.1 * Math.sqrt(xp)),
             lastUpdated: new Date(),
         };

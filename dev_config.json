@@ -13,9 +13,9 @@
         { "userUpdatesChannel": "1159140468601409536" },
         { "generalChannel": "1159140468601409536" },
         { "topMembersChannel": "1159140468601409536" },
-        { "topMembersMessage": "1131743295471616061" },
+        { "topMembersMessage": "1159830079594045573" },
         { "introductionsChannel": "1159140468601409536" },
-        {"socialUpdatesChannel": "1159140468601409536"}
+        { "socialUpdatesChannel": "1159140468601409536" }
     ],
     "xpDbEnvironment": "dev_xpDatabase",
     "recruiterDbEnvironment": "dev_recruiter",

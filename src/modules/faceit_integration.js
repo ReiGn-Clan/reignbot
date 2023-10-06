@@ -16,7 +16,7 @@ const Levels = require('../utils/syb_xp.js');
 const xp_roles = require('../modules/xp_roles.js');
 
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
-
+const token_rates = require('../../token_rates.json');
 let discordClient;
 
 function setClient(client) {
@@ -72,7 +72,7 @@ async function rewardParticipants(matchData) {
                     let hasLeveledUp = await Levels.appendXp(
                         player.discordUserID,
                         discordAPIBotStuff[1].guildID,
-                        2500,
+                        token_rates.faceitMatchReward,
                         console.log('Awarded xp for match!'),
                     );
                     const channel = await discordClient.channels.fetch(
@@ -86,7 +86,7 @@ async function rewardParticipants(matchData) {
                         player.discordUserID,
                     );
                     await channel.send({
-                        content: `${member.user} has earned **2500** ReiGn Tokens for participating in a custom game!`,
+                        content: `${member.user} has earned **${token_rates.faceitMatchReward}** ReiGn Tokens for participating in a custom game!`,
                     });
 
                     if (hasLeveledUp) {
