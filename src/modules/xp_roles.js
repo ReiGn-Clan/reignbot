@@ -1,11 +1,14 @@
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
 const { config_to_use } = require('../../general_config.json');
-const { variousIDs, discordAPIBotStuff, xpDbEnvironment } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
+const token_rates = require('../../token_rates.json');
 
 async function improvedLevelUpMessage(message, disClient) {
     // What role should the user
@@ -379,12 +382,14 @@ async function rewardBoost(guildID, user, disClient) {
     }
 
     if (!alreadyBoosted) {
-        let hasLeveledUp = await Levels.appendXp(user.id, guildID, 10000).catch(
-            console.error,
-        ); // add error handling for appendXp function
+        let hasLeveledUp = await Levels.appendXp(
+            user.id,
+            guildID,
+            token_rates.serverBoostingReward,
+        ).catch(console.error); // add error handling for appendXp function
 
         channel.send({
-            content: `${user} boosted the server and has been awarded 10,000 ReiGn Tokens!`,
+            content: `${user} boosted the server and has been awarded **${token_rates.serverBoostingReward}** ReiGn Tokens!`,
         });
         await boostersCollection.insertOne({ user: user.id });
         if (hasLeveledUp) {
@@ -398,7 +403,6 @@ async function rewardBoost(guildID, user, disClient) {
 }
 
 async function rewardBump(message, disClient) {
-    const tokens = 2500;
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
     );
@@ -406,13 +410,13 @@ async function rewardBump(message, disClient) {
     const guild = await disClient.guilds.fetch(discordAPIBotStuff[1].guildID);
 
     channel.send({
-        content: `${user} has earned **${tokens}** ReiGn Tokens by bumping the server`,
+        content: `${user} has earned **${token_rates.bumpingReward}** ReiGn Tokens by bumping the server`,
     });
 
     let hasLeveledUp = await Levels.appendXp(
         user.id,
         message.guildId,
-        tokens,
+        token_rates.bumpingReward,
     ).catch(console.error); // add error handling for appendXp function
 
     if (hasLeveledUp) {

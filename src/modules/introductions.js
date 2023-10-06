@@ -1,14 +1,16 @@
 const { config_to_use } = require('../../general_config.json');
 const Levels = require('../utils/syb_xp.js');
-const { variousIDs, introductionsDBEnv, discordAPIBotStuff } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    introductionsDBEnv,
+    discordAPIBotStuff,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 
 const xp_roles = require('./xp_roles');
 const { EmbedBuilder } = require('discord.js');
-
+const token_rates = require('../../token_rates.json');
 let interactionObj = null;
 let introduction = null;
 let disClient = null;
@@ -72,7 +74,7 @@ async function rewardIntroduction(introductionid, userid) {
     let hasLeveledUp = await Levels.appendXp(
         userid,
         discordAPIBotStuff[1].guildID,
-        3000,
+        token_rates.makeIntroductionReward,
         console.log('Awarded Tokens for making an Introduction!'),
     );
     const userUpdateschannel = await disClient.channels.fetch(
@@ -80,7 +82,7 @@ async function rewardIntroduction(introductionid, userid) {
     );
     const guild = await disClient.guilds.fetch(discordAPIBotStuff[1].guildID);
     await userUpdateschannel.send({
-        content: `${interactionObj.user} You've just earned **3,000** ReiGn Tokens for posting an introduction! Check out ${botInfoChannel} to see what you can spend them on.`,
+        content: `${interactionObj.user} You've just earned **${token_rates.makeIntroductionReward}** ReiGn Tokens for posting an introduction! Check out ${botInfoChannel} to see what you can spend them on.`,
     });
 
     if (hasLeveledUp) {
