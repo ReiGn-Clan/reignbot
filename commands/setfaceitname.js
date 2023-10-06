@@ -6,6 +6,7 @@ const mongo_bongo = require('../src/utils/mongo_bongo.js');
 const { config_to_use } = require('../general_config.json');
 const { faceitDbEnvironment } = require(`../${config_to_use}`);
 const db = mongo_bongo.getDbInstance(faceitDbEnvironment);
+const token_rates = require('../token_rates.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -63,7 +64,7 @@ module.exports = {
             let hasLeveledUp = await Levels.appendXp(
                 interaction.user.id,
                 interaction.guild.id,
-                5000,
+                token_rates.faceitUsernameReward,
             );
 
             if (hasLeveledUp) {
@@ -79,7 +80,7 @@ module.exports = {
             }
             let discordUserID = interaction.user.id;
             await interaction.reply({
-                content: `Successfully linked ${discordUsername} (Discord) to ${faceitUsername} (FaceIt). You were awarded 5000 tokens!`,
+                content: `Successfully linked ${discordUsername} (Discord) to ${faceitUsername} (FaceIt). You were awarded **${token_rates.faceitUsernameReward}** tokens!`,
                 ephemeral: true,
             });
             faceitUsername = faceitUsername.toLowerCase();

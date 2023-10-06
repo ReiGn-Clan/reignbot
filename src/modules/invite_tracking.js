@@ -8,6 +8,7 @@ const fs = require('fs');
 const { EmbedBuilder } = require('discord.js');
 const Levels = require('../utils/syb_xp.js');
 const xp_roles = require('./xp_roles.js');
+const token_rates = require('../../token_rates.json');
 
 async function CreateInviteLinkObject(invites, invite_links) {
     // Get the keys == invite link
@@ -132,7 +133,7 @@ async function UpdateLeaderboard(
                 let hasLeveledUp = await Levels.appendXp(
                     userIDv2,
                     guild.id,
-                    6000,
+                    token_rates.recruitmentReward,
                 ).catch(console.error); // add error handling for appendXp function
 
                 if (hasLeveledUp) {
@@ -171,12 +172,12 @@ async function UpdateLeaderboard(
 
                     let hasRankedDown;
 
-                    if (init_userXP.xp > 6000) {
+                    if (init_userXP.xp > token_rates.recruitmentReward) {
                         //  Subtract tokens
                         hasRankedDown = await Levels.subtractXp(
                             userIDv2,
                             guild.id,
-                            6000,
+                            token_rates.recruitmentReward,
                         );
                     } else {
                         hasRankedDown = await Levels.subtractXp(

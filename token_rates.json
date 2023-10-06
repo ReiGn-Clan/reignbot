@@ -1,0 +1,11 @@
+{
+    "perMessage": 25,
+    "voiceFlatRate": 10,
+    "faceitMatchReward": 2500,
+    "faceitUsernameReward": 5000,
+    "makeIntroductionReward": 4000,
+    "serverBoostingReward": 10000,
+    "bumpingReward": 2500,
+    "topGGReward": 2000,
+    "recruitmentReward": 6000
+}
