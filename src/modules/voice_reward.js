@@ -19,10 +19,8 @@ async function faster_reward(guild, disClient, afk_channel) {
 
                 channel.members.map(async (user) => {
                     if (user.voice.selfVideo) {
-                        console.log('User has cam on');
                         tokens += 5;
                     }
-                    console.log(tokens);
                     let hasLeveledUp = await Levels.appendXp(
                         user.id,
                         guild.id,
