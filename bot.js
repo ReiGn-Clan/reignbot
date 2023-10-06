@@ -20,6 +20,7 @@ const async = require('async');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 const { config_to_use } = require('./general_config.json');
+const token_rates = require('./token_rates.json');
 const { discordAPIBotStuff, xpDbEnvironment } = require(`./${config_to_use}`);
 
 // For voice channel tracking
@@ -173,6 +174,8 @@ client.once(Events.ClientReady, async () => {
 
     xp_roles.makeDaily(client);
 
+    voiceReward.bot_boot(guild);
+
     setInterval(() => {
         xp_roles.updateXpLeaderboard(discordAPIBotStuff[1].guildID, client);
     }, 60000);
@@ -205,50 +208,7 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
-    if (newMember.member.user.bot) {
-        console.log('Bot Detected');
-        return;
-    }
-
-    const newUserChannel = newMember.channel;
-    const oldUserChannel = oldMember.channel;
-
-    const newDeafened = newMember.deaf;
-    const newMuted = newMember.mute;
-
-    if (oldUserChannel === null && newUserChannel !== null) {
-        // User Joins a voice channel
-
-        // Check if channel is not afk
-        if (newUserChannel.id == afk_channel) return;
-
-        voiceReward.user_join(newMember, newUserChannel);
-    } else if (newUserChannel === null) {
-        // User leaves a voice channel
-        if (oldUserChannel.id == afk_channel) return;
-
-        voiceReward.user_leave(newMember, oldUserChannel);
-    } else if (
-        oldUserChannel != newUserChannel &&
-        newUserChannel !== null &&
-        oldUserChannel !== null
-    ) {
-        // User switches to a different channel
-        // Check if channel is not afk
-        if (newUserChannel.id == afk_channel) return;
-        voiceReward.user_switch(newMember, oldUserChannel, newUserChannel);
-    }
-    if (newDeafened || newMuted) {
-        // Basically remove from channel
-        voiceReward.user_leave(newMember, newUserChannel);
-    } else {
-        // Basically add back to channel
-
-        if (newUserChannel !== null) {
-            if (newUserChannel.id == afk_channel) return;
-            voiceReward.user_join(newMember, newUserChannel);
-        }
-    }
+    await voiceReward.voiceStateHandler(oldMember, newMember, afk_channel);
 });
 
 // Listen for interactions (i.e. commands) and execute the appropriate command
@@ -305,11 +265,10 @@ client.on('messageCreate', async (message) => {
     }
 
     // Here we establish an xpPerMsg variable, then a hasLeveledUp variable
-    const xpPerMsg = 25;
     let hasLeveledUp = await Levels.appendXp(
         message.author.id,
         message.guild.id,
-        xpPerMsg,
+        token_rates.perMessage,
     ).catch(console.error); // add error handling for appendXp function
 
     if (hasLeveledUp) {
