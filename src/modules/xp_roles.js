@@ -1,9 +1,11 @@
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
 const { config_to_use } = require('../../general_config.json');
-const { variousIDs, discordAPIBotStuff, xpDbEnvironment } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 const token_rates = require('../../token_rates.json');
@@ -400,6 +402,42 @@ async function rewardBoost(guildID, user, disClient) {
     }
 }
 
+async function rewardSubscriber(guildID, user, disClient) {
+    const subscribersCollection = db.collection('supporters');
+    const channel = await disClient.channels.fetch(
+        variousIDs[1].generalChannel,
+    );
+
+    const guild = await disClient.guilds.fetch(guildID);
+    const alreadySubbed = await subscribersCollection.findOne({
+        user: user.id,
+    });
+
+    if (alreadySubbed) {
+        return;
+    }
+
+    if (!alreadySubbed) {
+        let hasLeveledUp = await Levels.appendXp(
+            user.id,
+            guildID,
+            token_rates.serverBoostingReward,
+        ).catch(console.error); // add error handling for appendXp function
+
+        channel.send({
+            content: `# **<a:pepewavereign:1137351477912932422> ${user} HAS BECOME A SUPPORTER, WHAT A LEGEND <a:pepewavereign:1137351477912932422>** \n\n For this amazing feat ${user} has been awarded **${token_rates.serverBoostingReward}** ReiGn Tokens! <:reignLove:1160183400628494336> \n\n Wanna join the supporter gang? ➡️ https://www.patreon.com/ReiGnClan`,
+        });
+        await subscribersCollection.insertOne({ user: user.id });
+        if (hasLeveledUp) {
+            try {
+                await improvedLevelUp(guild, user.id, disClient);
+            } catch (error) {
+                console.error(error); // add error handling for levelUp functio
+            }
+        }
+    }
+}
+
 async function rewardBump(message, disClient) {
     const channel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
@@ -434,4 +472,5 @@ module.exports = {
     rewardDaily,
     rewardBoost,
     rewardBump,
+    rewardSubscriber,
 };
