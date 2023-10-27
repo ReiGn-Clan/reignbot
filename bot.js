@@ -295,6 +295,24 @@ client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
     }
 });
 
+client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
+    const { guild } = newMember;
+    if (!guild) return;
+
+    let boosterRoleID = '1120327700398231562';
+    const wasBoosting = oldMember.roles.cache.has(boosterRoleID);
+    const isBoosting = newMember.roles.cache.has(boosterRoleID);
+
+    if (!wasBoosting && isBoosting) {
+        const user = newMember.user;
+        await xp_roles.rewardSubscriber(
+            discordAPIBotStuff[1].guildID,
+            user,
+            client,
+        );
+    }
+});
+
 // Event for when user joins
 client.on(Events.GuildMemberAdd, async (member) => {
     console.log('User joined');
