@@ -18,13 +18,23 @@ function set_collection(database_name, collection_name) {
     collection = db.collection(collection_name);
 }
 
-async function set_initial_rank(userId, guildId) {
+async function set_initial_rank(userId, guildId, disClient) {
     if (!userId) throw new TypeError('An user id was not provided.');
     if (!guildId) throw new TypeError('A guild id was not provided.');
 
     const user = await collection.findOne({ userID: userId, guildID: guildId });
+    const guild = await disClient.guilds.fetch(guildId);
+    const member = await guild.members.fetch(userId);
+
+    console.log('user', user);
 
     if (!user) {
+        const role_to_give = await guild.roles.cache.find(
+            (role) => role.name === 'Neophyte',
+        );
+
+        await member.roles.add(role_to_give);
+
         const doc = {
             userID: userId,
             guildID: guildId,
@@ -38,6 +48,28 @@ async function set_initial_rank(userId, guildId) {
         await collection
             .insertOne(doc)
             .catch((e) => console.log(`Failed to save new user, error`, e));
+    } else {
+        const actual_rank = await getRank(userId, guildId);
+
+        const role = await guild.roles.cache.find(
+            (role) => role.name === actual_rank,
+        );
+
+        console.log('Actual rank', actual_rank);
+
+        if (actual_rank === 'Neophyte') {
+            await member.roles.add(role);
+            return;
+        }
+
+        const previousRole = await guild.roles.cache.find(
+            (role) => role.name === 'Neophyte',
+        );
+
+        await member.roles.remove(previousRole);
+        await member.roles.add(role);
+
+        console.log('Done');
     }
 }
 
