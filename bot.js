@@ -85,20 +85,6 @@ const invLeaderboardQueue = async.queue((task, callback) => {
             } else {
                 // If we update the leaderboard, check if new member
                 // has joined, so we assign roles to that person
-                if (task.increase) {
-                    let roles = [];
-                    roles.push(
-                        guild.roles.cache.find(
-                            (role) => role.name === 'Neophyte',
-                        ),
-                    );
-                    roles.push(
-                        guild.roles.cache.find(
-                            (role) => role.name === 'Member',
-                        ),
-                    );
-                    roleQueue.push({ memberobject: task.member, roles: roles });
-                }
                 // Execute the task function with its arguments
                 inv_l
                     .UpdateLeaderboard(
@@ -123,20 +109,6 @@ const invLeaderboardQueue = async.queue((task, callback) => {
             }
         });
     });
-}, 1);
-
-const roleQueue = async.queue((task, callback) => {
-    // execute the task function with its arguments
-    task.memberobject
-        .edit({ roles: task.roles })
-        .then(() => {
-            console.log(`Assigned role`);
-            callback();
-        })
-        .catch((err) => {
-            console.error(`Error assigning role, ${err}`);
-            callback(err);
-        });
 }, 1);
 
 const reactionQueue = async.queue((task, callback) => {
@@ -324,7 +296,11 @@ client.on(Events.GuildMemberAdd, async (member) => {
         increase: true,
         fetchinv: false,
     });
-    await Levels.set_initial_rank(member.id, discordAPIBotStuff[1].guildID);
+    await Levels.set_initial_rank(
+        member.id,
+        discordAPIBotStuff[1].guildID,
+        client,
+    );
 });
 
 // Event for when user leaves
