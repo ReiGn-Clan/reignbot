@@ -38,12 +38,6 @@ async function set_initial_rank(userId, guildId) {
         await collection
             .insertOne(doc)
             .catch((e) => console.log(`Failed to save new user, error`, e));
-    } else {
-        user.rank = 'Neophyte';
-        user.rank = 0;
-        await collection
-            .updateOne({ _id: user._id }, { $set: user })
-            .catch((e) => console.log(`Failed to append xp, error`, e));
     }
 }
 
