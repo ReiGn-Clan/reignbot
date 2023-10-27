@@ -50,12 +50,17 @@ async function set_initial_rank(userId, guildId, disClient) {
             .catch((e) => console.log(`Failed to save new user, error`, e));
     } else {
         const actual_rank = await getRank(userId, guildId);
-        console.log('Actual rank', actual_rank);
-        if (actual_rank === 'Neophyte') return;
 
         const role = await guild.roles.cache.find(
             (role) => role.name === actual_rank,
         );
+
+        console.log('Actual rank', actual_rank);
+
+        if (actual_rank === 'Neophyte') {
+            await member.roles.add(role);
+            return;
+        }
 
         const previousRole = await guild.roles.cache.find(
             (role) => role.name === 'Neophyte',
