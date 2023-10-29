@@ -68,9 +68,7 @@ async function rockPaperScissors(interaction) {
                     tokens *
                     2 *
                     0.95
-                ).toFixed(
-                    0,
-                )} ReiGn Tokens** \nYou have 60 seconds to respond!`,
+                ).toFixed(0)} ReiGn Tokens** \nYou have 60 seconds to respond!`,
                 components: [row],
             })
             .then(async (sent) => {
