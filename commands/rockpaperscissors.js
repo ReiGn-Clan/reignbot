@@ -53,7 +53,7 @@ async function rockPaperScissors(interaction) {
         button_option_rock,
         button_option_paper,
         button_option_scissors,
-        button_option_cancel
+        button_option_cancel,
     );
 
     await interaction.reply({
@@ -128,54 +128,58 @@ async function rockPaperScissors(interaction) {
                     content: `This interaction is not related to the target!`,
                     ephemeral: true,
                 });
-        }
-    };
+            }
+        };
 
-    collector = interaction.channel.createMessageComponentCollector({
-        filter: collectorFilter,
-        time: 60000,
-    });
-}
+        collector = interaction.channel.createMessageComponentCollector({
+            filter: collectorFilter,
+            time: 60000,
+        });
+    }
     let choiceArray = [];
     let winner;
     let loser;
     let gameResolved = false;
 
     collector.on('collect', async (collected) => {
-        if (collected.customId == 'cancel' && collected.user.id === interaction.user.id){
-            try{
+        if (
+            collected.customId == 'cancel' &&
+            collected.user.id === interaction.user.id
+        ) {
+            try {
                 await collected.reply({
                     content: 'Cancelled the game of rock paper scissors!',
                     ephemeral: true,
                 });
                 collector.stop();
-            } catch(error){
+            } catch (error) {
                 console.log('kanker async ' + error);
             }
-            
-        } 
-        
-        if (collected.customId == 'cancel' && collected.user.id !== interaction.user.id){
-            try{
-                await collected.reply({
-                    content: 'You are not the rock paper scissors initiator, cannot cancel!',
-                    ephemeral: true
-                });
-            } catch (error){
-                console.log('kanker async '+ error);
-            }
-            
         }
-        else {
+
+        if (
+            collected.customId == 'cancel' &&
+            collected.user.id !== interaction.user.id
+        ) {
+            try {
+                await collected.reply({
+                    content:
+                        'You are not the rock paper scissors initiator, cannot cancel!',
+                    ephemeral: true,
+                });
+            } catch (error) {
+                console.log('kanker async ' + error);
+            }
+        } else {
             const userXP = await Levels.fetch(
                 collected.user.id,
                 interaction.guild.id,
             );
-    
+
             const alreadyInArray = choiceArray.some(
                 (obj) => obj.userID === collected.user.id,
             );
-    
+
             if (
                 userXP.xp >= tokens &&
                 alreadyInArray === false &&
@@ -186,51 +190,52 @@ async function rockPaperScissors(interaction) {
                     rps: collected.customId, //rps = rock paper scissors (which one of those the user picked)
                 };
                 choiceArray.push(choice);
-    
-                try{
+
+                try {
                     await collected.reply({
                         content: `You've chosen **${collected.customId}**!`,
                         ephemeral: true,
                     });
-                } catch (error){
+                } catch (error) {
                     console.log('kanker async ' + error);
                 }
-                
             } else {
-                try{
+                try {
                     await collected.reply({
                         content:
                             "You either don't have enough tokens for this, you've already made a choice or someone beat you to it!",
                         ephemeral: true,
                     });
-                } catch(error){
+                } catch (error) {
                     console.log('kanker async ' + error);
-                }   
+                }
             }
-    
+
             if (choiceArray.length === 2 && gameResolved === false) {
                 gameResolved = true;
                 row.components.forEach((button) => button.setDisabled(true));
-    
-                try{
+
+                try {
                     await bet_message
-                    .edit({
-                        content: `${
-                            interaction.user
-                        } created a game of rock paper scissors! You are betting for **${tokens} ReiGn Tokens**! \n\nThe winner will take home **${(
-                            tokens *
-                            2 *
-                            0.95
-                        ).toFixed(0)}** **ReiGn Tokens** \n\n You have **60 seconds to respond**!`,
-                        components: [row],
-                    })
-                    .then(async (sent) => {
-                        bet_message = sent;
-                    });
-                } catch (error){
-                    console.log('kanker async '+ error);
+                        .edit({
+                            content: `${
+                                interaction.user
+                            } created a game of rock paper scissors! You are betting for **${tokens} ReiGn Tokens**! \n\nThe winner will take home **${(
+                                tokens *
+                                2 *
+                                0.95
+                            ).toFixed(
+                                0,
+                            )}** **ReiGn Tokens** \n\n You have **60 seconds to respond**!`,
+                            components: [row],
+                        })
+                        .then(async (sent) => {
+                            bet_message = sent;
+                        });
+                } catch (error) {
+                    console.log('kanker async ' + error);
                 }
-                
+
                 switch (choiceArray[0].rps) {
                     case 'rock':
                         switch (choiceArray[1].rps) {
@@ -247,7 +252,7 @@ async function rockPaperScissors(interaction) {
                                 break;
                         }
                         break;
-    
+
                     case 'paper':
                         switch (choiceArray[1].rps) {
                             case 'rock':
@@ -263,7 +268,7 @@ async function rockPaperScissors(interaction) {
                                 break;
                         }
                         break;
-    
+
                     case 'scissors':
                         switch (choiceArray[1].rps) {
                             case 'rock':
@@ -286,11 +291,11 @@ async function rockPaperScissors(interaction) {
                     const player1Member = await interaction.guild.members.fetch(
                         choiceArray[0].userID,
                     );
-    
+
                     const player2Member = await interaction.guild.members.fetch(
                         choiceArray[1].userID,
                     );
-    
+
                     await interaction.channel.send({
                         content: `It's a tie! Both ${player1Member.user} and ${player2Member.user} chose ***${choiceArray[0].rps}***.\n\nYour **ReiGn Tokens** have been refunded.\n\nUse */rockpaperscissors* again if you'd like a rematch!`,
                     });
@@ -298,37 +303,39 @@ async function rockPaperScissors(interaction) {
                     const winnerMember = await interaction.guild.members.fetch(
                         winner.userID,
                     );
-    
+
                     const loserMember = await interaction.guild.members.fetch(
                         loser.userID,
                     );
-    
+
                     await interaction.channel.send({
-                        content: `${winnerMember.user} chose ***${winner.rps}*** and ${
-                            loserMember.user
-                        } chose ***${loser.rps}***.\n\n${winnerMember.user} wins **${
-                            Math.round(tokens * 2 * 0.95)
-                        }** **ReiGn Tokens**!`,
+                        content: `${winnerMember.user} chose ***${
+                            winner.rps
+                        }*** and ${loserMember.user} chose ***${
+                            loser.rps
+                        }***.\n\n${winnerMember.user} wins **${Math.round(
+                            tokens * 2 * 0.95,
+                        )}** **ReiGn Tokens**!`,
                     });
-    
+
                     await Levels.subtractXp(
                         winnerMember.user.id,
                         interaction.guild.id,
                         tokens,
                     ); //take away original bet amount from winner so the maths works out
-    
+
                     const hasLeveledUp = await Levels.appendXp(
                         winnerMember.user.id,
                         interaction.guild.id,
                         tokens * 2 * 0.95,
                     );
-    
+
                     const hasLeveledDown = await Levels.subtractXp(
                         loserMember.user.id,
                         interaction.guild.id,
                         tokens,
                     );
-    
+
                     if (hasLeveledUp) {
                         try {
                             await xp_roles.improvedLevelUp(
