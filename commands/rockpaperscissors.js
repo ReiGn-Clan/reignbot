@@ -68,9 +68,7 @@ async function rockPaperScissors(interaction) {
     if (user == null) {
         await interaction.channel
             .send({
-                content: `${
-                    interaction.user
-                } created a game of rock paper scissors! You are betting for **${tokens} ReiGn Tokens**! \n\n The winnner will take home **${(
+                content: `A game of rock paper scissors has been created! You are betting for **${tokens} ReiGn Tokens**! \n\n The winnner will take home **${(
                     tokens *
                     2 *
                     0.95
@@ -85,9 +83,7 @@ async function rockPaperScissors(interaction) {
     } else {
         await interaction.channel
             .send({
-                content: `${
-                    interaction.user
-                } created a game of rock paper scissors! You are betting **for ${tokens} ReiGn Tokens**! \n\nThe winner will take home **${(
+                content: `A game of rock paper scissors has been created! You are betting **for ${tokens} ReiGn Tokens**! \n\nThe winner will take home **${(
                     tokens *
                     2 *
                     0.95
@@ -218,9 +214,7 @@ async function rockPaperScissors(interaction) {
                 try {
                     await bet_message
                         .edit({
-                            content: `${
-                                interaction.user
-                            } created a game of rock paper scissors! You are betting for **${tokens} ReiGn Tokens**! \n\nThe winner will take home **${(
+                            content: `A game of rock paper scissors has been created! You are betting for **${tokens} ReiGn Tokens**! \n\nThe winner will take home **${(
                                 tokens *
                                 2 *
                                 0.95
