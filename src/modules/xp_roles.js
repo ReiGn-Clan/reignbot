@@ -251,7 +251,7 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
 async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     // Determine if we want to make a daily (chance 1 in 5)
     if (!manual) {
-        if (Math.floor(Math.random() * 5) !== 4) return;
+        if (Math.floor(Math.random() * 3) !== 4) return;
     }
 
     // Channel to send it in
@@ -263,13 +263,13 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
 
     if (!manual) {
         const lastMessage = (
-            await channel.messages.fetch({ limit: 1 })
+            await channel.messages.fetch({ limit: 2 })
         ).first();
         if (lastMessage.author.bot) return;
     }
 
-    let maxReactions = Math.floor(Math.random() * 5) + 1;
-    let xp = (Math.floor(Math.random() * 25) + 1) * 100;
+    let maxReactions = Math.floor(Math.random() * 4) + 1;
+    let xp = (Math.floor(Math.random() * 75) + 1) * 100;
     if (manual) {
         maxReactions = manualUses;
         xp = manualXP;
