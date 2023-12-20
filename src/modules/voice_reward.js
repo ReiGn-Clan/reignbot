@@ -15,30 +15,27 @@ async function faster_reward(guild, disClient, afk_channel) {
             if (!user.voice.deaf && !user.voice.mute) {
                 const flat_rate = token_rates.voiceFlatRate;
                 const multiplier = 0.8 + channel.members.size * 0.1;
-                let tokens = flat_rate * multiplier;
+                let tokens = flat_rate * multiplier;        
+                if (user.voice.selfVideo) {
+                    tokens += 5;
+                }
+                let hasLeveledUp = await Levels.appendXp(
+                    user.id,
+                    guild.id,
+                    tokens,
+                ).catch(console.error); // add error handling for appendXp function
 
-                channel.members.map(async (user) => {
-                    if (user.voice.selfVideo) {
-                        tokens += 5;
+                if (hasLeveledUp) {
+                    try {
+                        await xp_roles.improvedLevelUp(
+                            guild,
+                            user.id,
+                            disClient,
+                        );
+                    } catch (error) {
+                        console.error(error); // add error handling for levelUp functio
                     }
-                    let hasLeveledUp = await Levels.appendXp(
-                        user.id,
-                        guild.id,
-                        tokens,
-                    ).catch(console.error); // add error handling for appendXp function
-
-                    if (hasLeveledUp) {
-                        try {
-                            await xp_roles.improvedLevelUp(
-                                guild,
-                                user.id,
-                                disClient,
-                            );
-                        } catch (error) {
-                            console.error(error); // add error handling for levelUp functio
-                        }
-                    }
-                });
+                }
             }
         });
     });

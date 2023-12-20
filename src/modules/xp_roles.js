@@ -269,7 +269,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     }
 
     let maxReactions = Math.floor(Math.random() * 4) + 1;
-    let xp = (Math.floor(Math.random() * 75) + 1) * 100;
+    let xp = (Math.floor(Math.random() * 50) + 1) * 100;
     if (manual) {
         maxReactions = manualUses;
         xp = manualXP;
