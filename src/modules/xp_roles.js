@@ -251,7 +251,7 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
 async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     // Determine if we want to make a daily (chance 1 in 5)
     if (!manual) {
-        if (Math.floor(Math.random() * 3) !== 4) return;
+        if (Math.floor(Math.random() * 3) !== 2) return;
     }
 
     // Channel to send it in
