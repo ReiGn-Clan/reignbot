@@ -15,7 +15,7 @@ async function faster_reward(guild, disClient, afk_channel) {
             if (!user.voice.deaf && !user.voice.mute) {
                 const flat_rate = token_rates.voiceFlatRate;
                 const multiplier = 0.8 + channel.members.size * 0.1;
-                let tokens = flat_rate * multiplier;        
+                let tokens = flat_rate * multiplier;
                 if (user.voice.selfVideo) {
                     tokens += 5;
                 }
