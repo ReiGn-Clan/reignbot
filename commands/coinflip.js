@@ -127,7 +127,7 @@ module.exports = {
         let collector = null;
         if (user_challenge == null) {
             collector = interaction.channel.createMessageComponentCollector({
-                time: 60000,
+                time: 300000,
             });
         } else {
             const collectorFilter = async (i) => {
@@ -146,7 +146,7 @@ module.exports = {
 
             collector = interaction.channel.createMessageComponentCollector({
                 filter: collectorFilter,
-                time: 60000,
+                time: 300000,
             });
         }
 

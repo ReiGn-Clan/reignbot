@@ -102,7 +102,7 @@ async function rockPaperScissors(interaction) {
     let collector = null;
     if (user == null) {
         collector = interaction.channel.createMessageComponentCollector({
-            time: 60000,
+            time: 300000,
             filter: (i) => i.message.id === bet_message.id,
         });
     } else {
@@ -129,7 +129,7 @@ async function rockPaperScissors(interaction) {
 
         collector = interaction.channel.createMessageComponentCollector({
             filter: collectorFilter,
-            time: 60000,
+            time: 300000,
         });
     }
     let choiceArray = [];
