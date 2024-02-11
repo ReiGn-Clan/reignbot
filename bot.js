@@ -130,9 +130,9 @@ async function KickKids() {
     const role = await guild.roles.fetch('1125194932819341322');
     const members = await role.members;
 
-    members.forEach((value) => {
-        console.log(value.user.username);
-        value.kick('Underage!');
+    members.forEach((member) => {
+        console.log(member.user.username);
+        member.kick('Underage!');
     });
 }
 
