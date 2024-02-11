@@ -97,7 +97,7 @@ module.exports = {
                         0.95
                     ).toFixed(
                         0,
-                    )}** ReiGn Tokens \nYou have 60 seconds to respond!`,
+                    )}** ReiGn Tokens \nYou have 5 minutes to respond!`,
                     components: [row],
                 })
                 .then(async (sent) => {
@@ -114,7 +114,7 @@ module.exports = {
                         0.95
                     ).toFixed(
                         0,
-                    )}** ReiGn Tokens \n${user_challenge} has 60 seconds to respond!`,
+                    )}** ReiGn Tokens \n${user_challenge} has 5 minutes to respond!`,
                     components: [row],
                 })
                 .then(async (sent) => {

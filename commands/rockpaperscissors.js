@@ -74,7 +74,7 @@ async function rockPaperScissors(interaction) {
                     0.95
                 ).toFixed(
                     0,
-                )}** **ReiGn Tokens** \n\nYou have 60 seconds to respond!`,
+                )}** **ReiGn Tokens** \n\nYou have 5 minutes to respond!`,
                 components: [row],
             })
             .then(async (sent) => {
@@ -89,7 +89,7 @@ async function rockPaperScissors(interaction) {
                     0.95
                 ).toFixed(
                     0,
-                )}** **ReiGn Tokens** \n\n${user} has 60 seconds to respond!`,
+                )}** **ReiGn Tokens** \n\n${user} has 5 minutes to respond!`,
                 components: [row],
             })
             .then(async (sent) => {
@@ -220,7 +220,7 @@ async function rockPaperScissors(interaction) {
                                 0.95
                             ).toFixed(
                                 0,
-                            )}** **ReiGn Tokens** \n\n You have **60 seconds to respond**!`,
+                            )}** **ReiGn Tokens** \n\n You have **5 has minutes to respond**!`,
                             components: [row],
                         })
                         .then(async (sent) => {
