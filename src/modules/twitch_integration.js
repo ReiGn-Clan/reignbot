@@ -1,5 +1,7 @@
 const { config_to_use } = require('../../general_config.json');
-const { discordAPIBotStuff, variousIDs, streamers, twitchSecrets } = require(`../../${config_to_use}`);
+const { discordAPIBotStuff, variousIDs, streamers, twitchSecrets } = require(
+    `../../${config_to_use}`,
+);
 
 const ApiClient = require('@twurple/api');
 const auth = require('@twurple/auth');
@@ -43,8 +45,8 @@ async function handleGoLive(client, whichStreamer) {
     let messageObj = {
         followerMention: null,
         memberToPing: null,
-        streamLink: null
-    }
+        streamLink: null,
+    };
 
     if (whichStreamer === 'notsureifavid') {
         member = await guild.members.fetch(streamers.avid.discordUserId);
@@ -89,23 +91,18 @@ async function handleGoOffline(client, whichStreamer) {
     let member = null;
     if (whichStreamer === 'notsureifavid') {
         member = await guild.members.fetch(streamers.avid.discordUserId);
-    } else{
+    } else {
         member = await guild.members.fetch(streamers.rose.discordUserId);
     }
-
 
     const hasRole = member.roles.cache.some(
         (role) => role.name === liveRole.name,
     );
     if (hasRole) {
         member.roles.remove(liveRole);
-        console.log(
-            `Removed role ${liveRole.name} from ${whichStreamer}`,
-        );
+        console.log(`Removed role ${liveRole.name} from ${whichStreamer}`);
     } else {
-        console.log(
-            `${whichStreamer} doesn't have LIVE role, skipping.`,
-        );
+        console.log(`${whichStreamer} doesn't have LIVE role, skipping.`);
         return;
     }
 }
