@@ -17,6 +17,20 @@
         { "introductionsChannel": "1105944524162859171" },
         { "socialUpdatesChannel": "1140659894043820055" }
     ],
+    "streamers": {
+        "rose": {
+            "discordUserId": "479407032848613376",
+            "followerRoleId": "1156598612046909490" 
+        },
+        "avid": {
+            "discordUserId": "213382521273057280",
+            "followerRoleId": "1213531330076479529"
+        } 
+    },
+    "twitchSecrets": {
+        "clientId": "v68hozjmzyo3gfey18trucp5colj8e",
+        "clientSecret": "0qrhdlqgrod0h95gmz5pgyzijda99h"
+    },
     "xpDbEnvironment": "xpDatabase",
     "recruiterDbEnvironment": "recruiter",
     "faceitJsonAccept": "application/json",

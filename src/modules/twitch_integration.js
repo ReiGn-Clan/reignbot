@@ -1,38 +1,64 @@
 const { config_to_use } = require('../../general_config.json');
-const { discordAPIBotStuff, variousIDs } = require(`../../${config_to_use}`);
+const { discordAPIBotStuff, variousIDs, streamers, twitchSecrets } = require(
+    `../../${config_to_use}`,
+);
 
 const ApiClient = require('@twurple/api');
 const auth = require('@twurple/auth');
-
-const clientId = 'v68hozjmzyo3gfey18trucp5colj8e';
-const clientSecret = '0qrhdlqgrod0h95gmz5pgyzijda99h';
+const clientId = twitchSecrets.clientId;
+const clientSecret = twitchSecrets.clientSecret;
 const authProvider = new auth.AppTokenAuthProvider(clientId, clientSecret);
 const newApiObj = new ApiClient.ApiClient({ authProvider });
 
 async function isLive(client) {
-    const user = await newApiObj.users.getUserByName('phoenixrose24');
-    if (!user) {
+    const rose = await newApiObj.users.getUserByName('phoenixrose24');
+    const avid = await newApiObj.users.getUserByName('notsureifavid');
+
+    if (!rose && !avid) {
         return;
     }
 
-    const subscription = await newApiObj.streams.getStreamByUserId(user);
-    if (subscription !== (undefined || null)) {
-        handleGoLive(client);
+    const roseSubscription = await newApiObj.streams.getStreamByUserId(rose);
+    const avidSubscription = await newApiObj.streams.getStreamByUserId(avid);
+    let whichStreamer = null;
+
+    if (roseSubscription !== (undefined || null)) {
+        whichStreamer = 'phoenixrose24';
+        handleGoLive(client, whichStreamer);
+    } else if (avidSubscription !== (undefined || null)) {
+        whichStreamer = 'notsureifavid';
+        handleGoLive(client, whichStreamer);
     } else {
-        handleGoOffline(client);
+        handleGoOffline(client, whichStreamer);
         return;
     }
 }
 
-async function handleGoLive(client) {
+async function handleGoLive(client, whichStreamer) {
     const guild = await client.guilds.cache.get(discordAPIBotStuff[1].guildID);
-    const member = await guild.members.fetch('479407032848613376');
     const liveRole = await guild.roles.cache.get('1157008708165959680');
-    const followerRoleID = '1156598612046909490';
-    const followerMention = `<@&${followerRoleID}>`;
     const channel = await client.channels.fetch(
         variousIDs[5].socialUpdatesChannel,
     );
+
+    let member = null;
+    let messageObj = {
+        followerMention: null,
+        memberToPing: null,
+        streamLink: null,
+    };
+
+    if (whichStreamer === 'notsureifavid') {
+        member = await guild.members.fetch(streamers.avid.discordUserId);
+        messageObj.followerMention = `@&${streamers.avid.followerRoleId}`;
+        messageObj.memberToPing = streamers.avid.discordUserId;
+        messageObj.streamLink = streamers.avid.streamLink;
+    } else {
+        member = await guild.members.fetch(streamers.rose.discordUserId);
+        messageObj.followerMention = `@&${streamers.rose.followerRoleId}`;
+        messageObj.memberToPing = streamers.rose.discordUserId;
+        messageObj.streamLink = streamers.rose.streamLink;
+    }
 
     const hasRole = member.roles.cache.some(
         (role) => role.name === liveRole.name,
@@ -42,7 +68,7 @@ async function handleGoLive(client) {
         return;
     } else {
         await channel.send(
-            `${followerMention}, ${member.user} has gone live! Check out their stream at https://www.twitch.tv/phoenixrose24`,
+            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live! Check out their stream at ${messageObj.streamLink}`,
         );
     }
 
@@ -50,7 +76,7 @@ async function handleGoLive(client) {
         .add(liveRole)
         .then(() => {
             console.log(
-                `Added role ${liveRole.name} to ${member.user.username}.`,
+                `Added role ${liveRole.name} to ${messageObj.memberToPing}.`,
             );
         })
         .catch((error) => {
@@ -58,23 +84,25 @@ async function handleGoLive(client) {
         });
 }
 
-async function handleGoOffline(client) {
+async function handleGoOffline(client, whichStreamer) {
     const guild = await client.guilds.cache.get(discordAPIBotStuff[1].guildID);
-    const member = await guild.members.fetch('479407032848613376');
     const liveRole = await guild.roles.cache.get('1157008708165959680');
+
+    let member = null;
+    if (whichStreamer === 'notsureifavid') {
+        member = await guild.members.fetch(streamers.avid.discordUserId);
+    } else {
+        member = await guild.members.fetch(streamers.rose.discordUserId);
+    }
 
     const hasRole = member.roles.cache.some(
         (role) => role.name === liveRole.name,
     );
     if (hasRole) {
         member.roles.remove(liveRole);
-        console.log(
-            `Removed role ${liveRole.name} from ${member.user.username}`,
-        );
+        console.log(`Removed role ${liveRole.name} from ${whichStreamer}`);
     } else {
-        console.log(
-            `${member.user.username} doesn't have LIVE role, skipping.`,
-        );
+        console.log(`${whichStreamer} doesn't have LIVE role, skipping.`);
         return;
     }
 }
