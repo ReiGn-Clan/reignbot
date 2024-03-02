@@ -12,7 +12,7 @@ async function isLive(client) {
     const rose = await newApiObj.users.getUserByName('phoenixrose24');
     const avid = await newApiObj.users.getUserByName('notsureifavid');
 
-    if (!rose || !avid) {
+    if (!rose && !avid) {
         return;
     }
 
