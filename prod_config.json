@@ -20,11 +20,13 @@
     "streamers": {
         "rose": {
             "discordUserId": "479407032848613376",
-            "followerRoleId": "1156598612046909490" 
+            "followerRoleId": "1156598612046909490",
+            "streamLink": "https://www.twitch.tv/phoenixrose24"
         },
         "avid": {
             "discordUserId": "213382521273057280",
-            "followerRoleId": "1213531330076479529"
+            "followerRoleId": "1213531330076479529",
+            "streamLink": "https://www.twitch.tv/notsureifavid"
         } 
     },
     "twitchSecrets": {
