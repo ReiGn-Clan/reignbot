@@ -55,7 +55,7 @@ async function handleGoLive(client, whichStreamer) {
         messageObj.streamLink = streamers.avid.streamLink;
     } else {
         member = await guild.members.fetch(streamers.rose.discordUserId);
-        messageObj.followerMention = `@&${streamers.rose.followerRoleId}`;
+        messageObj.followerMention = `@${streamers.rose.followerRoleId}`;
         messageObj.memberToPing = streamers.rose.discordUserId;
         messageObj.streamLink = streamers.rose.streamLink;
     }
