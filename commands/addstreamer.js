@@ -48,9 +48,8 @@ module.exports = {
             return;
         }
 
-        const broadcasterId = await twitch_integration.getBroadcasterId(
-            twitchUsername,
-        );
+        const broadcasterId =
+            await twitch_integration.getBroadcasterId(twitchUsername);
 
         if (broadcasterId == null) {
             await interaction.reply({
