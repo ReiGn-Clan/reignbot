@@ -38,13 +38,12 @@ function startWebHookServer() {
 
     const httpsOptions = {
         key: fs.readFileSync(certKeyPath, 'utf-8'),
-        cert: fs.readFileSync(certFilePath, 'utf-8')
+        cert: fs.readFileSync(certFilePath, 'utf-8'),
     };
 
-    https.createServer(httpsOptions, app)
-         .listen(webServerPort, () => {
-             console.log(`HTTPS server listening on port ${webServerPort}`);
-         });
+    https.createServer(httpsOptions, app).listen(webServerPort, () => {
+        console.log(`HTTPS server listening on port ${webServerPort}`);
+    });
 }
 
 module.exports = { startWebHookServer };
