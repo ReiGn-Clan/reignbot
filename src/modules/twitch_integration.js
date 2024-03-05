@@ -62,7 +62,7 @@ async function subscribeOnlineOffline(broadcasterId) {
 
 // Function to subscribe to an EventSub topic
 async function subscribeToEventSub(topic, broadcasterId) {
-    const callbackUrl = `https://3.120.209.118/webhook/callback`; // Replace with your server's callback URL
+    const callbackUrl = `https://webserver.reignclan.org/webhook/callback`; // Replace with your server's callback URL
     try {
         const response = await axios.post(
             `https://api.twitch.tv/helix/eventsub/subscriptions`,
