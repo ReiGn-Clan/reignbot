@@ -6,8 +6,8 @@ const faceit_integration = require('../modules/faceit_integration.js');
 const twitch_integration = require('../modules/twitch_integration.js');
 const https = require('https');
 const fs = require('fs');
-const certKeyPath = '/etc/letsencrypt/live/yourdomain.com/privkey.pem'; // Update with the actual path
-const certFilePath = '/etc/letsencrypt/live/yourdomain.com/fullchain.pem'; // Update with the actual path
+const certKeyPath = '/etc/letsencrypt/live/webserver.reignclan.org/privkey.pem'; // Update with the actual path
+const certFilePath = '/etc/letsencrypt/live/webserver.reignclan.org/fullchain.pem'; // Update with the actual path
 
 function startWebHookServer() {
     app.use(express.json());
@@ -24,7 +24,7 @@ function startWebHookServer() {
         // Twitch sends a challenge query param to verify your endpoint
         if (challenge) {
             return res.status(200).send(challenge);
-        }
+        };
 
         const { subscription, event } = req.body;
 
