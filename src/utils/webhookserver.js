@@ -6,8 +6,8 @@ const faceit_integration = require('../modules/faceit_integration.js');
 const twitch_integration = require('../modules/twitch_integration.js');
 const https = require('https');
 const fs = require('fs');
-const certKeyPath = './credentials/server.key';
-const certFilePath = './credentials/server.crt';
+const certKeyPath = '/etc/letsencrypt/live/yourdomain.com/privkey.pem'; // Update with the actual path
+const certFilePath = '/etc/letsencrypt/live/yourdomain.com/fullchain.pem'; // Update with the actual path
 
 function startWebHookServer() {
     app.use(express.json());
