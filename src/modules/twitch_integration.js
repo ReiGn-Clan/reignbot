@@ -179,45 +179,6 @@ async function handleGoOffline(whichStreamer) {
     }
 }
 
-async function deleteAllSubscriptions() {
-    try {
-        // Step 1: List all subscriptions
-        const listResponse = await axios.get(
-            'https://api.twitch.tv/helix/eventsub/subscriptions',
-            {
-                headers: {
-                    'Client-ID': clientId,
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            },
-        );
-
-        const subscriptions = listResponse.data.data;
-
-        // Step 2: Delete each subscription
-        for (const subscription of subscriptions) {
-            await axios.delete(
-                'https://api.twitch.tv/helix/eventsub/subscriptions',
-                {
-                    headers: {
-                        'Client-ID': clientId,
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                    params: {
-                        id: subscription.id,
-                    },
-                },
-            );
-
-            console.log(`Deleted subscription with ID: ${subscription.id}`);
-        }
-
-        console.log('All subscriptions have been deleted.');
-    } catch (error) {
-        console.error(`Error deleting subscriptions: ${error}`);
-    }
-}
-
 // Function to create all the initial subscriptions to events
 async function botStartup() {
     await authenticate();
