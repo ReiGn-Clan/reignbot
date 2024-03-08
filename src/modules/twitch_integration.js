@@ -68,7 +68,7 @@ async function handleGoLive(client, whichStreamer) {
         return;
     } else {
         await channel.send(
-            `${`@${messageObj.followerMention}`}, <@${messageObj.memberToPing}> has gone live! Check out their stream at ${messageObj.streamLink}`,
+            `<@${messageObj.followerMention}>, <@${messageObj.memberToPing}> has gone live! Check out their stream at ${messageObj.streamLink}`,
         );
     }
 
