@@ -32,5 +32,5 @@
     "introductionsDBEnv": "introductions",
     "timersDBEnv": "timers",
     "twitchDBEnv": "twitch",
-    "webServerPort": 443 
+    "webServerPort": 3000
 }
