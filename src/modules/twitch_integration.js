@@ -1,110 +1,115 @@
 const { config_to_use } = require('../../general_config.json');
-const { discordAPIBotStuff, variousIDs, streamers, twitchSecrets } = require(
+const mongo_bongo = require('../utils/mongo_bongo.js');
+const { discordAPIBotStuff, variousIDs, twitchSecrets, twitchDBEnv } = require(
     `../../${config_to_use}`,
 );
+const axios = require('axios');
 
-const ApiClient = require('@twurple/api');
-const auth = require('@twurple/auth');
 const clientId = twitchSecrets.clientId;
 const clientSecret = twitchSecrets.clientSecret;
-const authProvider = new auth.AppTokenAuthProvider(clientId, clientSecret);
-const newApiObj = new ApiClient.ApiClient({ authProvider });
 
-async function isLive(client) {
-    const rose = await newApiObj.users.getUserByName('phoenixrose24');
-    const avid = await newApiObj.users.getUserByName('notsureifavid');
+const db = mongo_bongo.getDbInstance(twitchDBEnv);
 
-    if (!rose && !avid) {
-        return;
-    }
+let discordClient;
+let accessToken;
 
-    const roseSubscription = await newApiObj.streams.getStreamByUserId(rose);
-    const avidSubscription = await newApiObj.streams.getStreamByUserId(avid);
-    let whichStreamer = null;
-
-    if (roseSubscription !== (undefined || null)) {
-        whichStreamer = 'phoenixrose24';
-        handleGoLive(client, whichStreamer);
-    } else if (avidSubscription !== (undefined || null)) {
-        whichStreamer = 'notsureifavid';
-        handleGoLive(client, whichStreamer);
-    } else {
-        handleGoOffline(client, whichStreamer);
-        return;
-    }
+// Function to set the client
+function setClient(client) {
+    discordClient = client;
 }
 
-async function handleGoLive(client, whichStreamer) {
-    const guild = await client.guilds.cache.get(discordAPIBotStuff[1].guildID);
-    const liveRole = await guild.roles.cache.get('1157008708165959680');
-    const channel = await client.channels.fetch(
-        variousIDs[5].socialUpdatesChannel,
+// Function to authenticate and get an access token
+async function authenticate() {
+    const response = await axios.post(
+        `https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`,
     );
+    accessToken = response.data.access_token;
+}
 
-    let member = null;
-    let messageObj = {
-        followerMention: null,
-        memberToPing: null,
-        streamLink: null,
-    };
-
-    if (whichStreamer === 'notsureifavid') {
-        member = await guild.members.fetch(streamers.avid.discordUserId);
-        messageObj.followerMention = `@&${streamers.avid.followerRoleId}`;
-        messageObj.memberToPing = streamers.avid.discordUserId;
-        messageObj.streamLink = streamers.avid.streamLink;
-    } else {
-        member = await guild.members.fetch(streamers.rose.discordUserId);
-        messageObj.followerMention = streamers.rose.followerRoleId;
-        messageObj.memberToPing = streamers.rose.discordUserId;
-        messageObj.streamLink = streamers.rose.streamLink;
-    }
-
-    const hasRole = member.roles.cache.some(
-        (role) => role.name === liveRole.name,
-    );
-    if (hasRole) {
-        console.log('User already has live role! Skipping message');
-        return;
-    } else {
-        await channel.send(
-            `<@${messageObj.followerMention}>, <@${messageObj.memberToPing}> has gone live! Check out their stream at ${messageObj.streamLink}`,
-        );
-    }
-
-    member.roles
-        .add(liveRole)
-        .then(() => {
-            console.log(
-                `Added role ${liveRole.name} to ${messageObj.memberToPing}.`,
-            );
-        })
-        .catch((error) => {
-            console.error(error);
+// Function to get the broadcasterId
+async function getBroadcasterId(broadcasterName) {
+    try {
+        const response = await axios.get('https://api.twitch.tv/helix/users', {
+            headers: {
+                'Client-ID': clientId,
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                login: broadcasterName,
+            },
         });
-}
 
-async function handleGoOffline(client, whichStreamer) {
-    const guild = await client.guilds.cache.get(discordAPIBotStuff[1].guildID);
-    const liveRole = await guild.roles.cache.get('1157008708165959680');
-
-    let member = null;
-    if (whichStreamer === 'notsureifavid') {
-        member = await guild.members.fetch(streamers.avid.discordUserId);
-    } else {
-        member = await guild.members.fetch(streamers.rose.discordUserId);
-    }
-
-    const hasRole = member.roles.cache.some(
-        (role) => role.name === liveRole.name,
-    );
-    if (hasRole) {
-        member.roles.remove(liveRole);
-        console.log(`Removed role ${liveRole.name} from ${whichStreamer}`);
-    } else {
-        console.log(`${whichStreamer} doesn't have LIVE role, skipping.`);
-        return;
+        if (response.data && response.data.data.length > 0) {
+            const broadcasterId = response.data.data[0].id;
+            console.log(
+                `Broadcaster ID for ${broadcasterName}: ${broadcasterId}`,
+            );
+            return broadcasterId;
+        } else {
+            console.log('User not found');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching broadcaster ID:', error.message);
+        return null;
     }
 }
 
-module.exports = { isLive };
+async function subscribeOnlineOffline(broadcasterId) {
+    await subscribeToEventSub('stream.online', broadcasterId);
+    await subscribeToEventSub('stream.offline', broadcasterId);
+}
+
+// Function to subscribe to an EventSub topic
+async function subscribeToEventSub(topic, broadcasterId) {
+    const callbackUrl = `https://webserver.reignclan.org/webhook/callback`; // Replace with your server's callback URL
+    try {
+        const response = await axios.post(
+            `https://api.twitch.tv/helix/eventsub/subscriptions`,
+            {
+                type: topic,
+                version: '1',
+                condition: {
+                    broadcaster_user_id: broadcasterId,
+                },
+                transport: {
+                    method: 'webhook',
+                    callback: callbackUrl,
+                    secret: clientSecret, // Replace with a secret string for verifying signatures
+                },
+            },
+            {
+                headers: {
+                    'Client-ID': clientId,
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
+
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error creating subscription', error.message);
+        return null;
+    }
+}
+
+async function handleEventsub(eventType, broadcasterName) {
+    if (eventType === 'stream.online') {
+        console.log(`Stream started by ${broadcasterName}`);
+        handleGoLive(broadcasterName);
+    } else if (eventType === 'stream.offline') {
+        console.log(`Stream stopped by ${broadcasterName}`);
+        handleGoOffline(broadcasterName);
+    }
+}
+
+
+
+module.exports = {
+    setClient,
+    handleEventsub,
+    getBroadcasterId,
+    subscribeOnlineOffline,
+    botStartup,
+};
