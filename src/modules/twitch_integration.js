@@ -182,7 +182,6 @@ async function handleGoOffline(whichStreamer) {
 // Function to create all the initial subscriptions to events
 async function botStartup() {
     await authenticate();
-    await deleteAllSubscriptions();
     const collection = db.collection('streamers');
     // Find all documents in the collection
     const allDocs = await collection.find({}).toArray(); // Converts to array to iterate
