@@ -104,8 +104,6 @@ async function handleEventsub(eventType, broadcasterName) {
     }
 }
 
-
-
 module.exports = {
     setClient,
     handleEventsub,
