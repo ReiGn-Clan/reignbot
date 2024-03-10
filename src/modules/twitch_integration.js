@@ -1,8 +1,11 @@
 const { config_to_use } = require('../../general_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const { discordAPIBotStuff, variousIDs, twitchSecrets, twitchDBEnv } = require(
-    `../../${config_to_use}`,
-);
+const {
+    discordAPIBotStuff,
+    variousIDs,
+    twitchSecrets,
+    twitchDBEnv,
+} = require(`../../${config_to_use}`);
 const axios = require('axios');
 
 const clientId = twitchSecrets.clientId;
@@ -104,6 +107,31 @@ async function handleEventsub(eventType, broadcasterName) {
     }
 }
 
+async function getStreamTitle(userName) {
+    const endpoint = `https://api.twitch.tv/helix/streams?user_login=${userName}`;
+
+    try {
+        const response = await axios.get(endpoint, {
+            headers: {
+                'Client-ID': clientId,
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        if (response.data.data.length > 0) {
+            const streamTitle = response.data.data[0].title;
+            console.log(`The stream title is: "${streamTitle}"`);
+            return streamTitle;
+        } else {
+            console.log('The user is not currently streaming.');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching stream title:', error.message);
+        return null;
+    }
+}
+
 async function handleGoLive(whichStreamer) {
     const collection = db.collection('streamers');
     const guild = await discordClient.guilds.cache.get(
@@ -130,6 +158,9 @@ async function handleGoLive(whichStreamer) {
     messageObj.memberToPing = data.userId;
     messageObj.streamLink = `https://www.twitch.tv/${whichStreamer}`;
 
+    // Get Stream title
+    let title = await getStreamTitle(whichStreamer);
+
     const hasRole = member.roles.cache.some(
         (role) => role.name === liveRole.name,
     );
@@ -138,7 +169,7 @@ async function handleGoLive(whichStreamer) {
         return;
     } else {
         await channel.send(
-            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live! Check out their stream at ${messageObj.streamLink}`,
+            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live with "${title}"! \n\nCheck out their stream at ${messageObj.streamLink}`,
         );
     }
 
