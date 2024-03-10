@@ -104,7 +104,6 @@ async function handleEventsub(eventType, broadcasterName) {
     }
 }
 
-
 async function getStreamTitle(userName) {
     const endpoint = `https://api.twitch.tv/helix/streams?user_login=${userName}`;
 
@@ -207,7 +206,6 @@ async function handleGoOffline(whichStreamer) {
         return;
     }
 }
-
 
 async function deleteAllSubscriptions() {
     try {
