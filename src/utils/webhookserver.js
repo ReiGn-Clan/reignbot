@@ -1,11 +1,14 @@
 const express = require('express');
 const { config_to_use } = require('../../general_config.json');
-const { webserverPort } = require(`../../${config_to_use}`);
+const { webServerPort } = require(`../../${config_to_use}`);
 const app = express();
 const faceit_integration = require('../modules/faceit_integration.js');
-const topgg_integration = require('../modules/topgg_integration.js');
-const Topgg = require('@top-gg/sdk');
-const webhook = new Topgg.Webhook('r31gn0nt0p');
+const twitch_integration = require('../modules/twitch_integration.js');
+const https = require('https');
+const fs = require('fs');
+const certKeyPath = '/etc/letsencrypt/live/webserver.reignclan.org/privkey.pem'; // Update with the actual path
+const certFilePath =
+    '/etc/letsencrypt/live/webserver.reignclan.org/fullchain.pem'; // Update with the actual path
 
 function startWebHookServer() {
     app.use(express.json());
@@ -17,17 +20,31 @@ function startWebHookServer() {
         res.sendStatus(200);
     });
 
-    app.post(
-        '/topgg/',
-        webhook.listener((vote) => {
-            // vote is your vote object
-            console.log('Received user vote on topgg');
-            topgg_integration.rewardVote(vote.user);
-        }),
-    );
+    app.post('/webhook/callback', (req, res) => {
+        const { challenge } = req.body;
+        // Twitch sends a challenge query param to verify your endpoint
+        if (challenge) {
+            return res.status(200).send(challenge);
+        }
 
-    app.listen(webserverPort, () => {
-        console.log(`Web server listening on port ${webserverPort}`);
+        const { subscription, event } = req.body;
+
+        twitch_integration.handleEventsub(
+            subscription.type,
+            event.broadcaster_user_name,
+        );
+
+        res.sendStatus(200);
+    });
+
+    const httpsOptions = {
+        key: fs.readFileSync(certKeyPath, 'utf-8'),
+        cert: fs.readFileSync(certFilePath, 'utf-8'),
+    };
+
+    https.createServer(httpsOptions, app).listen(webServerPort, () => {
+        console.log(`HTTPS server listening on port ${webServerPort}`);
     });
 }
+
 module.exports = { startWebHookServer };

@@ -17,21 +17,9 @@
         { "introductionsChannel": "1159140468601409536" },
         { "socialUpdatesChannel": "1159140468601409536" }
     ],
-    "streamers": {
-        "rose": {
-            "discordUserId": "479407032848613376",
-            "followerRoleId": "1156598612046909490",
-            "streamLink": "https://www.twitch.tv/phoenixrose24"
-        },
-        "avid": {
-            "discordUserId": "213382521273057280",
-            "followerRoleId": "1213531330076479529",
-            "streamLink": "https://www.twitch.tv/notsureifavid"
-        } 
-    },
     "twitchSecrets": {
-        "clientId": "v68hozjmzyo3gfey18trucp5colj8e",
-        "clientSecret": "0qrhdlqgrod0h95gmz5pgyzijda99h"
+        "clientId": "x0nkechkioogsp0bg1yo14cbubkqpn",
+        "clientSecret": "34d4347rfbdrozagtxk9ze45siqt96"
     },
     "xpDbEnvironment": "dev_xpDatabase",
     "recruiterDbEnvironment": "dev_recruiter",
@@ -43,6 +31,6 @@
     "donateRateLimitDBEnv": "dev_donate_tokens_uses",
     "introductionsDBEnv": "dev_introductions",
     "timersDBEnv": "dev_timers",
-    "webserverPort": 3001,
-    "twitchWebServerPort": 443
+    "twitchDBEnv": "dev_twitch",
+    "webServerPort": 443
 }
