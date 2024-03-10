@@ -104,6 +104,7 @@ async function handleEventsub(eventType, broadcasterName) {
     }
 }
 
+
 async function getStreamTitle(userName) {
     const endpoint = `https://api.twitch.tv/helix/streams?user_login=${userName}`;
 
@@ -207,6 +208,7 @@ async function handleGoOffline(whichStreamer) {
     }
 }
 
+
 async function deleteAllSubscriptions() {
     try {
         // Step 1: List all subscriptions
@@ -250,6 +252,7 @@ async function deleteAllSubscriptions() {
 async function botStartup() {
     await authenticate();
     await deleteAllSubscriptions();
+
     const collection = db.collection('streamers');
     // Find all documents in the collection
     const allDocs = await collection.find({}).toArray(); // Converts to array to iterate
