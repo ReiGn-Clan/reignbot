@@ -104,6 +104,32 @@ async function handleEventsub(eventType, broadcasterName) {
     }
 }
 
+
+async function getStreamTitle(userName) {
+    const endpoint = `https://api.twitch.tv/helix/streams?user_login=${userName}`;
+
+    try {
+        const response = await axios.get(endpoint, {
+            headers: {
+                'Client-ID': clientId,
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        if (response.data.data.length > 0) {
+            const streamTitle = response.data.data[0].title;
+            console.log(`The stream title is: "${streamTitle}"`);
+            return streamTitle;
+        } else {
+            console.log('The user is not currently streaming.');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching stream title:', error.message);
+        return null;
+    }
+}
+
 async function handleGoLive(whichStreamer) {
     const collection = db.collection('streamers');
     const guild = await discordClient.guilds.cache.get(
@@ -130,6 +156,9 @@ async function handleGoLive(whichStreamer) {
     messageObj.memberToPing = data.userId;
     messageObj.streamLink = `https://www.twitch.tv/${whichStreamer}`;
 
+    // Get Stream title
+    let title = await getStreamTitle(whichStreamer);
+
     const hasRole = member.roles.cache.some(
         (role) => role.name === liveRole.name,
     );
@@ -138,7 +167,7 @@ async function handleGoLive(whichStreamer) {
         return;
     } else {
         await channel.send(
-            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live! Check out their stream at ${messageObj.streamLink}`,
+            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live with "${title}"! \n\nCheck out their stream at ${messageObj.streamLink}`,
         );
     }
 
@@ -179,9 +208,51 @@ async function handleGoOffline(whichStreamer) {
     }
 }
 
+
+async function deleteAllSubscriptions() {
+    try {
+        // Step 1: List all subscriptions
+        const listResponse = await axios.get(
+            'https://api.twitch.tv/helix/eventsub/subscriptions',
+            {
+                headers: {
+                    'Client-ID': clientId,
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            },
+        );
+
+        const subscriptions = listResponse.data.data;
+
+        // Step 2: Delete each subscription
+        for (const subscription of subscriptions) {
+            await axios.delete(
+                'https://api.twitch.tv/helix/eventsub/subscriptions',
+                {
+                    headers: {
+                        'Client-ID': clientId,
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        id: subscription.id,
+                    },
+                },
+            );
+
+            console.log(`Deleted subscription with ID: ${subscription.id}`);
+        }
+
+        console.log('All subscriptions have been deleted.');
+    } catch (error) {
+        console.error(`Error deleting subscriptions: ${error}`);
+    }
+}
+
 // Function to create all the initial subscriptions to events
 async function botStartup() {
     await authenticate();
+    await deleteAllSubscriptions();
+
     const collection = db.collection('streamers');
     // Find all documents in the collection
     const allDocs = await collection.find({}).toArray(); // Converts to array to iterate
