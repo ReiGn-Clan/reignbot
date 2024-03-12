@@ -32,7 +32,9 @@ module.exports = {
 
     async execute(interaction) {
         const collection = db.collection('streamers');
-        const twitchUsername = interaction.options.getString('twitchusername');
+        const twitchUsername = interaction.options
+            .getString('twitchusername')
+            .toLowerCase();
         const discordUser = interaction.options.getUser('discorduser');
         const discordRole = interaction.options.getRole('notifrole');
 
@@ -48,8 +50,9 @@ module.exports = {
             return;
         }
 
-        const broadcasterId =
-            await twitch_integration.getBroadcasterId(twitchUsername);
+        const broadcasterId = await twitch_integration.getBroadcasterId(
+            twitchUsername,
+        );
 
         if (broadcasterId == null) {
             await interaction.reply({

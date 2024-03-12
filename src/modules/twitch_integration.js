@@ -1,8 +1,11 @@
 const { config_to_use } = require('../../general_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const { discordAPIBotStuff, variousIDs, twitchSecrets, twitchDBEnv } = require(
-    `../../${config_to_use}`,
-);
+const {
+    discordAPIBotStuff,
+    variousIDs,
+    twitchSecrets,
+    twitchDBEnv,
+} = require(`../../${config_to_use}`);
 const axios = require('axios');
 
 const clientId = twitchSecrets.clientId;
@@ -146,7 +149,9 @@ async function handleGoLive(whichStreamer) {
         streamLink: null,
     };
 
-    const data = await collection.findOne({ twitchUsername: whichStreamer });
+    const data = await collection.findOne({
+        twitchUsername: whichStreamer.toLowerCase(),
+    });
 
     console.log(data);
 
@@ -189,7 +194,9 @@ async function handleGoOffline(whichStreamer) {
     );
     const liveRole = await guild.roles.cache.get('1157008708165959680');
 
-    const data = await collection.findOne({ twitchUsername: whichStreamer });
+    const data = await collection.findOne({
+        twitchUsername: whichStreamer.toLowerCase(),
+    });
 
     let member = null;
 
