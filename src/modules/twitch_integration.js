@@ -146,7 +146,9 @@ async function handleGoLive(whichStreamer) {
         streamLink: null,
     };
 
-    const data = await collection.findOne({ twitchUsername: whichStreamer });
+    const data = await collection.findOne({
+        twitchUsername: whichStreamer.toLowerCase(),
+    });
 
     console.log(data);
 
@@ -189,7 +191,9 @@ async function handleGoOffline(whichStreamer) {
     );
     const liveRole = await guild.roles.cache.get('1157008708165959680');
 
-    const data = await collection.findOne({ twitchUsername: whichStreamer });
+    const data = await collection.findOne({
+        twitchUsername: whichStreamer.toLowerCase(),
+    });
 
     let member = null;
 
