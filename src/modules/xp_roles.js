@@ -1,9 +1,11 @@
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
 const { config_to_use } = require('../../general_config.json');
-const { variousIDs, discordAPIBotStuff, xpDbEnvironment } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 const token_rates = require('../../token_rates.json');
@@ -251,7 +253,7 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
 async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     // Determine if we want to make a daily (chance 1 in 5)
     if (!manual) {
-        if (Math.floor(Math.random() * 3) !== 2) return;
+        if (Math.floor(Math.random() * 5) !== 2) return;
     }
 
     // Channel to send it in
