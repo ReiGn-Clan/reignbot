@@ -7,10 +7,11 @@ const Levels = require('./src/utils/syb_xp.js');
 const inv_l = require('./src/modules/invite_tracking.js');
 const xp_roles = require('./src/modules/xp_roles.js');
 const faceit_integration = require('./src/modules/faceit_integration.js');
+const topgg_integration = require('./src/modules/topgg_integration.js');
 const timers = require('./src/utils/timers.js');
 const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
-const twitch_integration = require('./src/modules/twitch_integration.js');
+const twitchIntegration = require('./src/modules/twitch_integration.js');
 const voiceReward = require('./src/modules/voice_reward.js');
 
 const async = require('async');
@@ -40,10 +41,9 @@ const client = new Client({
 });
 
 faceit_integration.setClient(client);
-twitch_integration.setClient(client);
+topgg_integration.setClient(client);
 introductions.setClient(client);
 webhookserver.startWebHookServer();
-twitch_integration.botStartup();
 // Create a new Collection to store the commands
 client.commands = new Collection();
 
@@ -155,6 +155,10 @@ client.once(Events.ClientReady, async () => {
     setInterval(() => {
         voiceReward.faster_reward(guild, client, afk_channel);
     }, 60000);
+
+    setInterval(() => {
+        twitchIntegration.isLive(client);
+    }, 30000);
 
     setInterval(() => {
         xp_roles.makeDaily(client);
