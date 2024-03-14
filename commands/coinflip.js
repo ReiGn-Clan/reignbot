@@ -197,7 +197,7 @@ module.exports = {
                                 // Let people know they bet
                                 await collected.reply({
                                     content: `You have chosen the option ${collected.customId}, tossing the coin!`,
-                                    files: ['./assets/coinflip2.gif'],
+                                    files: ['./assets/coinflip.gif'],
                                     ephemeral: true,
                                 });
 
