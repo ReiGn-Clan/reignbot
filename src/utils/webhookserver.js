@@ -1,14 +1,17 @@
 const express = require('express');
 const { config_to_use } = require('../../general_config.json');
-const { webServerPort } = require(`../../${config_to_use}`);
+const {
+    webServerPort,
+    privCertLoc,
+    fullchainCertLoc,
+} = require(`../../${config_to_use}`);
 const app = express();
 const faceit_integration = require('../modules/faceit_integration.js');
 const twitch_integration = require('../modules/twitch_integration.js');
 const https = require('https');
 const fs = require('fs');
-const certKeyPath = '/etc/letsencrypt/live/webserver.reignclan.org/privkey.pem'; // Update with the actual path
-const certFilePath =
-    '/etc/letsencrypt/live/webserver.reignclan.org/fullchain.pem'; // Update with the actual path
+const certKeyPath = privCertLoc; // Update with the actual path
+const certFilePath = fullchainCertLoc; // Update with the actual path
 
 function startWebHookServer() {
     app.use(express.json());
