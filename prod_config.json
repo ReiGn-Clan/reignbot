@@ -43,6 +43,7 @@
     "donateRateLimitDBEnv": "donate_tokens_uses",
     "introductionsDBEnv": "introductions",
     "timersDBEnv": "timers",
-    "webserverPort": 3000,
-    "twitchWebServerPort": 443
+    "twitchDBEnv": "twitch",
+    "webServerPort": 443,
+    "callbackURL": "https://devwebserver.reignclan.org/webhook/callback"
 }
