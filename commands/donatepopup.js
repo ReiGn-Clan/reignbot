@@ -141,7 +141,7 @@ module.exports = {
                 .setDescription('How much xp the user gets')
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(10000),
+                .setMaxValue(100000),
         )
         .addIntegerOption((option) =>
             option
@@ -149,7 +149,7 @@ module.exports = {
                 .setDescription('The amount of uses the pop up has')
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(10),
+                .setMaxValue(30),
         ),
     execute: createDonatePopup,
 };
