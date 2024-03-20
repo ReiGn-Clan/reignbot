@@ -162,7 +162,7 @@ async function handleGoLive(whichStreamer) {
     messageObj.streamLink = `https://www.twitch.tv/${whichStreamer}`;
 
     // Get Stream title
-    let title = await getStreamTitle(whichStreamer);
+    let title = await getStreamTitle(whichStreamer.toLowerCase());
 
     const hasRole = member.roles.cache.some(
         (role) => role.name === liveRole.name,
