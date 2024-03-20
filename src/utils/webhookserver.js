@@ -1,10 +1,8 @@
 const express = require('express');
 const { config_to_use } = require('../../general_config.json');
-const {
-    webServerPort,
-    privCertLoc,
-    fullchainCertLoc,
-} = require(`../../${config_to_use}`);
+const { webServerPort, privCertLoc, fullchainCertLoc } = require(
+    `../../${config_to_use}`,
+);
 const app = express();
 const faceit_integration = require('../modules/faceit_integration.js');
 const twitch_integration = require('../modules/twitch_integration.js');
