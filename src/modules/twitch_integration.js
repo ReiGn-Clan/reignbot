@@ -1,8 +1,12 @@
 const { config_to_use } = require('../../general_config.json');
 const mongo_bongo = require('../utils/mongo_bongo.js');
-const { discordAPIBotStuff, variousIDs, twitchSecrets, twitchDBEnv } = require(
-    `../../${config_to_use}`,
-);
+const {
+    discordAPIBotStuff,
+    variousIDs,
+    twitchSecrets,
+    twitchDBEnv,
+    callbackURL,
+} = require(`../../${config_to_use}`);
 const axios = require('axios');
 
 const clientId = twitchSecrets.clientId;
@@ -62,7 +66,7 @@ async function subscribeOnlineOffline(broadcasterId) {
 
 // Function to subscribe to an EventSub topic
 async function subscribeToEventSub(topic, broadcasterId) {
-    const callbackUrl = `https://webserver.reignclan.org/webhook/callback`; // Replace with your server's callback URL
+    const callbackUrl = callbackURL; // Replace with your server's callback URL
     try {
         const response = await axios.post(
             `https://api.twitch.tv/helix/eventsub/subscriptions`,

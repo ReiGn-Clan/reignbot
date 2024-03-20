@@ -32,5 +32,6 @@
     "introductionsDBEnv": "introductions",
     "timersDBEnv": "timers",
     "twitchDBEnv": "twitch",
-    "webServerPort": 443
+    "webServerPort": 443,
+    "callbackURL": "https://devwebserver.reignclan.org/webhook/callback"
 }
