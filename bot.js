@@ -136,6 +136,10 @@ async function KickKids() {
     });
 }
 
+Levels.XP_EVENTS.on('XPChanged', () => {
+    xp_roles.updateXpLeaderboard(discordAPIBotStuff[1].guildID, client);
+});
+
 // When the client is ready, log a message to the console and connect to mongoDB
 client.once(Events.ClientReady, async () => {
     console.log('Ready!');
@@ -147,10 +151,6 @@ client.once(Events.ClientReady, async () => {
     xp_roles.makeDaily(client);
 
     //voiceReward.bot_boot(guild);
-
-    setInterval(() => {
-        xp_roles.updateXpLeaderboard(discordAPIBotStuff[1].guildID, client);
-    }, 60000);
 
     setInterval(() => {
         voiceReward.faster_reward(guild, client, afk_channel);
