@@ -1,9 +1,11 @@
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
 const { config_to_use } = require('../../general_config.json');
-const { variousIDs, discordAPIBotStuff, xpDbEnvironment } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 const token_rates = require('../../token_rates.json');
@@ -195,10 +197,7 @@ async function updateXpLeaderboard(guildID, disClient) {
         variousIDs[3].topMembersMessage,
     );
 
-    message
-        .edit({ embeds: [embed] })
-        .then(console.log('Updated RT leaderboard'))
-        .catch(console.error);
+    await message.edit({ embeds: [embed] });
 
     await old_leaderboard.deleteMany();
     await old_leaderboard.insertMany(await xp_leaderboard.find({}).toArray());
