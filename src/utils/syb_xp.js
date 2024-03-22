@@ -4,8 +4,11 @@ const fs = require('node:fs');
 const levelNamesData = JSON.parse(
     fs.readFileSync('./json/levelNames.json', 'utf-8'),
 );
+const EventEmitter = require('events');
 
 let collection;
+
+const XP_EVENTS = new EventEmitter();
 
 function set_collection(database_name, collection_name) {
     if (!database_name)
@@ -112,6 +115,8 @@ async function appendXp(userId, guildId, xp) {
         .updateOne({ _id: user._id }, { $set: user })
         .catch((e) => console.log(`Failed to append xp, error`, e));
 
+    XP_EVENTS.emit('XPChanged');
+
     return prev_level < user.level;
 }
 
@@ -148,6 +153,8 @@ async function subtractXp(userId, guildId, xp, rankName) {
         .updateOne({ _id: user._id }, { $set: user })
         .catch((e) => console.log(`Failed to subtract xp, error`, e));
 
+    XP_EVENTS.emit('XPChanged');
+
     return prev_level > user.level;
 }
 
@@ -175,6 +182,8 @@ async function setXp(userId, guildId, xp) {
     await collection
         .updateOne({ _id: user._id }, { $set: user })
         .catch((e) => console.log(`Failed to append xp, error`, e));
+
+    XP_EVENTS.emit('XPChanged');
 
     return prev_level > user.xp;
 }
@@ -222,4 +231,5 @@ module.exports = {
     xpFor,
     getRank,
     set_initial_rank,
+    XP_EVENTS,
 };
