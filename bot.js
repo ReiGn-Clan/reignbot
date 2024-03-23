@@ -157,12 +157,12 @@ client.once(Events.ClientReady, async () => {
     }, 60000);
 
     setInterval(() => {
-        xp_roles.makeDaily(client);
-    }, 6000000);
-
-    setInterval(() => {
         KickKids();
     }, 500);
+
+    setInterval(() => {
+        CalculateHourRate();
+    }, 3600000);
 
     console.log('Invite event triggered');
     invLeaderboardQueue.push({
@@ -212,6 +212,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 //event for each message posted, awards xp to every user per message
+let popUpMessageCounter = 0;
+let messageRateCounter = 0;
+let messagePerHour = 100;
+
+function CalculateHourRate() {
+    messagePerHour = messageRateCounter;
+    console.log('Average messages per hour: ', messagePerHour);
+    messageRateCounter = 0;
+}
+
 client.on('messageCreate', async (message) => {
     if (
         message.embeds.length &&
@@ -226,6 +236,13 @@ client.on('messageCreate', async (message) => {
     //if the message starts with the command prefix or if the author is the bot, skip this method
     if (message.content.startsWith('/') || message.author.bot) {
         return;
+    }
+
+    popUpMessageCounter += 1;
+
+    if (popUpMessageCounter == 500) {
+        xp_roles.makeDaily(client, messagePerHour);
+        popUpMessageCounter = 0;
     }
 
     // Here we establish an xpPerMsg variable, then a hasLeveledUp variable

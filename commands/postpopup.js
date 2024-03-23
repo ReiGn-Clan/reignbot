@@ -32,6 +32,6 @@ module.exports = {
             ephemeral: true,
         });
 
-        await xp_roles.makeDaily(interaction.client, true, xp, uses);
+        await xp_roles.makeDaily(interaction.client, 0, true, xp, uses);
     },
 };

@@ -1,9 +1,11 @@
 const Levels = require('../utils/syb_xp.js');
 const { EmbedBuilder } = require('discord.js');
 const { config_to_use } = require('../../general_config.json');
-const { variousIDs, discordAPIBotStuff, xpDbEnvironment } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    discordAPIBotStuff,
+    xpDbEnvironment,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(xpDbEnvironment);
 const token_rates = require('../../token_rates.json');
@@ -245,11 +247,21 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
     return updatedLeaderboard;
 }
 
-async function makeDaily(disClient, manual = false, manualXP, manualUses) {
+async function makeDaily(
+    disClient,
+    rate,
+    manual = false,
+    manualXP,
+    manualUses,
+) {
+    // Set max token amount from popup
+    const maxTokens = 4000;
+
     // Determine if we want to make a daily (chance 1 in 5)
+    /*
     if (!manual) {
         if (Math.floor(Math.random() * 5) !== 2) return;
-    }
+    }*/
 
     // Channel to send it in
     const channel = await disClient.channels.fetch(
@@ -266,7 +278,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     }
 
     let maxReactions = Math.floor(Math.random() * 4) + 1;
-    let xp = (Math.floor(Math.random() * 50) + 1) * 100;
+    let xp = Math.round(maxTokens / maxReactions);
     if (manual) {
         maxReactions = manualUses;
         xp = manualXP;

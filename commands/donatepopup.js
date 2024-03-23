@@ -122,6 +122,7 @@ async function createDonatePopup(interaction) {
 
     await xp_roles.makeDaily(
         interaction.client,
+        0,
         true,
         afterTaxReward,
         uses,
