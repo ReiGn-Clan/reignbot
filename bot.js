@@ -216,7 +216,7 @@ let popUpMessageCounter = 0;
 let messageRateCounter = 0;
 let messagePerHour = 100;
 
-function CalculateHourRate() {
+async function CalculateHourRate() {
     messagePerHour = messageRateCounter;
     console.log('Average messages per hour: ', messagePerHour);
     messageRateCounter = 0;
