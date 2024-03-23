@@ -239,6 +239,7 @@ client.on('messageCreate', async (message) => {
     }
 
     popUpMessageCounter += 1;
+    messageRateCounter += 1;
 
     if (popUpMessageCounter == 500) {
         xp_roles.makeDaily(client, messagePerHour);
