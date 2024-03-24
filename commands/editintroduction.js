@@ -104,7 +104,6 @@ async function editintroduction(interaction) {
             };
 
             if (isNaN(form.age)) {
-                console.log('Age dumb');
                 await modalInteraction.reply({
                     content:
                         'Please only use numbers in the age category! Type /makeintroduction to try again.',

@@ -29,8 +29,6 @@ async function set_initial_rank(userId, guildId, disClient) {
     const guild = await disClient.guilds.fetch(guildId);
     const member = await guild.members.fetch(userId);
 
-    console.log('user', user);
-
     if (!user) {
         const role_to_give = await guild.roles.cache.find(
             (role) => role.name === 'Neophyte',
@@ -58,8 +56,6 @@ async function set_initial_rank(userId, guildId, disClient) {
             (role) => role.name === actual_rank,
         );
 
-        console.log('Actual rank', actual_rank);
-
         if (actual_rank === 'Neophyte') {
             await member.roles.add(role);
             return;
@@ -71,8 +67,6 @@ async function set_initial_rank(userId, guildId, disClient) {
 
         await member.roles.remove(previousRole);
         await member.roles.add(role);
-
-        console.log('Done');
     }
 }
 

@@ -1,8 +1,10 @@
 const { config_to_use } = require('../../general_config.json');
 const Levels = require('../utils/syb_xp.js');
-const { variousIDs, introductionsDBEnv, discordAPIBotStuff } = require(
-    `../../${config_to_use}`,
-);
+const {
+    variousIDs,
+    introductionsDBEnv,
+    discordAPIBotStuff,
+} = require(`../../${config_to_use}`);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(introductionsDBEnv);
 
@@ -73,7 +75,6 @@ async function rewardIntroduction(introductionid, userid) {
         userid,
         discordAPIBotStuff[1].guildID,
         token_rates.makeIntroductionReward,
-        console.log('Awarded Tokens for making an Introduction!'),
     );
     const userUpdateschannel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
@@ -128,7 +129,6 @@ async function handleEditIntroduction(
             iconURL: 'https://i.imgur.com/4H0ZiTv.png',
         });
     await introToEdit.edit({ embeds: [editIntroEmbed] });
-    console.log(`Edited ${modalInteraction.user.username}'s intro`);
 }
 module.exports = {
     getForm,

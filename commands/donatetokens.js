@@ -149,7 +149,6 @@ async function giveXP(interaction) {
     }
 
     if (init_userXP_after.level < init_userXP.level) {
-        console.log('Deranked');
         xp_roles.improvedLevelUp(
             interaction.guild,
             interaction.user.id,
