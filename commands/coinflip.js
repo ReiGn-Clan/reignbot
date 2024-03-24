@@ -265,7 +265,6 @@ module.exports = {
                                 // Let the loser know they deranked if they did
                                 if (loser == interaction.user.id) {
                                     if (initHasLeveledDown) {
-                                        console.log('Deranked');
                                         xp_roles.improvedLevelUp(
                                             interaction.guild,
                                             interaction.user.id,
@@ -276,7 +275,6 @@ module.exports = {
                                     }
                                 } else {
                                     if (hasLeveledDown) {
-                                        console.log('Deranked');
                                         xp_roles.improvedLevelUp(
                                             interaction.guild,
                                             collected.user.id,
