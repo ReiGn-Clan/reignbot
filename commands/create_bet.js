@@ -118,7 +118,6 @@ module.exports = {
                         // Add components to modal
 
                         // Create the text input components
-                        console.log(collected.id);
                         const XPinput = new TextInputBuilder()
                             .setCustomId('xp_modal')
                             // The label is the prompt the user sees for this input
@@ -151,7 +150,6 @@ module.exports = {
                             })
                             .catch(() => {
                                 // Catch any Errors that are thrown (e.g. if the awaitModalSubmit times out after 60000 ms)
-                                console.log('Time Expired');
                             });
 
                         if (submitted != null && betting_time_ended == false) {
