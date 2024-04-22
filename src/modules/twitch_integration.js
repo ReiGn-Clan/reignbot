@@ -167,11 +167,9 @@ async function handleGoLive(whichStreamer) {
     let channelMessage;
 
     if (!title || !titleString) {
-        channelMessage = 
-            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live! \n\nCheck out their stream at ${messageObj.streamLink}`;
+        channelMessage = `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live! \n\nCheck out their stream at ${messageObj.streamLink}`;
     } else {
-        channelMessage =
-            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live with "$${titleString}"! \n\nCheck out their stream at ${messageObj.streamLink}`;
+        channelMessage = `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live with "$${titleString}"! \n\nCheck out their stream at ${messageObj.streamLink}`;
     }
 
     const hasRole = member.roles.cache.some(
