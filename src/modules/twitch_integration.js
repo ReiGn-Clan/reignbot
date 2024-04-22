@@ -164,12 +164,13 @@ async function handleGoLive(whichStreamer) {
     // Get Stream title
     let title = await getStreamTitle(whichStreamer.toLowerCase());
     const titleString = title.toString();
+    let channelMessage;
 
     if (!title || !titleString) {
-        const channelMessage = 
+        channelMessage = 
             `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live! \n\nCheck out their stream at ${messageObj.streamLink}`;
     } else {
-        const channelMessage =
+        channelMessage =
             `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live with "$${titleString}"! \n\nCheck out their stream at ${messageObj.streamLink}`;
     }
 
