@@ -73,7 +73,6 @@ async function rewardIntroduction(introductionid, userid) {
         userid,
         discordAPIBotStuff[1].guildID,
         token_rates.makeIntroductionReward,
-        console.log('Awarded Tokens for making an Introduction!'),
     );
     const userUpdateschannel = await disClient.channels.fetch(
         variousIDs[0].userUpdatesChannel,
@@ -128,7 +127,6 @@ async function handleEditIntroduction(
             iconURL: 'https://i.imgur.com/4H0ZiTv.png',
         });
     await introToEdit.edit({ embeds: [editIntroEmbed] });
-    console.log(`Edited ${modalInteraction.user.username}'s intro`);
 }
 module.exports = {
     getForm,

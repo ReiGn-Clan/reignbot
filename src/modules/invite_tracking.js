@@ -120,7 +120,6 @@ async function UpdateLeaderboard(
         const exist = await invite_leaderboard.findOne({ _id: userID });
         console.log(exist);
         if (exist != null) {
-            console.log('Yeet');
             if (increase) {
                 await invite_leaderboard.updateOne(
                     { _id: userID },
@@ -408,7 +407,6 @@ async function RetrieveLinkUsed(invites, invite_links_old, guild) {
             .toArray();
 
         if (difference.length > 0) {
-            console.log(difference);
             //console.log(await temp_invite_links.find({}).toArray());
             link_used = difference[0]._id;
             console.log('User joined through temp link');

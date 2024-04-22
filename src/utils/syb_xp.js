@@ -4,8 +4,11 @@ const fs = require('node:fs');
 const levelNamesData = JSON.parse(
     fs.readFileSync('./json/levelNames.json', 'utf-8'),
 );
+const EventEmitter = require('events');
 
 let collection;
+
+const XP_EVENTS = new EventEmitter();
 
 function set_collection(database_name, collection_name) {
     if (!database_name)
@@ -25,8 +28,6 @@ async function set_initial_rank(userId, guildId, disClient) {
     const user = await collection.findOne({ userID: userId, guildID: guildId });
     const guild = await disClient.guilds.fetch(guildId);
     const member = await guild.members.fetch(userId);
-
-    console.log('user', user);
 
     if (!user) {
         const role_to_give = await guild.roles.cache.find(
@@ -55,8 +56,6 @@ async function set_initial_rank(userId, guildId, disClient) {
             (role) => role.name === actual_rank,
         );
 
-        console.log('Actual rank', actual_rank);
-
         if (actual_rank === 'Neophyte') {
             await member.roles.add(role);
             return;
@@ -68,8 +67,6 @@ async function set_initial_rank(userId, guildId, disClient) {
 
         await member.roles.remove(previousRole);
         await member.roles.add(role);
-
-        console.log('Done');
     }
 }
 
@@ -112,6 +109,8 @@ async function appendXp(userId, guildId, xp) {
         .updateOne({ _id: user._id }, { $set: user })
         .catch((e) => console.log(`Failed to append xp, error`, e));
 
+    XP_EVENTS.emit('XPChanged');
+
     return prev_level < user.level;
 }
 
@@ -148,6 +147,8 @@ async function subtractXp(userId, guildId, xp, rankName) {
         .updateOne({ _id: user._id }, { $set: user })
         .catch((e) => console.log(`Failed to subtract xp, error`, e));
 
+    XP_EVENTS.emit('XPChanged');
+
     return prev_level > user.level;
 }
 
@@ -175,6 +176,8 @@ async function setXp(userId, guildId, xp) {
     await collection
         .updateOne({ _id: user._id }, { $set: user })
         .catch((e) => console.log(`Failed to append xp, error`, e));
+
+    XP_EVENTS.emit('XPChanged');
 
     return prev_level > user.xp;
 }
@@ -222,4 +225,5 @@ module.exports = {
     xpFor,
     getRank,
     set_initial_rank,
+    XP_EVENTS,
 };

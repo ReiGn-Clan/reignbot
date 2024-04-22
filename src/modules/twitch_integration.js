@@ -162,7 +162,14 @@ async function handleGoLive(whichStreamer) {
     messageObj.streamLink = `https://www.twitch.tv/${whichStreamer}`;
 
     // Get Stream title
-    let title = await getStreamTitle(whichStreamer);
+    let title = await getStreamTitle(whichStreamer.toLowerCase());
+    const titleString = title.toString();
+
+    if (!title || !titleString) {
+        const channelMessage = `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live! \n\nCheck out their stream at ${messageObj.streamLink}`;
+    } else {
+        const channelMessage = `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live with "$${titleString}"! \n\nCheck out their stream at ${messageObj.streamLink}`;
+    }
 
     const hasRole = member.roles.cache.some(
         (role) => role.name === liveRole.name,
@@ -171,9 +178,7 @@ async function handleGoLive(whichStreamer) {
         console.log('User already has live role! Skipping message');
         return;
     } else {
-        await channel.send(
-            `${messageObj.followerMention}, <@${messageObj.memberToPing}> has gone live with "${title}"! \n\nCheck out their stream at ${messageObj.streamLink}`,
-        );
+        await channel.send(channelMessage);
     }
 
     member.roles

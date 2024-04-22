@@ -14,7 +14,6 @@ async function improvedLevelUpMessage(message, disClient) {
     const member = await message.guild.members.fetch(message.author.id);
 
     if (member.user.bot) {
-        console.log('Bot trying to lvl up');
         return;
     }
 
@@ -23,14 +22,12 @@ async function improvedLevelUpMessage(message, disClient) {
     );
 
     // Nothing has to be done
-    console.log('No Action needed');
     if (user.level % 10 === 0) {
         channel.send(
             `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
         );
         return;
     } else {
-        console.log('User level not divisible by 10, skipping message');
         return;
     }
 }
@@ -42,13 +39,11 @@ async function improvedLevelUp(
     deranking = false,
     gambling = false,
 ) {
-    console.log(deranking, gambling);
     // What role should the user
     let user = await Levels.fetch(userID, guild.id);
     const member = await guild.members.fetch(userID);
 
     if (member.user.bot) {
-        console.log('Bot trying to lvl up');
         return;
     }
 
@@ -63,7 +58,6 @@ async function improvedLevelUp(
                 await channel.send(
                     `${member.user}, congratulations! You've leveled up to **Level ${user.level}!**`,
                 );
-                console.log('No Action needed');
                 return;
             }
         } else {
@@ -71,7 +65,6 @@ async function improvedLevelUp(
             await channel.send(
                 `${member.user}, oh no! You've lost tokens and are now **Level ${user.level}!**`,
             );
-            console.log('No Action needed');
             return;
         }
     } else {
@@ -195,10 +188,7 @@ async function updateXpLeaderboard(guildID, disClient) {
         variousIDs[3].topMembersMessage,
     );
 
-    message
-        .edit({ embeds: [embed] })
-        .then(console.log('Updated RT leaderboard'))
-        .catch(console.error);
+    await message.edit({ embeds: [embed] });
 
     await old_leaderboard.deleteMany();
     await old_leaderboard.insertMany(await xp_leaderboard.find({}).toArray());
@@ -208,7 +198,7 @@ async function rewardVoiceUsers(guildID, voiceChannelUsers, disClient) {
     const guild = await disClient.guilds.fetch(guildID);
 
     const xpPerMinute = 15;
-    console.log('Updating RT for users', voiceChannelUsers);
+
     voiceChannelUsers.forEach(async function (item) {
         let hasLeveledUp = await Levels.appendXp(
             item,
@@ -223,8 +213,6 @@ async function rewardVoiceUsers(guildID, voiceChannelUsers, disClient) {
                 console.error(error); // add error handling for levelUp functio
             }
         }
-
-        console.log('Done for user', item);
     });
 }
 
@@ -248,11 +236,21 @@ async function positionChange(oldLeaderboard, newLeaderboard) {
     return updatedLeaderboard;
 }
 
-async function makeDaily(disClient, manual = false, manualXP, manualUses) {
+async function makeDaily(
+    disClient,
+    rate,
+    manual = false,
+    manualXP,
+    manualUses,
+) {
+    // Set max token amount from popup
+    const maxTokens = 4000;
+
     // Determine if we want to make a daily (chance 1 in 5)
+    /*
     if (!manual) {
         if (Math.floor(Math.random() * 5) !== 2) return;
-    }
+    }*/
 
     // Channel to send it in
     const channel = await disClient.channels.fetch(
@@ -269,7 +267,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
     }
 
     let maxReactions = Math.floor(Math.random() * 4) + 1;
-    let xp = (Math.floor(Math.random() * 50) + 1) * 100;
+    let xp = Math.round(maxTokens / maxReactions);
     if (manual) {
         maxReactions = manualUses;
         xp = manualXP;
@@ -284,7 +282,7 @@ async function makeDaily(disClient, manual = false, manualXP, manualUses) {
         .then(async (sent) => {
             sent.react('1099386036133560391');
             let id_ = sent.id;
-            console.log(id_);
+
             const doc = {
                 _id: id_,
                 maxUses: maxReactions,
@@ -307,7 +305,6 @@ async function rewardDaily(reaction, user, disClient) {
 
     if (messageDOC !== null) {
         if (reaction.emoji.id !== '1099386036133560391') {
-            console.log('Wrong emoji');
             await reaction.users.remove(user.id);
             return;
         }

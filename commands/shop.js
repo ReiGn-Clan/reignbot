@@ -80,8 +80,6 @@ module.exports = {
 
         collector.on('collect', async (collected) => {
             if (collected.message.interaction.id === og_message.id) {
-                console.log('Collected');
-
                 const shop_type = collected.values[0];
 
                 switch (shop_type) {
