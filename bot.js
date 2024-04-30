@@ -12,6 +12,7 @@ const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
 const twitch_integration = require('./src/modules/twitch_integration.js');
 const voiceReward = require('./src/modules/voice_reward.js');
+const { cacheMembersIntoMongo } = require('./src/utils/cacheMembersIntoMongo.js');
 
 const async = require('async');
 
@@ -168,6 +169,12 @@ client.once(Events.ClientReady, async () => {
     invLeaderboardQueue.push({
         fetchinv: true,
     });
+
+    setInterval(() => {
+        cacheMembersIntoMongo(client);
+    }, 86400000 );
+
+    cacheMembersIntoMongo(client);
 
     await timers.restartTimers(guild, client);
 
