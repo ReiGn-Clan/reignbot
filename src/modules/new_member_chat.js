@@ -1,6 +1,8 @@
 const moment = require('moment');
 const { config_to_use } = require('../../general_config.json');
-const { discordAPIBotStuff, newMemberChatDBEnv} = require(`../../${config_to_use}`);
+const { discordAPIBotStuff, newMemberChatDBEnv } = require(
+    `../../${config_to_use}`,
+);
 const mongo_bongo = require('../utils/mongo_bongo.js');
 const db = mongo_bongo.getDbInstance(newMemberChatDBEnv);
 
@@ -31,9 +33,13 @@ async function removeNewMemberRole() {
     console.log('Members who joined more than 7 days ago:', membersPast7Days);
 
     membersPast7Days.forEach((member) => {
-        const guild = discordClient.guilds.cache.get(discordAPIBotStuff.guildId);
+        const guild = discordClient.guilds.cache.get(
+            discordAPIBotStuff.guildId,
+        );
         const memberObj = guild.members.cache.get(member.userId);
-        const role = guild.roles.cache.find((role) => role.name === 'New Member');
+        const role = guild.roles.cache.find(
+            (role) => role.name === 'New Member',
+        );
         memberObj.roles.remove(role);
     });
 }

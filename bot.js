@@ -328,16 +328,22 @@ client.on(Events.GuildMemberAdd, async (member) => {
     // add new member to mongo
     const newMemberCollection = db.collection('new_members');
 
-    // insert new member into collection, with upsert option 
-    const mongoRes = await newMemberCollection.insertOne({
-        userId: member.id,
-        joinDate: moment(),
-    }, { upsert: true });
+    // insert new member into collection, with upsert option
+    const mongoRes = await newMemberCollection.insertOne(
+        {
+            userId: member.id,
+            joinDate: moment(),
+        },
+        { upsert: true },
+    );
 
     if (mongoRes.result.ok) {
         console.log('New member added to collection');
     } else {
-        console.log('Error adding new member to collection, error:', mongoRes.result);
+        console.log(
+            'Error adding new member to collection, error:',
+            mongoRes.result,
+        );
     }
 });
 
