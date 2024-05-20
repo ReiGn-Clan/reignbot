@@ -326,7 +326,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
     );
 
     // add new member to mongo
-    const newMemberCollection = db.collection('new_members');
+    const newMemberCollection = newMemberDb.collection('new_members');
 
     // insert new member into collection, with upsert option
     const mongoRes = await newMemberCollection.insertOne(
