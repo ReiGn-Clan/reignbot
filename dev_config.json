@@ -30,6 +30,7 @@
     "gamblingDbEnvironment": "dev_gambling",
     "donateRateLimitDBEnv": "dev_donate_tokens_uses",
     "introductionsDBEnv": "dev_introductions",
+    "newMemberChatDBEnv": "dev_NewMemberChat",
     "timersDBEnv": "dev_timers",
     "twitchDBEnv": "dev_twitch",
     "webServerPort": 443,

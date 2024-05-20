@@ -1,6 +1,7 @@
 const mongo_bongo = require('./src/utils/mongo_bongo.js');
 mongo_bongo.connectToDatabase();
-
+const newMemberDb = mongo_bongo.getDbInstance('new_member_chat');
+const moment = require('moment');
 const fs = require('node:fs');
 const path = require('node:path');
 const Levels = require('./src/utils/syb_xp.js');
@@ -12,9 +13,7 @@ const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
 const twitch_integration = require('./src/modules/twitch_integration.js');
 const voiceReward = require('./src/modules/voice_reward.js');
-const {
-    cacheMembersIntoMongo,
-} = require('./src/utils/cacheMembersIntoMongo.js');
+const newMemberChat = require('./src/modules/new_member_chat.js');
 
 const async = require('async');
 
@@ -42,6 +41,7 @@ const client = new Client({
     ],
 });
 
+newMemberChat.setClient(client);
 faceit_integration.setClient(client);
 twitch_integration.setClient(client);
 introductions.setClient(client);
@@ -324,6 +324,21 @@ client.on(Events.GuildMemberAdd, async (member) => {
         discordAPIBotStuff[1].guildID,
         client,
     );
+
+    // add new member to mongo
+    const newMemberCollection = db.collection('new_members');
+
+    // insert new member into collection, with upsert option 
+    const mongoRes = await newMemberCollection.insertOne({
+        userId: member.id,
+        joinDate: moment(),
+    }, { upsert: true });
+
+    if (mongoRes.result.ok) {
+        console.log('New member added to collection');
+    } else {
+        console.log('Error adding new member to collection, error:', mongoRes.result);
+    }
 });
 
 // Event for when user leaves
