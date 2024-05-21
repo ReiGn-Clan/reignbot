@@ -65,6 +65,11 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
+//create sleep function
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // Create queues
 const invLeaderboardQueue = async.queue((task, callback) => {
     // Fetch the guild object
@@ -324,6 +329,8 @@ client.on(Events.GuildMemberAdd, async (member) => {
     const role = guild.roles.cache.get('1242542742488354889');
 
     await member.roles.add(role);
+
+    await sleep(50);
 
     // add new member to mongo
     const newMemberCollection = newMemberDb.collection('new_members');
