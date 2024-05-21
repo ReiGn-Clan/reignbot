@@ -172,12 +172,6 @@ client.once(Events.ClientReady, async () => {
         fetchinv: true,
     });
 
-    setInterval(() => {
-        cacheMembersIntoMongo(client);
-    }, 86400000);
-
-    cacheMembersIntoMongo(client);
-
     await timers.restartTimers(guild, client);
 
     //client.user.setAvatar('./assets/logo_v1_dev.png');
@@ -325,26 +319,22 @@ client.on(Events.GuildMemberAdd, async (member) => {
         client,
     );
 
+    //give new member role
+    const guild = client.guilds.cache.get(discordAPIBotStuff[1].guildID);
+    const role = guild.roles.cache.get('1242542742488354889');
+
+    await member.roles.add(role);
+
     // add new member to mongo
     const newMemberCollection = newMemberDb.collection('new_members');
-
     // insert new member into collection, with upsert option
-    const mongoRes = await newMemberCollection.insertOne(
+    await newMemberCollection.insertOne(
         {
             userId: member.id,
             joinDate: moment(),
         },
         { upsert: true },
     );
-
-    if (mongoRes.result.ok) {
-        console.log('New member added to collection');
-    } else {
-        console.log(
-            'Error adding new member to collection, error:',
-            mongoRes.result,
-        );
-    }
 });
 
 // Event for when user leaves
