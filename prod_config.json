@@ -34,7 +34,7 @@
     "timersDBEnv": "timers",
     "twitchDBEnv": "twitch",
     "webServerPort": 443,
-    "callbackURL": "https://webserver.reignclan.org/webhook/callback",
+    "callbackURL": "https://devwebserver.reignclan.org/webhook/callback",
     "privCertLoc": "/etc/letsencrypt/live/webserver.reignclan.org/privkey.pem",
     "fullchainCertLoc": "/etc/letsencrypt/live/webserver.reignclan.org/fullchain.pem"
 }

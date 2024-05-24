@@ -23,7 +23,7 @@ function startWebHookServer() {
         res.sendStatus(200);
     });
 
-    app.post('/webhook/callback', (req, res) => {
+    /*app.post('/webhook/callback', (req, res) => {
         const { challenge } = req.body;
         // Twitch sends a challenge query param to verify your endpoint
         if (challenge) {
@@ -32,13 +32,13 @@ function startWebHookServer() {
 
         const { subscription, event } = req.body;
 
-        twitch_integration.handleEventsub(
+        //twitch_integration.handleEventsub(
             subscription.type,
             event.broadcaster_user_name,
         );
 
         res.sendStatus(200);
-    });
+    });*/
 
     const httpsOptions = {
         key: fs.readFileSync(certKeyPath, 'utf-8'),
