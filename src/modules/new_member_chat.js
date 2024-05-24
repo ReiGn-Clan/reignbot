@@ -46,7 +46,6 @@ async function removeNewMemberRole() {
             console.log(
                 'Member or role not found in guild:',
                 member.userID,
-                role.name,
             );
             return;
         }
