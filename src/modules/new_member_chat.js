@@ -42,12 +42,8 @@ async function removeNewMemberRole() {
         );
         const memberObj = guild.members.cache.get(member.userID);
 
-        if (!memberObj || !role) {
-            console.log(
-                'Member or role not found in guild:',
-                member.userID,
-                role.name,
-            );
+        if (!memberObj) {
+            console.log('Member or role not found in guild:', member.userID);
             return;
         }
 
