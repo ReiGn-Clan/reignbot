@@ -272,7 +272,7 @@ async function deleteAllSubscriptions() {
 
 // Function to create all the initial subscriptions to events
 async function botStartup() {
-    await authenticate();
+    /*await authenticate();
     await deleteAllSubscriptions();
 
     const collection = db.collection('streamers');
@@ -282,7 +282,7 @@ async function botStartup() {
     // Iterate over each document
     allDocs.forEach(async (doc) => {
         await subscribeOnlineOffline(doc.twitchUserId);
-    });
+    });*/
 }
 
 module.exports = {
