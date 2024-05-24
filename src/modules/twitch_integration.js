@@ -27,7 +27,6 @@ async function authenticate() {
     let reqBody = `client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`;
     // x-www-form-urlencoded
 
-
     const response = await fetch('https://id.twitch.tv/oauth2/token', {
         method: 'POST',
         headers: {
