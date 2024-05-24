@@ -24,10 +24,19 @@ function setClient(client) {
 
 // Function to authenticate and get an access token
 async function authenticate() {
-    const response = await axios.post(
-        `https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`,
-    );
-    accessToken = response.data.access_token;
+    let reqBody = `client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`;
+    // x-www-form-urlencoded
+
+    const response = await fetch('https://id.twitch.tv/oauth2/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'x-www-form-urlencoded',
+        },
+        body: reqBody,
+    });
+
+    const data = await response.json();
+    accessToken = data.access_token;
 }
 
 // Function to get the broadcasterId

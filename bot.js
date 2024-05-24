@@ -156,7 +156,7 @@ client.once(Events.ClientReady, async () => {
 
     Levels.set_collection(xpDbEnvironment, 'levels'); //this connects to the database, then sets the URL for the database for the discord-xp library
 
-    xp_roles.makeDaily(client);
+    xp_roles.makeDaily(client, 100);
 
     //voiceReward.bot_boot(guild);
 
