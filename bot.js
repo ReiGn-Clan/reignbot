@@ -361,4 +361,5 @@ client.on(Events.GuildCreate, async (guild) => {
 });
 
 // Log the client in using the token from the config file
+console.log(discordAPIBotStuff[0].token);
 client.login(discordAPIBotStuff[0].token);
