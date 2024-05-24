@@ -231,6 +231,11 @@ async function CalculateHourRate() {
 }
 
 client.on('messageCreate', async (message) => {
+    //if the message starts with the command prefix or if the author is the bot, skip this method
+    if (message.content.startsWith('/') || message.author.bot) {
+        return;
+    }
+
     if (
         message.embeds.length &&
         message.author.username == 'DISBOARD' &&
@@ -239,11 +244,6 @@ client.on('messageCreate', async (message) => {
         timers.bumpTimer(Date.now() + 7200000, message.channel);
 
         await xp_roles.rewardBump(message, client);
-    }
-
-    //if the message starts with the command prefix or if the author is the bot, skip this method
-    if (message.content.startsWith('/') || message.author.bot) {
-        return;
     }
 
     popUpMessageCounter += 1;
@@ -339,6 +339,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
         {
             userId: member.id,
             joinDate: moment(),
+            hasNewRole: true,
         },
         { upsert: true },
     );
