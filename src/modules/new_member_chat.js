@@ -30,26 +30,36 @@ async function getAllMembersPast7Days() {
 
 async function removeNewMemberRole() {
     const membersPast7Days = await getAllMembersPast7Days();
-    const withNewRole = membersPast7Days.filter((member) => member.hasNewRole === true);
+    const withNewRole = membersPast7Days.filter(
+        (member) => member.hasNewRole === true,
+    );
 
     console.log('Members who joined more than 7 days ago:', membersPast7Days);
 
     withNewRole.forEach(async (member) => {
-        const guild = discordClient.guilds.cache.get(discordAPIBotStuff.guildID);
+        const guild = discordClient.guilds.cache.get(
+            discordAPIBotStuff.guildID,
+        );
         const memberObj = guild.members.cache.get(member.userID);
 
-
         if (!memberObj || !role) {
-            console.log('Member or role not found in guild:', member.userID, role.name);
+            console.log(
+                'Member or role not found in guild:',
+                member.userID,
+                role.name,
+            );
             return;
         }
-        
+
         //remove role
         await memberObj.roles.remove('1242542742488354889');
 
         //update db
         const collection = db.collection('new_members');
-        const mongoRes = await collection.updateOne({ userID: member.userID }, { $set: { hasNewRole: false } });
+        const mongoRes = await collection.updateOne(
+            { userID: member.userID },
+            { $set: { hasNewRole: false } },
+        );
 
         if (mongoRes.modifiedCount === 1) {
             console.log('Role removed and db updated for:', member.userID);
