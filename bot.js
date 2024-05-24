@@ -1,6 +1,7 @@
 const mongo_bongo = require('./src/utils/mongo_bongo.js');
 mongo_bongo.connectToDatabase();
-
+const newMemberDb = mongo_bongo.getDbInstance('new_member_chat');
+const moment = require('moment');
 const fs = require('node:fs');
 const path = require('node:path');
 const Levels = require('./src/utils/syb_xp.js');
@@ -12,6 +13,7 @@ const webhookserver = require('./src/utils/webhookserver.js');
 const introductions = require('./src/modules/introductions.js');
 const twitch_integration = require('./src/modules/twitch_integration.js');
 const voiceReward = require('./src/modules/voice_reward.js');
+const newMemberChat = require('./src/modules/new_member_chat.js');
 
 const async = require('async');
 
@@ -39,6 +41,7 @@ const client = new Client({
     ],
 });
 
+newMemberChat.setClient(client);
 faceit_integration.setClient(client);
 twitch_integration.setClient(client);
 introductions.setClient(client);
@@ -60,6 +63,11 @@ for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const command = require(filePath);
     client.commands.set(command.data.name, command);
+}
+
+//create sleep function
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // Create queues
@@ -223,6 +231,11 @@ async function CalculateHourRate() {
 }
 
 client.on('messageCreate', async (message) => {
+    //if the message starts with the command prefix or if the author is the bot, skip this method
+    if (message.content.startsWith('/') || message.author.bot) {
+        return;
+    }
+
     if (
         message.embeds.length &&
         message.author.username == 'DISBOARD' &&
@@ -231,11 +244,6 @@ client.on('messageCreate', async (message) => {
         timers.bumpTimer(Date.now() + 7200000, message.channel);
 
         await xp_roles.rewardBump(message, client);
-    }
-
-    //if the message starts with the command prefix or if the author is the bot, skip this method
-    if (message.content.startsWith('/') || message.author.bot) {
-        return;
     }
 
     popUpMessageCounter += 1;
@@ -314,6 +322,26 @@ client.on(Events.GuildMemberAdd, async (member) => {
         member.id,
         discordAPIBotStuff[1].guildID,
         client,
+    );
+
+    //give new member role
+    const guild = client.guilds.cache.get(discordAPIBotStuff[1].guildID);
+    const role = guild.roles.cache.get('1242542742488354889');
+
+    await member.roles.add(role);
+
+    await sleep(50);
+
+    // add new member to mongo
+    const newMemberCollection = newMemberDb.collection('new_members');
+    // insert new member into collection, with upsert option
+    await newMemberCollection.insertOne(
+        {
+            userId: member.id,
+            joinDate: moment(),
+            hasNewRole: true,
+        },
+        { upsert: true },
     );
 });
 

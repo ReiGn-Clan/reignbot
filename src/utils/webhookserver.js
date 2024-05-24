@@ -10,6 +10,8 @@ const https = require('https');
 const fs = require('fs');
 const certKeyPath = privCertLoc; // Update with the actual path
 const certFilePath = fullchainCertLoc; // Update with the actual path
+const cron = require('node-cron');
+const { removeNewMemberRole } = require('../modules/new_member_chat.js');
 
 function startWebHookServer() {
     app.use(express.json());
@@ -47,5 +49,10 @@ function startWebHookServer() {
         console.log(`HTTPS server listening on port ${webServerPort}`);
     });
 }
+
+// schedule a cron job for midnight every day to remove the new member role from members who joined more than 7 days ago
+cron.schedule('0 0 * * *', async () => {
+    await removeNewMemberRole();
+});
 
 module.exports = { startWebHookServer };
