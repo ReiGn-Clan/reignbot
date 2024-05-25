@@ -188,6 +188,7 @@ async function fetch(userId, guildId) {
 
     returns user doc
     */
+
     const user = await collection.findOne({ userID: userId, guildID: guildId });
 
     if (!user) return false;
