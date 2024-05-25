@@ -42,12 +42,20 @@ async function thanosSnap(interaction) {
                     member.id,
                     interaction.client,
                     true,
+<<<<<<< HEAD
                     false,
             );
             console.log(`Set ${member.user.username}'s XP to 0.`);
         } catch (error) {
             console.error(error);
         }
+=======
+                );
+                console.log(`Set ${member.user.username}'s XP to 0.`);
+            } catch (error) {
+                console.error(error);
+            }
+>>>>>>> 209033d76ed3d5c1ca44d2a43f2561be555fb937
         }
     });
     return interaction.reply('Perfectly balanced, as all things should be.');
