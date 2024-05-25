@@ -29,19 +29,20 @@ async function thanosSnap(interaction) {
         });
 
         let userTotalXP = await Levels.fetch(member.id, guild.id);
-        let hasLevelUp = await Levels.subtractXp(
+        let hasLevelDown = await Levels.subtractXp(
             member.id,
             guild.id,
             userTotalXP.xp,
         );
 
-        if (hasLevelUp) {
+        if (hasLevelDown) {
             try {
                 await xp_roles.improvedLevelUp(
                     guild,
                     member.id,
                     interaction.client,
                     true,
+                    false,
             );
             console.log(`Set ${member.user.username}'s XP to 0.`);
         } catch (error) {
