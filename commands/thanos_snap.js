@@ -27,10 +27,28 @@ async function thanosSnap(interaction) {
                 );
             }
         });
-        await Levels.setXp(member.id, guild.id, 0);
-        console.log(`Set ${member.user.username}'s XP to 0.`);
-    });
 
+        let userTotalXP = await Levels.fetch(member.id, guild.id);
+        let hasLevelUp = await Levels.subtractXp(
+            member.id,
+            guild.id,
+            userTotalXP.xp,
+        );
+
+        if (hasLevelUp) {
+            try {
+                await xp_roles.improvedLevelUp(
+                    guild,
+                    member.id,
+                    interaction.client,
+                    true,
+            );
+            console.log(`Set ${member.user.username}'s XP to 0.`);
+        } catch (error) {
+            console.error(error);
+        }
+        }
+    });
     return interaction.reply('Perfectly balanced, as all things should be.');
 }
 

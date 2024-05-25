@@ -11,7 +11,7 @@ async function subtractXP(interaction) {
         interaction.guild.id,
         amount,
     );
-    let userTotalXP = await Levels.fetch(user.id, interaction.guild.id, true);
+    let userTotalXP = await Levels.fetch(user.id, interaction.guild.id);
 
     if (hasLeveledUp) {
         try {
