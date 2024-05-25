@@ -43,11 +43,11 @@ async function thanosSnap(interaction) {
                     interaction.client,
                     true,
                     false,
-            );
-            console.log(`Set ${member.user.username}'s XP to 0.`);
-        } catch (error) {
-            console.error(error);
-        }
+                );
+                console.log(`Set ${member.user.username}'s XP to 0.`);
+            } catch (error) {
+                console.error(error);
+            }
         }
     });
     return interaction.reply('Perfectly balanced, as all things should be.');
