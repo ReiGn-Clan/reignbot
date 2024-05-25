@@ -10,6 +10,9 @@ async function thanosSnap(interaction) {
     const neophyteRole = guild.roles.cache.find(
         (role) => role.name === 'Neophyte',
     );
+    const loyalMemberRole = guild.roles.cache.find(
+        (role) => role.name === 'Loyal Member',
+    );
 
     const roleNames = roles.ranges.map((range) => range.value);
 
@@ -27,7 +30,8 @@ async function thanosSnap(interaction) {
                 );
             }
         });
-
+        await member.roles.add(loyalMemberRole);
+        console.log(`Added Loyal Member to ${member.user.username}.`);
         let userTotalXP = await Levels.fetch(member.id, guild.id);
         let hasLevelDown = await Levels.subtractXp(
             member.id,
