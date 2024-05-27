@@ -9,7 +9,7 @@ const db = mongo_bongo.getDbInstance('xpDatabase');
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function thanosSnap(interaction) {
-    const guild = interaction.guild;
+    /*const guild = interaction.guild;
     const members = await guild.members.fetch();
     const neophyteRole = guild.roles.cache.find(
         (role) => role.name === 'Neophyte',
@@ -87,7 +87,8 @@ async function thanosSnap(interaction) {
         } else {
             console.log(`${member.user.username} is not boosting the server.`);
         }
-    }
+    }*/
+    await interaction.reply('I have balanced the server.');
 }
 
 module.exports = {
