@@ -41,7 +41,7 @@ async function thanosSnap(interaction) {
         let hasLevelDown = await Levels.setXp(
             member.id,
             guild.id,
-            0,
+            1,
         );
 
         if (hasLevelDown) {
