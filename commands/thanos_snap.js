@@ -33,7 +33,6 @@ async function thanosSnap(interaction) {
             }
         }
         await memberObj.roles.add(loyalMemberRole);
-    }
 
         console.log(`Added Loyal Member to ${member.user.username}.`);
         let userTotalXP = await Levels.fetch(member.id, guild.id);
