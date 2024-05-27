@@ -1,6 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Levels = require('../src/utils/syb_xp.js');
 const roles = require('../json/levelNames.json');
+const mongo_bongo = require('../src/utils/mongo_bongo.js');
+
+const db = mongo_bongo.getDbInstance('xpDatabase');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -31,6 +34,7 @@ async function thanosSnap(interaction) {
             }
         });
         await member.roles.add(loyalMemberRole);
+
         console.log(`Added Loyal Member to ${member.user.username}.`);
         let userTotalXP = await Levels.fetch(member.id, guild.id);
         let hasLevelDown = await Levels.subtractXp(
@@ -38,6 +42,21 @@ async function thanosSnap(interaction) {
             guild.id,
             userTotalXP.xp,
         );
+
+        const collection = db.collection('boosters');
+        const isBoosting = member.roles.cache.some(role => role.id === '1089665914129105066');
+
+        if (isBoosting) {
+            console.log(`${member.user.username} is boosting the server, adding 10000 Tokens.`);
+            await Levels.addXp(member.id, guild.id, 10000);
+
+            await collection.insertOne({
+                user_id: member.id,
+                awarded: true,
+            });
+        } else {
+            console.log(`${member.user.username} is not boosting the server.`);
+        }
 
         if (hasLevelDown) {
             try {
