@@ -20,21 +20,17 @@ async function thanosSnap(interaction) {
 
     const roleNames = roles.ranges.map((range) => range.value);
 
-    await members.forEach(async (member) => {
+    for (const member of members) {
         await sleep(350); // to avoid rate limit
-        await roleNames.forEach(async (roleName) => {
-            if (
-                roleName !== 'Neophyte' &&
-                (await member.roles.cache.has(roleName))
-            ) {
+        for (const roleName of roleNames) {
+            if (roleName !== 'Neophyte' && member.roles.cache.has(roleName)) {
                 await member.roles.remove(roleName);
                 await member.roles.add(neophyteRole);
-                console.log(
-                    `Removed ${roleName} from ${member.user.username}. Set to Neophyte.`,
-                );
+                console.log(`Removed ${roleName} from ${member.user.username}. Set to Neophyte.`);
             }
-        });
+        }
         await member.roles.add(loyalMemberRole);
+    }
 
         console.log(`Added Loyal Member to ${member.user.username}.`);
         let userTotalXP = await Levels.fetch(member.id, guild.id);

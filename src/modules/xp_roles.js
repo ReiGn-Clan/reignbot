@@ -63,7 +63,7 @@ async function improvedLevelUp(
         } else {
             // Nothing has to be done
             await channel.send(
-                `${member.user}, oh no! You've lost tokens and are now **Level ${user.level}!**`,
+                `${member.user.name}, oh no! You've lost tokens and are now **Level ${user.level}!**`,
             );
             return;
         }
