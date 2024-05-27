@@ -22,8 +22,10 @@ async function thanosSnap(interaction) {
 
     for (const member of members) {
         await sleep(350); // to avoid rate limit
+        //fetch member obj
+        const member = await guild.members.fetch(member.id);
         for (const roleName of roleNames) {
-            const hasRole = member.roles.cache.has(roleName);
+            const hasRole = member.roles.cache.some( (role) => role.name === roleName);
             if (roleName !== 'Neophyte' && hasRole) {
                 await member.roles.remove(roleName);
                 await member.roles.add(neophyteRole);
