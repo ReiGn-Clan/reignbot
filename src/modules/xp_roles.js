@@ -189,20 +189,23 @@ async function updateXpLeaderboard(guildID, disClient) {
     );
 
     await message.edit({ embeds: [embed] });
-}
+
     const docs = await xp_leaderboard.find({}).toArray();
 
-    const operations = docs.map(doc => ({
-        updateOne: {
-            filter: { _id: doc._id },
-            update: { $set: doc },
-            upsert: true
-        }
-    }));
-
-    old_leaderboard.bulkWrite(operations)
-        .catch(err => console.error(err));
+const operations = docs.map(doc => ({
+    updateOne: {
+        filter: { _id: doc._id },
+        update: { $set: doc },
+        upsert: true
     }
+}));
+
+old_leaderboard.bulkWrite(operations)
+    .catch(err => console.error(err));
+}
+
+
+
 
 async function rewardVoiceUsers(guildID, voiceChannelUsers, disClient) {
     const guild = await disClient.guilds.fetch(guildID);
