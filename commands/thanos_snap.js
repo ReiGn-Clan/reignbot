@@ -20,9 +20,9 @@ async function thanosSnap(interaction) {
 
     const roleNames = roles.ranges.map((range) => range.value);
 
-    members.forEach(async (member) => {
+    await members.forEach(async (member) => {
         await sleep(350); // to avoid rate limit
-        roleNames.forEach(async (roleName) => {
+        await roleNames.forEach(async (roleName) => {
             if (
                 roleName !== 'Neophyte' &&
                 (await member.roles.cache.has(roleName))
