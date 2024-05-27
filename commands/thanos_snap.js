@@ -38,7 +38,7 @@ async function thanosSnap(interaction) {
 
         console.log(`Added Loyal Member to ${member.user.username}.`);
         let userTotalXP = await Levels.fetch(member.id, guild.id);
-        let hasLevelDown = await Levels.setXp(member.id, guild.id, 0);
+        let hasLevelDown = await Levels.setXp(member.id, guild.id, 1);
 
         if (hasLevelDown) {
             try {
