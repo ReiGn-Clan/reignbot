@@ -30,10 +30,11 @@ async function thanosSnap(interaction) {
             if (roleName !== 'Neophyte' && hasRole) {
                 await memberObj.roles.remove(role.id);
                 await memberObj.roles.add(neophyteRole);
+                await memberObj.roles.add(loyalMemberRole);
                 console.log(`Removed ${roleName} from ${memberObj.user.username}. Set to Neophyte.`);
             }
         }
-        await memberObj.roles.add(loyalMemberRole);
+        
 
         console.log(`Added Loyal Member to ${member.user.username}.`);
         let userTotalXP = await Levels.fetch(member.id, guild.id);
