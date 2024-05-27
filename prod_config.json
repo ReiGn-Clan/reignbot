@@ -18,8 +18,8 @@
         { "socialUpdatesChannel": "1140659894043820055" }
     ],
     "twitchSecrets": {
-        "clientId": "x0nkechkioogsp0bg1yo14cbubkqpn",
-        "clientSecret": "34d4347rfbdrozagtxk9ze45siqt96"
+        "clientId": "tkevx82u56y37tsk6l2d7t46qq9yuc",
+        "clientSecret": "o6r3hme0nk19vvm7m6m3l1unlo8v0o"
     },
     "xpDbEnvironment": "xpDatabase",
     "recruiterDbEnvironment": "recruiter",
@@ -34,7 +34,7 @@
     "timersDBEnv": "timers",
     "twitchDBEnv": "twitch",
     "webServerPort": 443,
-    "callbackURL": "https://devwebserver.reignclan.org/webhook/callback",
+    "callbackURL": "https://webserver.reignclan.org/webhook/callback",
     "privCertLoc": "/etc/letsencrypt/live/webserver.reignclan.org/privkey.pem",
     "fullchainCertLoc": "/etc/letsencrypt/live/webserver.reignclan.org/fullchain.pem"
 }
