@@ -26,64 +26,66 @@ async function thanosSnap(interaction) {
             if (roleName !== 'Neophyte' && await member.roles.cache.has(roleName)) {
                 await member.roles.remove(roleName);
                 await member.roles.add(neophyteRole);
-                console.log(`Removed ${roleName} from ${member.user.username}. Set to Neophyte.`);
+                console.log(
+                    `Removed ${roleName} from ${member.user.username}. Set to Neophyte.`,
+                );
             }
         }
         await member.roles.add(loyalMemberRole);
     }
 
-        console.log(`Added Loyal Member to ${member.user.username}.`);
-        let userTotalXP = await Levels.fetch(member.id, guild.id);
-        let hasLevelDown = await Levels.setXp(member.id, guild.id, 1);
+    console.log(`Added Loyal Member to ${member.user.username}.`);
+    let userTotalXP = await Levels.fetch(member.id, guild.id);
+    let hasLevelDown = await Levels.setXp(member.id, guild.id, 1);
 
-        if (hasLevelDown) {
+    if (hasLevelDown) {
+        try {
+            await xp_roles.improvedLevelUp(
+                guild,
+                member.id,
+                interaction.client,
+                true,
+                false,
+            );
+            console.log(`Set ${member.user.username}'s XP to 0.`);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const collection = db.collection('boosters');
+    const isBoosting = member.roles.cache.some(
+        (role) => role.id === '1089665914129105066',
+    );
+
+    if (isBoosting) {
+        console.log(
+            `${member.user.username} is boosting the server, adding 10000 Tokens.`,
+        );
+        let haslvlup = await Levels.appendXp(member.id, guild.id, 10000);
+
+        if (haslvlup) {
             try {
                 await xp_roles.improvedLevelUp(
                     guild,
                     member.id,
                     interaction.client,
-                    true,
+                    false,
                     false,
                 );
-                console.log(`Set ${member.user.username}'s XP to 0.`);
             } catch (error) {
                 console.error(error);
             }
         }
 
-        const collection = db.collection('boosters');
-        const isBoosting = member.roles.cache.some(
-            (role) => role.id === '1089665914129105066',
-        );
-
-        if (isBoosting) {
-            console.log(
-                `${member.user.username} is boosting the server, adding 10000 Tokens.`,
-            );
-            let haslvlup = await Levels.appendXp(member.id, guild.id, 10000);
-
-            if (haslvlup) {
-                try {
-                    await xp_roles.improvedLevelUp(
-                        guild,
-                        member.id,
-                        interaction.client,
-                        false,
-                        false,
-                    );
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-
-            await collection.insertOne({
-                user_id: member.id,
-                awarded: true,
-            });
-        } else {
-            console.log(`${member.user.username} is not boosting the server.`);
-        }
+        await collection.insertOne({
+            user_id: member.id,
+            awarded: true,
+        });
+    } else {
+        console.log(`${member.user.username} is not boosting the server.`);
     }
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
