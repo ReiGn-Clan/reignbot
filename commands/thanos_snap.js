@@ -23,7 +23,7 @@ async function thanosSnap(interaction) {
     for (const member of members) {
         await sleep(350); // to avoid rate limit
         for (const roleName of roleNames) {
-            if (roleName !== 'Neophyte' && member.roles.cache.has(roleName)) {
+            if (roleName !== 'Neophyte' && await member.roles.cache.has(roleName)) {
                 await member.roles.remove(roleName);
                 await member.roles.add(neophyteRole);
                 console.log(`Removed ${roleName} from ${member.user.username}. Set to Neophyte.`);
@@ -83,7 +83,7 @@ async function thanosSnap(interaction) {
         } else {
             console.log(`${member.user.username} is not boosting the server.`);
         }
-    };
+    }
 
 module.exports = {
     data: new SlashCommandBuilder()
