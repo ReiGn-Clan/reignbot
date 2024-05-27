@@ -23,18 +23,18 @@ async function thanosSnap(interaction) {
     for (const member of members) {
         await sleep(350); // to avoid rate limit
         //fetch member obj
-        const member = await guild.members.fetch(member.id);
+        const memberObj = await guild.members.fetch(member.id);
         for (const roleName of roleNames) {
-            const hasRole = member.roles.cache.some( (role) => role.name === roleName);
+            const hasRole = memberObj.roles.cache.some( (role) => role.name === roleName);
             if (roleName !== 'Neophyte' && hasRole) {
-                await member.roles.remove(roleName);
-                await member.roles.add(neophyteRole);
+                await memberObj.roles.remove(roleName);
+                await memberObj.roles.add(neophyteRole);
                 console.log(
                     `Removed ${roleName} from ${member.user.username}. Set to Neophyte.`,
                 );
             }
         }
-        await member.roles.add(loyalMemberRole);
+        await memberObj.roles.add(loyalMemberRole);
 
         console.log(`Added Loyal Member to ${member.user.username}.`);
         let userTotalXP = await Levels.fetch(member.id, guild.id);
@@ -56,7 +56,7 @@ async function thanosSnap(interaction) {
         }
 
         const collection = db.collection('boosters');
-        const isBoosting = member.roles.cache.some(
+        const isBoosting = memberObj.roles.cache.some(
             (role) => role.id === '1089665914129105066',
         );
 
