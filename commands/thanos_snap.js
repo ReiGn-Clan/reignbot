@@ -27,7 +27,7 @@ async function thanosSnap(interaction) {
         for (const roleName of roleNames) {
             const hasRole = memberObj.roles.cache.some(role => role.name === roleName);
             if (roleName !== 'Neophyte' && hasRole) {
-                await memberObj.roles.remove(roleName);
+                await memberObj.roles.remove(roleName.id);
                 await memberObj.roles.add(neophyteRole);
                 console.log(`Removed ${roleName} from ${memberObj.user.username}. Set to Neophyte.`);
             }
