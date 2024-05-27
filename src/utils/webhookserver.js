@@ -24,7 +24,7 @@ function startWebHookServer() {
     });
 
     app.post('/webhook/callback', (req, res) => {
-        const { challenge } = req.body;
+        /*const { challenge } = req.body;
         // Twitch sends a challenge query param to verify your endpoint
         if (challenge) {
             return res.status(200).send(challenge);
@@ -37,7 +37,7 @@ function startWebHookServer() {
             event.broadcaster_user_name,
         );
 
-        res.sendStatus(200);
+        res.sendStatus(200);*/
     });
 
     const httpsOptions = {

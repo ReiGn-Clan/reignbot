@@ -43,10 +43,10 @@ const client = new Client({
 
 newMemberChat.setClient(client);
 faceit_integration.setClient(client);
-twitch_integration.setClient(client);
+//twitch_integration.setClient(client);
 introductions.setClient(client);
 webhookserver.startWebHookServer();
-twitch_integration.botStartup();
+//twitch_integration.botStartup();
 // Create a new Collection to store the commands
 client.commands = new Collection();
 
