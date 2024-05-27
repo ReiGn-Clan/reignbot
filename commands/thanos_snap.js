@@ -64,7 +64,7 @@ async function thanosSnap(interaction) {
             console.log(
                 `${member.user.username} is boosting the server, adding 10000 Tokens.`,
             );
-            let haslvlup = await Levels.addXp(member.id, guild.id, 10000);
+            let haslvlup = await Levels.appendXp(member.id, guild.id, 10000);
 
             if (haslvlup) {
                 try {
