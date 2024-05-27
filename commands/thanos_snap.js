@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Levels = require('../src/utils/syb_xp.js');
 const roles = require('../json/levelNames.json');
 const mongo_bongo = require('../src/utils/mongo_bongo.js');
+const xp_roles = require('../src/modules/xp_roles.js');
 
 const db = mongo_bongo.getDbInstance('xpDatabase');
 
@@ -43,25 +44,6 @@ async function thanosSnap(interaction) {
             userTotalXP.xp,
         );
 
-        const collection = db.collection('boosters');
-        const isBoosting = member.roles.cache.some(
-            (role) => role.id === '1089665914129105066',
-        );
-
-        if (isBoosting) {
-            console.log(
-                `${member.user.username} is boosting the server, adding 10000 Tokens.`,
-            );
-            await Levels.addXp(member.id, guild.id, 10000);
-
-            await collection.insertOne({
-                user_id: member.id,
-                awarded: true,
-            });
-        } else {
-            console.log(`${member.user.username} is not boosting the server.`);
-        }
-
         if (hasLevelDown) {
             try {
                 await xp_roles.improvedLevelUp(
@@ -75,6 +57,39 @@ async function thanosSnap(interaction) {
             } catch (error) {
                 console.error(error);
             }
+        }
+
+        const collection = db.collection('boosters');
+        const isBoosting = member.roles.cache.some(
+            (role) => role.id === '1089665914129105066',
+        );
+
+        if (isBoosting) {
+            console.log(
+                `${member.user.username} is boosting the server, adding 10000 Tokens.`,
+            );
+            let haslvlup = await Levels.addXp(member.id, guild.id, 10000);
+
+            if (haslvlup) {
+                try {
+                    await xp_roles.improvedLevelUp(
+                        guild,
+                        member.id,
+                        interaction.client,
+                        false,
+                        false,
+                    );
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            await collection.insertOne({
+                user_id: member.id,
+                awarded: true,
+            });
+        } else {
+            console.log(`${member.user.username} is not boosting the server.`);
         }
     });
     return interaction.reply('Perfectly balanced, as all things should be.');
