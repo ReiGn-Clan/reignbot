@@ -26,8 +26,9 @@ async function thanosSnap(interaction) {
         const memberObj = await guild.members.fetch(id);
         for (const roleName of roleNames) {
             const hasRole = memberObj.roles.cache.some(role => role.name === roleName);
+            const role = guild.roles.cache.find(role => role.name === roleName);
             if (roleName !== 'Neophyte' && hasRole) {
-                await memberObj.roles.remove(roleName.id);
+                await memberObj.roles.remove(role.id);
                 await memberObj.roles.add(neophyteRole);
                 console.log(`Removed ${roleName} from ${memberObj.user.username}. Set to Neophyte.`);
             }
