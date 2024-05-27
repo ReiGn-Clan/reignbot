@@ -23,7 +23,7 @@ async function thanosSnap(interaction) {
     for (const member of members) {
         await sleep(350); // to avoid rate limit
         for (const roleName of roleNames) {
-            const hasRole = await member.roles.cache.has(roleName);
+            const hasRole = member.roles.cache.has(roleName);
             if (roleName !== 'Neophyte' && hasRole) {
                 await member.roles.remove(roleName);
                 await member.roles.add(neophyteRole);
@@ -33,7 +33,7 @@ async function thanosSnap(interaction) {
             }
         }
         await member.roles.add(loyalMemberRole);
-    }
+    
 
     console.log(`Added Loyal Member to ${member.user.username}.`);
     let userTotalXP = await Levels.fetch(member.id, guild.id);
@@ -86,6 +86,7 @@ async function thanosSnap(interaction) {
     } else {
         console.log(`${member.user.username} is not boosting the server.`);
     }
+}
 }
 
 module.exports = {
