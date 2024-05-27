@@ -83,9 +83,7 @@ async function thanosSnap(interaction) {
         } else {
             console.log(`${member.user.username} is not boosting the server.`);
         }
-    });
-    return interaction.reply('Perfectly balanced, as all things should be.');
-}
+    };
 
 module.exports = {
     data: new SlashCommandBuilder()
