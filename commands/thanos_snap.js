@@ -44,10 +44,14 @@ async function thanosSnap(interaction) {
         );
 
         const collection = db.collection('boosters');
-        const isBoosting = member.roles.cache.some(role => role.id === '1089665914129105066');
+        const isBoosting = member.roles.cache.some(
+            (role) => role.id === '1089665914129105066',
+        );
 
         if (isBoosting) {
-            console.log(`${member.user.username} is boosting the server, adding 10000 Tokens.`);
+            console.log(
+                `${member.user.username} is boosting the server, adding 10000 Tokens.`,
+            );
             await Levels.addXp(member.id, guild.id, 10000);
 
             await collection.insertOne({
