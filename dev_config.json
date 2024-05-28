@@ -7,7 +7,7 @@
         { "clientID": "1089919830385238108" }
     ],
 
-    "mongoUri": "mongodb+srv://admin:vZxUHrWiAWpVNVOd@cluster0.jialcet.mongodb.net/",
+    "mongoUri": "mongodb+srv://bot:eJeFLsRgRKnMJRug@cluster0.jialcet.mongodb.net/",
 
     "variousIDs": [
         { "userUpdatesChannel": "1159140468601409536" },
